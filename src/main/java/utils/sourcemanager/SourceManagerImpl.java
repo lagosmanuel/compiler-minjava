@@ -8,6 +8,7 @@ public class SourceManagerImpl implements SourceManager {
     private int line;
     private int column;
     private boolean hasLineEnded;
+    private char pushBackChar;
     private FileReader fileReader;
     private final StringBuilder stringBuilder;
 
@@ -30,8 +31,15 @@ public class SourceManagerImpl implements SourceManager {
 
     @Override
     public char getNextChar() throws IOException {
-        int ch_code = fileReader.read();
-        char ch = ch_code != -1? (char) ch_code:END_OF_FILE;
+        char ch;
+
+        if (!hasPushBackChar()) {
+            int ch_code = fileReader.read();
+            ch = ch_code != -1? (char)ch_code:END_OF_FILE;
+        } else {
+            ch = getPushBackChar();
+            resetPushBackChar();
+        }
 
         if (hasLineEnded) {
             resetLine();
@@ -41,8 +49,9 @@ public class SourceManagerImpl implements SourceManager {
         if (ch == NEWLINE) {
             hasLineEnded = true;
         } else if (ch == CARRY_RETURN) {
-            if (fileReader.ready() && fileReader.read() != NEWLINE) {
-                fileReader.skip(-1);
+            if (fileReader.ready()) {
+                char nextChar = (char) fileReader.read();
+                if (nextChar != NEWLINE) setPushBackChar(nextChar);
             }
             hasLineEnded = true;
             ch = NEWLINE;
@@ -57,6 +66,22 @@ public class SourceManagerImpl implements SourceManager {
         ++line;
         column = 0;
         stringBuilder.delete(0, stringBuilder.length());
+    }
+
+    char getPushBackChar() {
+        return pushBackChar;
+    }
+
+    boolean hasPushBackChar() {
+        return pushBackChar != 0;
+    }
+
+    void setPushBackChar(char pushBackChar) {
+        this.pushBackChar = pushBackChar;
+    }
+
+    void resetPushBackChar() {
+        pushBackChar = 0;
     }
 
     @Override
