@@ -78,7 +78,7 @@ public class LexerImpl implements Lexer {
         } else if (ch == ',') {
             token = new Token(TokenType.comma, lexeme, line, column);
         } else if (ch == '.') {
-            token = new Token(TokenType.dot, lexeme, line, column);
+            return openDot();
         } else if (ch == ':') {
             token = new Token(TokenType.colon, lexeme, line, column);
         } else if (ch == '>') {
@@ -164,6 +164,12 @@ public class LexerImpl implements Lexer {
             }
             appendCharLexeme(ch);
             return digit();
+        } else if (ch == '.') {
+            appendCharLexeme(ch);
+            return openFloatDot();
+        } else if (ch == 'e' || ch == 'E') {
+            appendCharLexeme(ch);
+            return openFloatExp();
         } else {
             return new Token(TokenType.intLiteral, lexeme, line, column);
         }
@@ -495,6 +501,119 @@ public class LexerImpl implements Lexer {
         } while (ch != SourceManager.END_OF_FILE);
 
         throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED);
+        return null;
+    }
+
+    private Token openDot() throws LexicalException {
+        int line = sourceManager.getLineNumber();
+        int column = sourceManager.getColumnNumber();
+        ch = readChar();
+        Token token;
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return openDotFloat();
+        } else {
+            token = new Token(TokenType.dot, lexeme, line, column);
+        }
+
+        return token;
+    }
+
+    private Token openDotFloat() throws LexicalException {
+        int line = sourceManager.getLineNumber();
+        int column = sourceManager.getColumnNumber();
+        ch = readChar();
+        Token token;
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return openDotFloat();
+        } else if (ch == 'e' || ch == 'E') {
+            appendCharLexeme(ch);
+            return openDotFloatExp();
+        } else {
+            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+        }
+
+        return token;
+    }
+
+    private Token openDotFloatExp() throws LexicalException {
+        ch = readChar();
+        Token token = null;
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
+        } else {
+            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+        }
+
+        return token;
+    }
+
+    private Token closeFloat() {
+        int line = sourceManager.getLineNumber();
+        int column = sourceManager.getColumnNumber();
+        ch = readChar();
+        Token token;
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
+        } else {
+            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+        }
+
+        return token;
+    }
+
+    private Token closeFloatExp() throws LexicalException {
+        int line = sourceManager.getLineNumber();
+        int column = sourceManager.getColumnNumber();
+        ch = readChar();
+        Token token;
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
+        } else if (ch == 'e' || ch == 'E') {
+            appendCharLexeme(ch);
+            return openFloatExp();
+        } else {
+            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+        }
+
+        return token;
+    }
+
+    private Token openFloatExp() throws LexicalException {
+        ch = readChar();
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
+        } else {
+            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+        }
+
+        return null;
+    }
+
+    private Token openFloatDot() throws LexicalException {
+        ch = readChar();
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloatExp();
+        } else if (ch == 'e' || ch == 'E') {
+            appendCharLexeme(ch);
+            return openFloatExp();
+        } else {
+            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+        }
+
         return null;
     }
 
