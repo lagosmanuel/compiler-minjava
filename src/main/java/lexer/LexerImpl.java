@@ -152,11 +152,10 @@ public class LexerImpl implements Lexer {
         ch = readChar();
 
         if (Character.isDigit(ch)) {
-            appendCharLexeme(ch);
             if (lexeme.length() == LexerConfig.MAX_INT_LENGTH) {
-                restart();
                 throwException(LexErrorMessages.LITERAL_INT_TOO_LONG);
             }
+            appendCharLexeme(ch);
             return digit();
         } else {
             return new Token(TokenType.intLiteral, lexeme, line, column);
