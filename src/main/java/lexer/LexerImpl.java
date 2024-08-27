@@ -21,6 +21,8 @@ public class LexerImpl implements Lexer {
     private final Map<Integer, Pair<List<Error>, String>> errors;
     private String lexeme;
     private char ch;
+    private int line;
+    private int column;
     private boolean started;
 
     public LexerImpl(SourceManager sourceManager, Map<Integer, Pair<List<Error>, String>> errors) {
@@ -49,8 +51,8 @@ public class LexerImpl implements Lexer {
     private Token start() throws LexicalException {
         lexeme = "";
         appendCharLexeme(ch);
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
+        line = sourceManager.getLineNumber();
+        column = sourceManager.getColumnNumber();
         Token token = null;
 
         if (Character.isLowerCase(ch)) {
@@ -129,7 +131,12 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return idMetVar();
         } else {
-            return new Token(LexerConfig.RESERVED_WORDS.getOrDefault(lexeme, TokenType.idMetVar), lexeme, line, column);
+            return new Token(
+                    LexerConfig.RESERVED_WORDS.getOrDefault(lexeme, TokenType.idMetVar),
+                    lexeme,
+                    line,
+                    column
+            );
         }
     }
 
@@ -164,17 +171,18 @@ public class LexerImpl implements Lexer {
 
     private Token openCharLiteral() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch);
 
         if (ch == '\'') {
+            appendCharLexeme(ch);
             restart();
             throwException(LexErrorMessages.LITERAL_CHAR_EMPTY);
         } else if (ch == '\\') {
+            appendCharLexeme(ch);
             return escapeCharLiteral();
         } else if (ch == SourceManager.END_OF_FILE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         } else {
+            appendCharLexeme(ch);
             return closeCharLiteral();
         }
 
@@ -183,23 +191,22 @@ public class LexerImpl implements Lexer {
 
     private Token escapeCharLiteral() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch);
 
         if (ch == SourceManager.END_OF_FILE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         }
 
+        appendCharLexeme(ch);
         return closeCharLiteral();
     }
 
     private Token closeCharLiteral() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch); // TODO
         Token token = null;
-        restart();
 
         if (ch == '\'') {
+            restart();
+            appendCharLexeme(ch);
             token = new Token(TokenType.charLiteral, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
@@ -211,22 +218,22 @@ public class LexerImpl implements Lexer {
 
     private Token closeStringLiteral() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch);
         Token token = null;
 
         if (ch == '"') {
+            appendCharLexeme(ch);
             restart();
             token = new Token(TokenType.stringLiteral, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else if (ch == SourceManager.NEWLINE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_STR_NOT_CLOSED);
         } else if (ch == SourceManager.END_OF_FILE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_STR_NOT_CLOSED);
         } else if (ch == '\\') {
+            appendCharLexeme(ch);
             return escapeStringLiteral();
         } else {
+            appendCharLexeme(ch);
             return closeStringLiteral();
         }
 
@@ -235,32 +242,32 @@ public class LexerImpl implements Lexer {
 
     private Token escapeStringLiteral() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch);
 
+        // TODO
         if (ch == SourceManager.NEWLINE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         } else if (ch == SourceManager.END_OF_FILE) {
-            restart();
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         } else if (Character.isWhitespace(ch)) {
-            restart();
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         }
 
+        appendCharLexeme(ch);
         return closeStringLiteral();
     }
 
     private Token closeAndOp() throws LexicalException {
         ch = readChar();
         Token token = null;
-        appendCharLexeme(ch);
-        restart();
 
         if (ch == '&') {
+            restart();
+            appendCharLexeme(ch);
             token = new Token(TokenType.opAnd, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else if (ch == '=') {
+            restart();
+            appendCharLexeme(ch);
             token = new Token(TokenType.opAndAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         }
@@ -273,14 +280,16 @@ public class LexerImpl implements Lexer {
 
     private Token closeOrOp() throws LexicalException {
         ch = readChar();
-        appendCharLexeme(ch);
         Token token = null;
-        restart();
 
         if (ch == '|') {
+            restart();
+            appendCharLexeme(ch);
             token = new Token(TokenType.opOr, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else if (ch == '=') {
+            restart();
+            appendCharLexeme(ch);
             token = new Token(TokenType.opOrAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
@@ -308,8 +317,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opDivAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opDiv, lexeme,
-                    line, column);
+            token = new Token(TokenType.opDiv, lexeme, line, column);
         }
 
         return token;
@@ -327,8 +335,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opGreaterEqual, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opGreater, lexeme,
-                    line, column);
+            token = new Token(TokenType.opGreater, lexeme, line, column);
         }
 
         return token;
@@ -346,8 +353,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opLessEqual, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opLess, lexeme,
-                    line, column);
+            token = new Token(TokenType.opLess, lexeme, line, column);
         }
 
         return token;
@@ -365,8 +371,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opEqual, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opAssign, lexeme,
-                    line, column);
+            token = new Token(TokenType.opAssign, lexeme, line, column);
         }
 
         return token;
@@ -384,8 +389,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opPlusAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opPlus, lexeme,
-                    line, column);
+            token = new Token(TokenType.opPlus, lexeme, line, column);
         }
 
         return token;
@@ -403,8 +407,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opMinusAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opMinus, lexeme,
-                    line, column);
+            token = new Token(TokenType.opMinus, lexeme, line, column);
         }
 
         return token;
@@ -422,8 +425,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.opTimesAssign, lexeme,
                     sourceManager.getLineNumber(), sourceManager.getColumnNumber());
         } else {
-            token = new Token(TokenType.opTimes, lexeme,
-                    line, column);
+            token = new Token(TokenType.opTimes, lexeme, line, column);
         }
 
         return token;
@@ -432,10 +434,9 @@ public class LexerImpl implements Lexer {
     private Token lineComment() throws LexicalException {
         do {
             ch = readChar();
-            // appendCharLexeme(ch);
+            // appendCharLexeme(ch); TODO
         } while (ch != SourceManager.NEWLINE && ch != SourceManager.END_OF_FILE);
 
-        if (ch != SourceManager.END_OF_FILE) ch = readChar();
         return start();
     }
 
@@ -480,7 +481,8 @@ public class LexerImpl implements Lexer {
 
         do {
             ch = readChar();
-            appendCharLexeme(ch);
+            if (ch != SourceManager.END_OF_FILE)
+                appendCharLexeme(ch);
 
             if (ch == '*') {
                 hasSeenAsterisk = true;
@@ -492,7 +494,6 @@ public class LexerImpl implements Lexer {
             }
         } while (ch != SourceManager.END_OF_FILE);
 
-        restart();
         throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED);
         return null;
     }
@@ -512,9 +513,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Error saveError(String message) {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
-
         if (!errors.containsKey(line))
             errors.put(line, new Pair<>(new ArrayList<>(), ""));
 
