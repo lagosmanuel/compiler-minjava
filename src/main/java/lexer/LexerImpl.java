@@ -130,10 +130,10 @@ public class LexerImpl implements Lexer {
             return idMetVar();
         } else {
             return new Token(
-                    LexerConfig.RESERVED_WORDS.getOrDefault(lexeme, TokenType.idMetVar),
-                    lexeme,
-                    line,
-                    column
+                LexerConfig.RESERVED_WORDS.getOrDefault(lexeme, TokenType.idMetVar),
+                lexeme,
+                line,
+                column
             );
         }
     }
@@ -202,27 +202,25 @@ public class LexerImpl implements Lexer {
 
     private Token closeCharLiteral() throws LexicalException {
         ch = readChar();
-        Token token = null;
 
         if (ch == '\'') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.charLiteral, lexeme, line, column);
+            return new Token(TokenType.charLiteral, lexeme, line, column);
         } else {
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         }
 
-        return token;
+        return null;
     }
 
     private Token closeStringLiteral() throws LexicalException {
         ch = readChar();
-        Token token = null;
 
         if (ch == '"') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.stringLiteral, lexeme, line, column);
+            return new Token(TokenType.stringLiteral, lexeme, line, column);
         } else if (ch == SourceManager.NEWLINE) {
             throwException(LexErrorMessages.LITERAL_STR_NOT_CLOSED);
         } else if (ch == SourceManager.END_OF_FILE) {
@@ -235,7 +233,7 @@ public class LexerImpl implements Lexer {
             return closeStringLiteral();
         }
 
-        return token;
+        return null;
     }
 
     private Token escapeStringLiteral() throws LexicalException {
@@ -256,46 +254,43 @@ public class LexerImpl implements Lexer {
 
     private Token closeAndOp() throws LexicalException {
         ch = readChar();
-        Token token = null;
 
         if (ch == '&') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opAnd, lexeme, line, column);
+            return new Token(TokenType.opAnd, lexeme, line, column);
         } else if (ch == '=') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opAndAssign, lexeme, line, column);
+            return new Token(TokenType.opAndAssign, lexeme, line, column);
         }
         else {
             throwException(LexErrorMessages.OP_AND_INVALID);
         }
 
-        return token;
+        return null;
     }
 
     private Token closeOrOp() throws LexicalException {
         ch = readChar();
-        Token token = null;
 
         if (ch == '|') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opOr, lexeme, line, column);
+            return new Token(TokenType.opOr, lexeme, line, column);
         } else if (ch == '=') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opOrAssign, lexeme, line, column);
+            return new Token(TokenType.opOrAssign, lexeme, line, column);
         } else {
             throwException(LexErrorMessages.OP_OR_INVALID);
         }
 
-        return token;
+        return null;
     }
 
     private Token openComment() throws LexicalException {
         ch = readChar();
-        Token token;
 
         if (ch == '/') {
             appendCharLexeme(ch);
@@ -306,102 +301,82 @@ public class LexerImpl implements Lexer {
         } else if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opDivAssign, lexeme, line, column);
+            return new Token(TokenType.opDivAssign, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opDiv, lexeme, line, column);
+            return new Token(TokenType.opDiv, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeGreaterOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opGreaterEqual, lexeme, line, column);
+            return new Token(TokenType.opGreaterEqual, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opGreater, lexeme, line, column);
+            return new Token(TokenType.opGreater, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeLessOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opLessEqual, lexeme, line, column);
+            return new Token(TokenType.opLessEqual, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opLess, lexeme, line, column);
+            return new Token(TokenType.opLess, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeEqualOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opEqual, lexeme, line, column);
+            return new Token(TokenType.opEqual, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opAssign, lexeme, line, column);
+            return new Token(TokenType.opAssign, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closePlusOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opPlusAssign, lexeme, line, column);
+            return new Token(TokenType.opPlusAssign, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opPlus, lexeme, line, column);
+            return new Token(TokenType.opPlus, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeMinusOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opMinusAssign, lexeme, line, column);
+            return new Token(TokenType.opMinusAssign, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opMinus, lexeme, line, column);
+            return new Token(TokenType.opMinus, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeTimesOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opTimesAssign, lexeme, line, column);
+            return new Token(TokenType.opTimesAssign, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opTimes, lexeme, line, column);
+            return new Token(TokenType.opTimes, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token lineComment() throws LexicalException {
@@ -415,32 +390,26 @@ public class LexerImpl implements Lexer {
 
     private Token closeModOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opModAssign, lexeme, line, column);
+            return new Token(TokenType.opModAssign, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opMod, lexeme, line, column);
+            return new Token(TokenType.opMod, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeNotOp() {
         ch = readChar();
-        Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opNotEqual, lexeme, line, column);
+            return new Token(TokenType.opNotEqual, lexeme, line, column);
         } else {
-            token = new Token(TokenType.opNot, lexeme, line, column);
+            return new Token(TokenType.opNot, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token blockComment() throws LexicalException {
@@ -467,21 +436,17 @@ public class LexerImpl implements Lexer {
 
     private Token openDot() throws LexicalException {
         ch = readChar();
-        Token token;
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
             return openDotFloat();
         } else {
-            token = new Token(TokenType.dot, lexeme, line, column);
+            return new Token(TokenType.dot, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token openDotFloat() throws LexicalException {
         ch = readChar();
-        Token token;
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
@@ -490,15 +455,12 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openDotFloatExp();
         } else {
-            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+            return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token openDotFloatExp() throws LexicalException {
         ch = readChar();
-        Token token = null;
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
@@ -507,26 +469,22 @@ public class LexerImpl implements Lexer {
             throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
         }
 
-        return token;
+        return null;
     }
 
     private Token closeFloat() {
         ch = readChar();
-        Token token;
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
             return closeFloat();
         } else {
-            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+            return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token closeFloatExp() throws LexicalException {
         ch = readChar();
-        Token token;
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
@@ -535,10 +493,8 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
-            token = new Token(TokenType.floatLiteral, lexeme, line, column);
+            return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
-
-        return token;
     }
 
     private Token openFloatExp() throws LexicalException {
