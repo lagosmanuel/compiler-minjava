@@ -123,8 +123,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token idMetVar() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
 
         if (Character.isLetterOrDigit(ch) || ch == '_') {
@@ -141,8 +139,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token idClassVar() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
 
         if (Character.isLetterOrDigit(ch) || ch == '_') {
@@ -154,8 +150,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token digit() throws LexicalException {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
 
         if (Character.isDigit(ch)) {
@@ -213,8 +207,7 @@ public class LexerImpl implements Lexer {
         if (ch == '\'') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.charLiteral, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.charLiteral, lexeme, line, column);
         } else {
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         }
@@ -229,8 +222,7 @@ public class LexerImpl implements Lexer {
         if (ch == '"') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.stringLiteral, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.stringLiteral, lexeme, line, column);
         } else if (ch == SourceManager.NEWLINE) {
             throwException(LexErrorMessages.LITERAL_STR_NOT_CLOSED);
         } else if (ch == SourceManager.END_OF_FILE) {
@@ -269,13 +261,11 @@ public class LexerImpl implements Lexer {
         if (ch == '&') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opAnd, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opAnd, lexeme, line, column);
         } else if (ch == '=') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opAndAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opAndAssign, lexeme, line, column);
         }
         else {
             throwException(LexErrorMessages.OP_AND_INVALID);
@@ -291,13 +281,11 @@ public class LexerImpl implements Lexer {
         if (ch == '|') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opOr, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opOr, lexeme, line, column);
         } else if (ch == '=') {
             restart();
             appendCharLexeme(ch);
-            token = new Token(TokenType.opOrAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opOrAssign, lexeme, line, column);
         } else {
             throwException(LexErrorMessages.OP_OR_INVALID);
         }
@@ -306,8 +294,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token openComment() throws LexicalException {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
@@ -320,8 +306,7 @@ public class LexerImpl implements Lexer {
         } else if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opDivAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opDivAssign, lexeme, line, column);
         } else {
             token = new Token(TokenType.opDiv, lexeme, line, column);
         }
@@ -330,16 +315,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeGreaterOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opGreaterEqual, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opGreaterEqual, lexeme, line, column);
         } else {
             token = new Token(TokenType.opGreater, lexeme, line, column);
         }
@@ -348,16 +330,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeLessOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opLessEqual, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opLessEqual, lexeme, line, column);
         } else {
             token = new Token(TokenType.opLess, lexeme, line, column);
         }
@@ -366,16 +345,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeEqualOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opEqual, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opEqual, lexeme, line, column);
         } else {
             token = new Token(TokenType.opAssign, lexeme, line, column);
         }
@@ -384,16 +360,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closePlusOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opPlusAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opPlusAssign, lexeme, line, column);
         } else {
             token = new Token(TokenType.opPlus, lexeme, line, column);
         }
@@ -402,16 +375,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeMinusOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opMinusAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opMinusAssign, lexeme, line, column);
         } else {
             token = new Token(TokenType.opMinus, lexeme, line, column);
         }
@@ -420,16 +390,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeTimesOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opTimesAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opTimesAssign, lexeme, line, column);
         } else {
             token = new Token(TokenType.opTimes, lexeme, line, column);
         }
@@ -447,16 +414,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeModOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opModAssign, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opModAssign, lexeme, line, column);
         } else {
             token = new Token(TokenType.opMod, lexeme, line, column);
         }
@@ -465,16 +429,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeNotOp() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
         if (ch == '=') {
             appendCharLexeme(ch);
             restart();
-            token = new Token(TokenType.opNotEqual, lexeme,
-                    sourceManager.getLineNumber(), sourceManager.getColumnNumber());
+            token = new Token(TokenType.opNotEqual, lexeme, line, column);
         } else {
             token = new Token(TokenType.opNot, lexeme, line, column);
         }
@@ -505,8 +466,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token openDot() throws LexicalException {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
@@ -521,8 +480,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token openDotFloat() throws LexicalException {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
@@ -554,8 +511,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeFloat() {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
@@ -570,8 +525,6 @@ public class LexerImpl implements Lexer {
     }
 
     private Token closeFloatExp() throws LexicalException {
-        int line = sourceManager.getLineNumber();
-        int column = sourceManager.getColumnNumber();
         ch = readChar();
         Token token;
 
@@ -642,7 +595,7 @@ public class LexerImpl implements Lexer {
 
     private void throwException(String message) throws LexicalException {
         Error error = saveError(message);
-        String lineText = saveLine(sourceManager.getLineNumber());
+        String lineText = saveLine(line);
         throw new LexicalException(Formater.formatError(error, lineText));
     }
 
