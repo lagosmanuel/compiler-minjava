@@ -1,6 +1,5 @@
 package main.java.main;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import main.java.lexer.Lexer;
@@ -21,7 +20,6 @@ import java.io.IOException;
 public class Main {
     private static SourceManager sourceManager;
     private static Lexer lexer;
-    private static Map<Integer, Pair<List<Error>, String>> errors;
 
     public static void main(String[] args) {
         init();
@@ -38,8 +36,7 @@ public class Main {
 
     private static void init() {
         sourceManager = new SourceManagerImpl();
-        errors = new HashMap<>();
-        lexer = new LexerImpl(sourceManager, errors);
+        lexer = new LexerImpl(sourceManager);
     }
 
     private static boolean loadFile(String filename) {
@@ -78,7 +75,7 @@ public class Main {
         } while ((token != null && token.getType() != TokenType.EOF) || (token == null && onRecovery));
 
         if (onRecovery) {
-            showErrors(errors);
+            showErrors(lexer.getErrors());
         } else if (token != null && token.getType() == TokenType.EOF) {
             System.out.println(ErrorMessages.SUCCESS);
         }

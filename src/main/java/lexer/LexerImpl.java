@@ -1,6 +1,7 @@
 package main.java.lexer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +26,15 @@ public class LexerImpl implements Lexer {
     private int column;
     private boolean started;
 
-    public LexerImpl(SourceManager sourceManager, Map<Integer, Pair<List<Error>, String>> errors) {
+    public LexerImpl(SourceManager sourceManager) {
         this.sourceManager = sourceManager;
-        this.errors = errors;
-        lexeme = "";
-        started = false;
+        this.errors = new HashMap<>();
+        this.lexeme = "";
+        this.started = false;
+    }
+
+    public Map<Integer, Pair<List<Error>, String>> getErrors() {
+        return errors;
     }
 
     public Token nextToken() throws LexicalException {
