@@ -440,6 +440,22 @@ public class LexerImpl implements Lexer {
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
             return closeFloat();
+        } else if (ch == '+' || ch == '-') {
+            appendCharLexeme(ch);
+            return openDotFloatExpSign();
+        } else {
+            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+        }
+
+        return null;
+    }
+
+    private Token openDotFloatExpSign() throws LexicalException {
+        ch = readChar();
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
         } else {
             throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
         }
@@ -475,6 +491,22 @@ public class LexerImpl implements Lexer {
     }
 
     private Token openFloatExp() throws LexicalException {
+        ch = readChar();
+
+        if (Character.isDigit(ch)) {
+            appendCharLexeme(ch);
+            return closeFloat();
+        } else if (ch == '+' || ch == '-') {
+            appendCharLexeme(ch);
+            return openFloatExpSign();
+        } else {
+            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+        }
+
+        return null;
+    }
+
+    private Token openFloatExpSign() throws LexicalException {
         ch = readChar();
 
         if (Character.isDigit(ch)) {
