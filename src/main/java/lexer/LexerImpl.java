@@ -178,6 +178,8 @@ public class LexerImpl implements Lexer {
         } else if (ch == '\\') {
             appendCharLexeme(ch);
             return escapeCharLiteral();
+        } else if (ch == SourceManager.NEWLINE) {
+            throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         } else if (ch == SourceManager.END_OF_FILE) {
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         } else {
@@ -191,7 +193,7 @@ public class LexerImpl implements Lexer {
     private Token escapeCharLiteral() throws LexicalException {
         ch = readChar();
 
-        if (ch == SourceManager.END_OF_FILE) {
+        if (ch == SourceManager.NEWLINE || ch == SourceManager.END_OF_FILE) {
             throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
         }
 
