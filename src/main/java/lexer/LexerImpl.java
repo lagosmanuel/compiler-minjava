@@ -92,11 +92,11 @@ public class LexerImpl implements Lexer {
         } else if (ch == '-') {
             return closeMinusOp();
         } else if (ch == '*') {
-            return closeTimesOp();
+            token = new Token(TokenType.opTimes, lexeme, line, column);
         } else if (ch == '/') {
             return openComment();
         } else if (ch == '%') {
-            return closeModOp();
+            token = new Token(TokenType.opMod, lexeme, line, column);
         } else if (ch == '&') {
             return closeAndOp();
         } else if (ch == '|') {
@@ -257,12 +257,7 @@ public class LexerImpl implements Lexer {
             restart();
             appendCharLexeme(ch);
             return new Token(TokenType.opAnd, lexeme, line, column);
-        } else if (ch == '=') {
-            restart();
-            appendCharLexeme(ch);
-            return new Token(TokenType.opAndAssign, lexeme, line, column);
-        }
-        else {
+        } else {
             throwException(LexErrorMessages.OP_AND_INVALID);
         }
 
@@ -276,10 +271,6 @@ public class LexerImpl implements Lexer {
             restart();
             appendCharLexeme(ch);
             return new Token(TokenType.opOr, lexeme, line, column);
-        } else if (ch == '=') {
-            restart();
-            appendCharLexeme(ch);
-            return new Token(TokenType.opOrAssign, lexeme, line, column);
         } else {
             throwException(LexErrorMessages.OP_OR_INVALID);
         }
@@ -296,10 +287,6 @@ public class LexerImpl implements Lexer {
         } else if (ch == '*') {
             appendCharLexeme(ch);
             return blockComment();
-        } else if (ch == '=') {
-            appendCharLexeme(ch);
-            restart();
-            return new Token(TokenType.opDivAssign, lexeme, line, column);
         } else {
             return new Token(TokenType.opDiv, lexeme, line, column);
         }
@@ -365,18 +352,6 @@ public class LexerImpl implements Lexer {
         }
     }
 
-    private Token closeTimesOp() {
-        ch = readChar();
-
-        if (ch == '=') {
-            appendCharLexeme(ch);
-            restart();
-            return new Token(TokenType.opTimesAssign, lexeme, line, column);
-        } else {
-            return new Token(TokenType.opTimes, lexeme, line, column);
-        }
-    }
-
     private Token lineComment() throws LexicalException {
         lexeme = "";
 
@@ -385,18 +360,6 @@ public class LexerImpl implements Lexer {
         } while (ch != SourceManager.NEWLINE && ch != SourceManager.END_OF_FILE);
 
         return start();
-    }
-
-    private Token closeModOp() {
-        ch = readChar();
-
-        if (ch == '=') {
-            appendCharLexeme(ch);
-            restart();
-            return new Token(TokenType.opModAssign, lexeme, line, column);
-        } else {
-            return new Token(TokenType.opMod, lexeme, line, column);
-        }
     }
 
     private Token closeNotOp() {
