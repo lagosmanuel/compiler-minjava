@@ -9,6 +9,6 @@ public class LexerConfig {
     public static final char END_OF_FILE = '\uFFFF';
     public static final char NEWLINE = '\n';
     public static final char CARRY_RETURN = '\r';
-    public static final int MAX_INT_LENGTH = 10;
+    public static final int MAX_INT_LENGTH = 9;
     public static final Map<String, TokenType> RESERVED_WORDS = Keywords.getKeyWords();
 }

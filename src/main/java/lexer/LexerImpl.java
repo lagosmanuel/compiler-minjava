@@ -167,8 +167,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
-            if (lexeme.length() > LexerConfig.MAX_INT_LENGTH)
-                throwException(LexErrorMessages.LITERAL_INT_TOO_LARGE);
+            checkInteger();
             return new Token(TokenType.intLiteral, lexeme, line, column);
         }
     }
@@ -537,8 +536,20 @@ public class LexerImpl implements Lexer {
 
     private void checkFloat() throws LexicalException {
         float f = Float.parseFloat(lexeme + "f");
-        if (f == Float.POSITIVE_INFINITY || f == Float.NEGATIVE_INFINITY)
+        if (Float.isInfinite(f))
             throwException(LexErrorMessages.LITERAL_FLOAT_TOO_LARGE);
+    }
+
+    private void checkInteger() throws LexicalException {
+        if (lexeme.length() > LexerConfig.MAX_INT_LENGTH)
+            throwException(LexErrorMessages.LITERAL_INT_TOO_LARGE);
+
+        // issue: Integer.MINVALUE value is false positive
+        try {
+            Integer.parseInt(lexeme);
+        } catch (NumberFormatException e) {
+            throwException(LexErrorMessages.LITERAL_INT_TOO_LARGE);
+        }
     }
 
     private void saveLineIfError(int line) {
