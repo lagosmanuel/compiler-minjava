@@ -153,9 +153,6 @@ public class LexerImpl implements Lexer {
         ch = readChar();
 
         if (Character.isDigit(ch)) {
-            if (lexeme.length() == LexerConfig.MAX_INT_LENGTH) {
-                throwException(LexErrorMessages.LITERAL_INT_TOO_LONG);
-            }
             appendCharLexeme(ch);
             return digit();
         } else if (ch == '.') {
@@ -165,6 +162,8 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
+            if (lexeme.length() > LexerConfig.MAX_INT_LENGTH)
+                throwException(LexErrorMessages.LITERAL_INT_TOO_LARGE);
             return new Token(TokenType.intLiteral, lexeme, line, column);
         }
     }
@@ -478,13 +477,14 @@ public class LexerImpl implements Lexer {
         return null;
     }
 
-    private Token closeFloat() {
+    private Token closeFloat() throws LexicalException {
         ch = readChar();
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
             return closeFloat();
         } else {
+            checkFloat();
             return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
     }
@@ -494,11 +494,12 @@ public class LexerImpl implements Lexer {
 
         if (Character.isDigit(ch)) {
             appendCharLexeme(ch);
-            return closeFloat();
+            return closeFloatExp();
         } else if (ch == 'e' || ch == 'E') {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
+            checkFloat();
             return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
     }
@@ -530,6 +531,12 @@ public class LexerImpl implements Lexer {
         }
 
         return null;
+    }
+
+    private void checkFloat() throws LexicalException {
+        float f = Float.parseFloat(lexeme + "f");
+        if (f == Float.POSITIVE_INFINITY || f == Float.NEGATIVE_INFINITY)
+            throwException(LexErrorMessages.LITERAL_FLOAT_TOO_LARGE);
     }
 
     private void saveLineIfError(int line) {
