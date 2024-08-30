@@ -110,13 +110,17 @@ public class LexerImpl implements Lexer {
             return closeNotOp();
         } else if (ch == SourceManager.NEWLINE) {
             saveLineIfError(line);
-            ch = readChar();
+            do {
+                ch = readChar();
+            } while (ch == SourceManager.NEWLINE);
             return start();
         } else if (ch == SourceManager.END_OF_FILE) {
             saveLineIfError(line);
             token = new Token(TokenType.EOF, TokenMessages.EOF, line, column);
         }  else if (Character.isWhitespace(ch)) {
-            ch = readChar();
+            do {
+                ch = readChar();
+            } while (Character.isWhitespace(ch));
             return start();
         } else {
             restart();
