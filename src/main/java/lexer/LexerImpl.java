@@ -239,7 +239,6 @@ public class LexerImpl implements Lexer {
     private Token escapeStringLiteral() throws LexicalException {
         ch = readChar();
 
-        // TODO
         if (ch == SourceManager.NEWLINE) {
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         } else if (ch == SourceManager.END_OF_FILE) {
@@ -380,9 +379,10 @@ public class LexerImpl implements Lexer {
     }
 
     private Token lineComment() throws LexicalException {
+        lexeme = "";
+
         do {
             ch = readChar();
-            // appendCharLexeme(ch); TODO
         } while (ch != SourceManager.NEWLINE && ch != SourceManager.END_OF_FILE);
 
         return start();
@@ -413,12 +413,13 @@ public class LexerImpl implements Lexer {
     }
 
     private Token blockComment() throws LexicalException {
+        lexeme = "";
         boolean hasSeenAsterisk = false;
+        boolean readFirstLine = false;
+        String lineText = "";
 
         do {
             ch = readChar();
-            if (ch != SourceManager.END_OF_FILE)
-                appendCharLexeme(ch);
 
             if (ch == '*') {
                 hasSeenAsterisk = true;
@@ -428,9 +429,14 @@ public class LexerImpl implements Lexer {
             } else {
                 hasSeenAsterisk = false;
             }
+
+            if (ch == SourceManager.NEWLINE && !readFirstLine) {
+                lineText = saveLine(line);
+                readFirstLine = true;
+            }
         } while (ch != SourceManager.END_OF_FILE);
 
-        throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED);
+        throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED, lineText);
         return null;
     }
 
@@ -550,8 +556,12 @@ public class LexerImpl implements Lexer {
     }
 
     private void throwException(String message) throws LexicalException {
-        Error error = saveError(message);
         String lineText = saveLine(line);
+        throwException(message, lineText);
+    }
+
+    private void throwException(String message, String lineText) throws LexicalException {
+        Error error = saveError(message);
         throw new LexicalException(Formater.formatError(error, lineText));
     }
 
