@@ -194,7 +194,7 @@ public class LexerImpl implements Lexer {
         ch = readChar();
 
         if (ch == SourceManager.NEWLINE || ch == SourceManager.END_OF_FILE) {
-            throwException(LexErrorMessages.LITERAL_CHAR_NOT_CLOSED);
+            throwException(LexErrorMessages.LITERAL_CHAR_BAD_ESCAPED);
         }
 
         appendCharLexeme(ch);
