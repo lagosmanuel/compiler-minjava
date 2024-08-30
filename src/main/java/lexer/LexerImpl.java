@@ -533,6 +533,7 @@ public class LexerImpl implements Lexer {
     }
 
     private void throwException(String message) throws LexicalException {
+        if (LexerConfig.ENABLE_OPTIMIZATION) throwException(message, "");
         String lineText = saveLine(line);
         throwException(message, lineText);
     }
@@ -547,7 +548,7 @@ public class LexerImpl implements Lexer {
     }
 
     private void appendCharLexeme(char ch) {
-        if (ch != SourceManager.NEWLINE && ch != SourceManager.END_OF_FILE) // TODO
+        if (ch != SourceManager.NEWLINE && ch != SourceManager.END_OF_FILE)
             lexeme += Character.toString(ch);
     }
 }
