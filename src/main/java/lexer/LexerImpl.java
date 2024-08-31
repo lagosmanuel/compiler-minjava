@@ -252,8 +252,6 @@ public class LexerImpl implements Lexer {
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         } else if (ch == SourceManager.END_OF_FILE) {
             throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
-        } else if (Character.isWhitespace(ch)) {
-            throwException(LexErrorMessages.LITERAL_STR_BAD_ESCAPED);
         }
 
         appendCharLexeme(ch);
