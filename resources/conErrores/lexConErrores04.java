@@ -1,3 +1,5 @@
-///[Error:&|3]
+///[Error:&|4]
+///[Error:||5]
 
 &hola
+|chau
