@@ -532,10 +532,9 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_DOT_INVALID);
+            checkFloat();
+            return new Token(TokenType.floatLiteral, lexeme, line, column);
         }
-
-        return null;
     }
 
     private void checkFloat() throws LexicalException {
