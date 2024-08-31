@@ -83,10 +83,8 @@ public class Main {
 
     private static void showErrors(Map<Integer, Pair<List<Error>, String>> errors) {
         System.out.println();
-        for (Map.Entry<Integer, Pair<List<Error>, String>> entry : errors.entrySet()) {
-            for (Error error : entry.getValue().getFirst()) {
-                System.out.println(Formater.formatError(error, entry.getValue().getSecond()));
-            }
-        }
+        errors.forEach((line, pair) -> pair.getFirst().forEach(error ->
+            System.out.println(Formater.formatError(error, pair.getSecond()))
+        ));
     }
 }
