@@ -7,7 +7,6 @@ public class Token {
     private final String lexeme;
     private final int line;
     private final int column;
-    // private String lineText; TODO
 
     public Token(TokenType type, String lexeme, int line, int column) {
         this.type = type;
