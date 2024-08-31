@@ -124,7 +124,7 @@ public class LexerImpl implements Lexer {
             return start();
         } else {
             restart();
-            throwException(LexErrorMessages.UNEXPECTED_SYMBOL);
+            throwException(LexErrorMessages.ILLEGAL_CHAR);
         }
 
         restart();
@@ -447,7 +447,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openDotFloatExpSign();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+            throwException(LexErrorMessages.LITERAL_FLOAT_EXP_INVALID);
         }
 
         return null;
@@ -460,7 +460,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return closeFloat();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+            throwException(LexErrorMessages.LITERAL_FLOAT_EXP_SIGN_INVALID);
         }
 
         return null;
@@ -503,7 +503,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExpSign();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+            throwException(LexErrorMessages.LITERAL_FLOAT_EXP_INVALID);
         }
 
         return null;
@@ -516,7 +516,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return closeFloat();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+            throwException(LexErrorMessages.LITERAL_FLOAT_EXP_SIGN_INVALID);
         }
 
         return null;
@@ -532,7 +532,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return openFloatExp();
         } else {
-            throwException(LexErrorMessages.LITERAL_FLOAT_INVALID);
+            throwException(LexErrorMessages.LITERAL_FLOAT_DOT_INVALID);
         }
 
         return null;
