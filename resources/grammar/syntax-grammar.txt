@@ -21,9 +21,8 @@ e           is the empty string
 <InheritanceOptional> ::= extends idClase | e
 
 <MemberList> ::= <Member> <MemberList> | e
-<Member> ::= <Attribute> | <Method> | <Constructor>
-<Attribute> ::= <StaticOptional> <MemberType> idMetVar ;
-<Method> ::= <StaticOptional> <MemberType> idMetVar <FormalArgs> <Block>
+<Member> ::= <StaticOptional> <MemberType> idMetVar <MemberRest> | <Constructor>
+<MemberRest> ::= ; | <FormalArgs> <Block>
 <Constructor> ::= public idClass <FormalArgs> <Block>
 <StaticOptional> ::= static | e
 
@@ -33,8 +32,8 @@ e           is the empty string
 
 <FormalArgs> ::= ( <FormalArgsListOptional> )
 <FormalArgsListOptional> ::= <FormalArgsList> | e
-<FormalArgsList> ::= <ArgFormal>
-<FormalArgsList> ::= <ArgFormal> , <FormalArgsList>
+<FormalArgsList> ::= <FormalArg> <FormalArgsListRest>
+<FormalArgsListRest> ::= , <FormalArgsList> | e
 <FormalArg> ::= <Type> idMetVar
 
 --------------------------------------------------------------------------------
@@ -46,8 +45,7 @@ e           is the empty string
 <StatementOptional> ::= <Statement> | e
 
 <Statement> ::= ;
-<Statement> ::= <Assignment> ;
-<Statement> ::= <Call> ;
+<Statement> ::= <Expression> ; /* Assignment or Call */
 <Statement> ::= <LocalVar> ;
 <Statement> ::= <Return> ;
 <Statement> ::= <Break> ;
@@ -56,14 +54,12 @@ e           is the empty string
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
 
-<Assignment> ::= <Expression>
-<Call> ::= <Expression>
 <LocalVar> ::= var idMetVar = <CompositeExpression>
 <Return> ::= return <ExpressionOptional>
 <Break> ::= break
 
-<If> ::= if ( <Expression> ) <Statement>
-<If> ::= if ( <Expression> ) <Statement> else <Statement>
+<If> ::= if ( <Expression> ) <Statement> <IfRest>
+<IfRest> ::= else <Statement> | e
 
 <While> ::= while ( <Expression> ) <Statement>
 
@@ -77,8 +73,8 @@ e           is the empty string
 --------------------------------------------------------------------------------
 
 <ExpressionOptional> ::= <Expression> | e
-<Expression> ::= <CompositeExpression>
-<Expression> ::= <CompositeExpression> <AssignmentOp> <CompositeExpression>
+<Expression> ::= <CompositeExpression> <ExpressionRest>
+<ExpressionRest> ::= <AssignmentOp> <CompositeExpression> | e
 
 <AssignmentOp> ::= = | += | -=
 
@@ -87,8 +83,7 @@ e           is the empty string
 
 <BinaryOp> ::= || | && | == | != | < | > | <= | >= | + | - | * | / | %
 
-<BasicExpression> ::= <UnaryOp> <Operand>
-<BasicExpression> :: <Operand>
+<BasicExpression> ::= <UnaryOp> <Operand> | <Operand>
 
 <UnaryOp> ::= + | - | !
 
@@ -103,25 +98,24 @@ e           is the empty string
 <Access> ::= <Primary> <ChainedOptional>
 
 <Primary> ::= <ThisAccess>
-<Primary> ::= <VarAccess>
+<Primary> ::= <IdMetVarAccess> /* VarAccess and MethodAccess */
 <Primary> ::= <ConstructorAccess>
-<Primary> ::= <MethodAccess>
 <Primary> ::= <StaticMethodAccess>
 <Primary> ::= <ParentizedExpression>
 
 <ThisAccess> ::= this
-<VarAccess> ::= idMetVar
+<IdMetVarAccess> ::= idMetVar <IdMetVarAccessRest>
+<IdMetVarAccessRest> ::= <ActualArgs> | e
 <ConstructorAccess> ::= new idClass <ActualArgs>
-<ParentizedExpression> ::= ( <Expression> )
-<MethodAccess> ::= idMetVar <ActualArgs>
 <StaticMethodAccess> ::= idClass . idMetVar <ActualArgs>
+<ParentizedExpression> ::= ( <Expression> )
 
 <ActualArgs> ::= ( <ExpressionListOptional> )
 
 <ExpressionListOptional> ::= <ExpressionList> | e
-<ExpressionList> ::= <Expression>
-<ExpressionList> ::= <Expression> , <ExpressionList>
+<ExpressionList> ::= <Expression> <ExpressionListRest>
+<ExpressionListRest> ::= , <ExpressionList> | e
 
-<ChainedOptional> ::= <ChainedVar> | <ChainedMethod> | e
-<ChainedVar> ::= . idMetVar <ChainedOptional>
-<ChainedMethod> ::= . idMetVar <ActualArgs> <ChainedOptional>
+<ChainedOptional> ::= <ChainedIdMetVar> | e
+<ChainedIdMetVar> ::= . idMetVar <ChainedIdMetVarRest>
+<ChainedIdMetVarRest> ::= <ChainedOptional> | <ActualArgs> <ChainedOptional>
