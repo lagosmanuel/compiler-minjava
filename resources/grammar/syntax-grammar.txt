@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This file is the specification of the LL(1) context-free-grammar of the
+language syntax. To be LL(1) any production must have no left recursion and
+must be left factored. 
+
+The grammar follows the extended-BNF notation where:
+terminal    is a terminal symbol
+<Class>     is a non-terminal symbol, with the first letter in uppercase
+e           is the empty string
+<X>::=a     is a production, whrere a is a sequence of terminals and non-terminals
+<X>::=a|b   is an abbreviation of <X>::=a and <X>::=b
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+--------------------------------------------------------------------------------
+1. Classes, Methods and Attributes
+--------------------------------------------------------------------------------
+
+<Start> ::= <ClassList>
+<ClassList> ::= <Class> <ClassList> | e
+<Class> ::= class idClass <InheritanceOptional> { <MemberList> }
+<InheritanceOptional> ::= extends idClase | e
+
+<MemberList> ::= <Member> <MemberList> | e
+<Member> ::= <Attribute> | <Method> | <Constructor>
+<Attribute> ::= <StaticOptional> <MemberType> idMetVar ;
+<Method> ::= <StaticOptional> <MemberType> idMetVar <FormalArgs> <Block>
+<Constructor> ::= public idClass <FormalArgs> <Block>
+<StaticOptional> ::= static | e
+
+<MemberType> ::= <Type> | void
+<Type> ::= <PrimitiveType> | idClass
+<PrimitiveType> ::= boolean | char | int
+
+<FormalArgs> ::= ( <FormalArgsListOptional> )
+<FormalArgsListOptional> ::= <FormalArgsList> | e
+<FormalArgsList> ::= <ArgFormal>
+<FormalArgsList> ::= <ArgFormal> , <FormalArgsList>
+<FormalArg> ::= <Type> idMetVar
+
+--------------------------------------------------------------------------------
+2. Statements and Blocks
+--------------------------------------------------------------------------------
+
+<Bloque> ::= { <StatementList> }
+<StatementList> ::= <Statement> <StatementList> | e
+<StatementOptional> ::= <Statement> | e
+
+<Statement> ::= ;
+<Statement> ::= <Assignment> ;
+<Statement> ::= <Call> ;
+<Statement> ::= <LocalVar> ;
+<Statement> ::= <Return> ;
+<Statement> ::= <Break> ;
+<Statement> ::= <If>
+<Statement> ::= <While>
+<Statement> ::= <Switch>
+<Statement> ::= <Block>
+
+<Assignment> ::= <Expression>
+<Call> ::= <Expression>
+<LocalVar> ::= var idMetVar = <CompositeExpression>
+<Return> ::= return <ExpressionOptional>
+<Break> ::= break
+
+<If> ::= if ( <Expression> ) <Statement>
+<If> ::= if ( <Expression> ) <Statement> else <Statement>
+
+<While> ::= while ( <Expression> ) <Statement>
+
+<Switch> ::= switch ( <Expression> ) { <SwitchStatementList> }
+<SwitchStatementList> ::= <SwitchStatement> <SwitchStatementList> | e
+<SwitchStatement> ::= case <PrimitiveLiteral> : <StatementOptional>
+<SwitchStatement> ::= default : <Statement>
+
+--------------------------------------------------------------------------------
+3. Expressions
+--------------------------------------------------------------------------------
+
+<ExpressionOptional> ::= <Expression> | e
+<Expression> ::= <CompositeExpression>
+<Expression> ::= <CompositeExpression> <AssignmentOp> <CompositeExpression>
+
+<AssignmentOp> ::= = | += | -=
+
+<CompositeExpression> ::= <CompositeExpression> <BinaryOp> <BasicExpression>
+<CompositeExpression> ::= <BasicExpression>
+
+<BinaryOp> ::= || | && | == | != | < | > | <= | >= | + | - | * | / | %
+
+<BasicExpression> ::= <UnaryOp> <Operand>
+<BasicExpression> :: <Operand>
+
+<UnaryOp> ::= + | - | !
+
+<Operand> ::= <Literal>
+<Operand> ::= <Access>
+
+<Literal> ::= <PrimitiveLiteral> | <ObjectLiteral>
+
+<PrimitiveLiteral> ::= trueLiteral | falseLiteral | intLiteral | charLiteral
+<ObjectLiteral> ::= null | stringLiteral
+
+<Access> ::= <Primary> <ChainedOptional>
+
+<Primary> ::= <ThisAccess>
+<Primary> ::= <VarAccess>
+<Primary> ::= <ConstructorAccess>
+<Primary> ::= <MethodAccess>
+<Primary> ::= <StaticMethodAccess>
+<Primary> ::= <ParentizedExpression>
+
+<ThisAccess> ::= this
+<VarAccess> ::= idMetVar
+<ConstructorAccess> ::= new idClass <ActualArgs>
+<ParentizedExpression> ::= ( <Expression> )
+<MethodAccess> ::= idMetVar <ActualArgs>
+<StaticMethodAccess> ::= idClass . idMetVar <ActualArgs>
+
+<ActualArgs> ::= ( <ExpressionListOptional> )
+
+<ExpressionListOptional> ::= <ExpressionList> | e
+<ExpressionList> ::= <Expression>
+<ExpressionList> ::= <Expression> , <ExpressionList>
+
+<ChainedOptional> ::= <ChainedVar> | <ChainedMethod> | e
+<ChainedVar> ::= . idMetVar <ChainedOptional>
+<ChainedMethod> ::= . idMetVar <ActualArgs> <ChainedOptional>
