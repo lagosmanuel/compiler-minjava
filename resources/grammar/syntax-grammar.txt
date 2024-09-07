@@ -82,8 +82,8 @@ e           is the empty string
 
 <AssignmentOp> ::= = | += | -=
 
-<CompositeExpression> ::= <CompositeExpression> <BinaryOp> <BasicExpression>
-<CompositeExpression> ::= <BasicExpression>
+<CompositeExpression> ::= <BasicExpression> <CompositeExpressionRest>
+<CompositeExpressionRest> ::= <BinaryOp> <BasicExpression> <CompositeExpressionRest> | e
 
 <BinaryOp> ::= || | && | == | != | < | > | <= | >= | + | - | * | / | %
 
