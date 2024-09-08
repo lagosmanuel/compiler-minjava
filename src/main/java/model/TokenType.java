@@ -35,6 +35,7 @@ public enum TokenType {
     kwChar,
     kwElse,
     kwCase,
+    kwDefault,
     kwNew,
     kwPublic,
     kwInt,

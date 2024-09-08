@@ -17,6 +17,7 @@ public class Keywords {
         keywords.put("char", TokenType.kwChar);
         keywords.put("else", TokenType.kwElse);
         keywords.put("case", TokenType.kwCase);
+        keywords.put("default", TokenType.kwDefault);
         keywords.put("var", TokenType.kwVar);
         keywords.put("void", TokenType.kwVoid);
         keywords.put("new", TokenType.kwNew);

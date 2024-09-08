@@ -1,33 +1,39 @@
 package main.java.main;
 
-import java.util.List;
-import java.util.Map;
 import main.java.lexer.Lexer;
 import main.java.lexer.LexerImpl;
-import main.java.model.Error;
-import main.java.model.Pair;
+import main.java.config.LexerConfig;
+import main.java.parser.Parser;
+import main.java.parser.ParserImpl;
 import main.java.model.Token;
 import main.java.model.TokenType;
-import main.java.utils.Formater;
+import main.java.model.Pair;
+import main.java.model.Error;
 import main.java.utils.sourcemanager.SourceManager;
 import main.java.utils.sourcemanager.SourceManagerImpl;
-import main.java.config.LexerConfig;
+import main.java.utils.Formater;
 import main.java.messages.ErrorMessages;
 import main.java.exeptions.LexicalException;
+import main.java.exeptions.SyntacticException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import java.util.List;
+import java.util.Map;
 
 public class Main {
     private static SourceManager sourceManager;
     private static Lexer lexer;
+    private static Parser parser;
 
     public static void main(String[] args) {
         init();
 
         if (args.length == 1) {
             if (loadFile(args[0])) {
-                showTokens();
-                closeFile();
+                compile();
+                //showTokens();
             }
         } else {
             System.out.println(ErrorMessages.BAD_USAGE);
@@ -37,6 +43,7 @@ public class Main {
     private static void init() {
         sourceManager = new SourceManagerImpl();
         lexer = new LexerImpl(sourceManager);
+        parser = new ParserImpl(lexer);
     }
 
     private static boolean loadFile(String filename) {
@@ -78,6 +85,15 @@ public class Main {
             showErrors(lexer.getErrors());
         } else if (token != null && token.getType() == TokenType.EOF) {
             System.out.println(ErrorMessages.SUCCESS);
+        }
+    }
+
+    private static void compile() {
+        try {
+            parser.parse();
+            System.out.println(ErrorMessages.SUCCESS);
+        } catch (SyntacticException error) {
+            System.out.println(error.getMessage());
         }
     }
 

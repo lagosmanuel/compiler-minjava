@@ -40,7 +40,7 @@ e           is the empty string
 2. Statements and Blocks
 --------------------------------------------------------------------------------
 
-<Bloque> ::= { <StatementList> }
+<Block> ::= { <StatementList> }
 <StatementList> ::= <Statement> <StatementList> | e
 <StatementOptional> ::= <Statement> | e
 
