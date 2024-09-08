@@ -12,6 +12,7 @@ import main.java.exeptions.SyntacticException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ParserImpl implements Parser {
     private final Map<Integer, Pair<List<Error>, String>> errors;
@@ -108,9 +109,7 @@ public class ParserImpl implements Parser {
 
     private void MemberRest() throws SyntacticException {
         switch (token.getType()) {
-            case semicolon -> {
-                match(TokenType.semicolon);
-            }
+            case semicolon -> match(TokenType.semicolon);
             case leftParenthesis -> {
                 FormalArgs();
                 Block();
@@ -148,27 +147,17 @@ public class ParserImpl implements Parser {
 
     private void Type() throws SyntacticException {
         switch (token.getType()) {
-            case kwBoolean, kwChar, kwInt -> {
-                PrimitiveType();
-            }
-            case idClassVar -> {
-                match(TokenType.idClassVar);
-            }
+            case kwBoolean, kwChar, kwInt -> PrimitiveType();
+            case idClassVar -> match(TokenType.idClassVar);
             default -> throwException();
         }
     }
 
     private void PrimitiveType() throws SyntacticException {
         switch (token.getType()) {
-            case kwBoolean -> {
-                match(TokenType.kwBoolean);
-            }
-            case kwChar -> {
-                match(TokenType.kwChar);
-            }
-            case kwInt -> {
-                match(TokenType.kwInt);
-            }
+            case kwBoolean -> match(TokenType.kwBoolean);
+            case kwChar -> match(TokenType.kwChar);
+            case kwInt -> match(TokenType.kwInt);
             default -> throwException();
         }
     }
@@ -245,9 +234,7 @@ public class ParserImpl implements Parser {
 
     private void Statement() throws SyntacticException {
         switch (token.getType()) {
-            case semicolon -> {
-                match(TokenType.semicolon);
-            }
+            case semicolon -> match(TokenType.semicolon);
             case kwVar -> {
                 LocalVar();
                 match(TokenType.semicolon);
@@ -260,18 +247,10 @@ public class ParserImpl implements Parser {
                 Break();
                 match(TokenType.semicolon);
             }
-            case kwIf -> {
-                If();
-            }
-            case kwWhile -> {
-                While();
-            }
-            case kwSwitch -> {
-                Switch();
-            }
-            case leftBrace -> {
-                Block();
-            }
+            case kwIf -> If();
+            case kwWhile -> While();
+            case kwSwitch -> Switch();
+            case leftBrace -> Block();
             default -> {
                if (Lookup.Expression.contains(token.getType())) {
                    Expression();
@@ -309,14 +288,12 @@ public class ParserImpl implements Parser {
     }
 
     private void IfRest() throws SyntacticException {
-        switch (token.getType()) {
-            case kwElse -> {
-                match(TokenType.kwElse);
-                Statement();
-            }
+        if (Objects.requireNonNull(token.getType()) == TokenType.kwElse) {
+            match(TokenType.kwElse);
+            Statement();
+        } else {
             /* TODO: calculate follow set of IfRest
-            default -> throwException();
-            */
+            throwException(); */
         }
     }
 
@@ -399,15 +376,9 @@ public class ParserImpl implements Parser {
 
     private void AssignmentOp() throws SyntacticException {
         switch (token.getType()) {
-            case opAssign -> {
-                match(TokenType.opAssign);
-            }
-            case opPlusAssign -> {
-                match(TokenType.opPlusAssign);
-            }
-            case opMinusAssign -> {
-                match(TokenType.opMinusAssign);
-            }
+            case opAssign -> match(TokenType.opAssign);
+            case opPlusAssign -> match(TokenType.opPlusAssign);
+            case opMinusAssign -> match(TokenType.opMinusAssign);
             default -> throwException();
         }
     }
@@ -430,45 +401,19 @@ public class ParserImpl implements Parser {
 
     private void BinaryOp() throws SyntacticException {
         switch (token.getType()) {
-            case opOr -> {
-                match(TokenType.opOr);
-            }
-            case opAnd -> {
-                match(TokenType.opAnd);
-            }
-            case opEqual -> {
-                match(TokenType.opEqual);
-            }
-            case opNotEqual -> {
-                match(TokenType.opNotEqual);
-            }
-            case opLess -> {
-                match(TokenType.opLess);
-            }
-            case opGreater -> {
-                match(TokenType.opGreater);
-            }
-            case opLessEqual -> {
-                match(TokenType.opLessEqual);
-            }
-            case opGreaterEqual -> {
-                match(TokenType.opGreaterEqual);
-            }
-            case opPlus -> {
-                match(TokenType.opPlus);
-            }
-            case opMinus -> {
-                match(TokenType.opMinus);
-            }
-            case opTimes -> {
-                match(TokenType.opTimes);
-            }
-            case opDiv -> {
-                match(TokenType.opDiv);
-            }
-            case opMod -> {
-                match(TokenType.opMod);
-            }
+            case opOr -> match(TokenType.opOr);
+            case opAnd -> match(TokenType.opAnd);
+            case opEqual -> match(TokenType.opEqual);
+            case opNotEqual -> match(TokenType.opNotEqual);
+            case opLess -> match(TokenType.opLess);
+            case opGreater -> match(TokenType.opGreater);
+            case opLessEqual -> match(TokenType.opLessEqual);
+            case opGreaterEqual -> match(TokenType.opGreaterEqual);
+            case opPlus -> match(TokenType.opPlus);
+            case opMinus -> match(TokenType.opMinus);
+            case opTimes -> match(TokenType.opTimes);
+            case opDiv -> match(TokenType.opDiv);
+            case opMod -> match(TokenType.opMod);
             default -> throwException();
         }
     }
@@ -486,15 +431,9 @@ public class ParserImpl implements Parser {
 
     private void UnaryOp() throws SyntacticException {
         switch (token.getType()) {
-            case opPlus -> {
-                match(TokenType.opPlus);
-            }
-            case opMinus -> {
-                match(TokenType.opMinus);
-            }
-            case opNot -> {
-                match(TokenType.opNot);
-            }
+            case opPlus -> match(TokenType.opPlus);
+            case opMinus -> match(TokenType.opMinus);
+            case opNot -> match(TokenType.opNot);
             default -> throwException();
         }
     }
@@ -521,30 +460,18 @@ public class ParserImpl implements Parser {
 
     private void PrimitiveLiteral() throws SyntacticException {
         switch (token.getType()) {
-            case trueLiteral -> {
-                match(TokenType.trueLiteral);
-            }
-            case falseLiteral -> {
-                match(TokenType.falseLiteral);
-            }
-            case intLiteral -> {
-                match(TokenType.intLiteral);
-            }
-            case charLiteral -> {
-                match(TokenType.charLiteral);
-            }
+            case trueLiteral -> match(TokenType.trueLiteral);
+            case falseLiteral -> match(TokenType.falseLiteral);
+            case intLiteral -> match(TokenType.intLiteral);
+            case charLiteral -> match(TokenType.charLiteral);
             default -> throwException();
         }
     }
 
     private void ObjectLiteral() throws SyntacticException {
         switch (token.getType()) {
-            case nullLiteral -> {
-                match(TokenType.nullLiteral);
-            }
-            case stringLiteral -> {
-                match(TokenType.stringLiteral);
-            }
+            case nullLiteral -> match(TokenType.nullLiteral);
+            case stringLiteral -> match(TokenType.stringLiteral);
             default -> throwException();
         }
     }
@@ -556,21 +483,11 @@ public class ParserImpl implements Parser {
 
     private void Primary() throws SyntacticException {
         switch (token.getType()) {
-            case kwThis -> {
-                ThisAccess();
-            }
-            case idMetVar -> {
-                IdMetVarAccess();
-            }
-            case kwNew -> {
-                ConstructorAccess();
-            }
-            case idClassVar -> {
-                StaticMethodAccess();
-            }
-            case leftParenthesis -> {
-                ParentizedExpression();
-            }
+            case kwThis -> ThisAccess();
+            case idMetVar -> IdMetVarAccess();
+            case kwNew -> ConstructorAccess();
+            case idClassVar -> StaticMethodAccess();
+            case leftParenthesis -> ParentizedExpression();
             default -> throwException();
         }
     }
@@ -585,13 +502,11 @@ public class ParserImpl implements Parser {
     }
 
     private void IdMetVarAccessRest() throws SyntacticException {
-        switch (token.getType()) {
-            case leftParenthesis -> {
-                ActualArgs();
-            }
+        if (Objects.requireNonNull(token.getType()) == TokenType.leftParenthesis) {
+            ActualArgs();
+        } else {
             /* TODO: calculate follow set of IdMetVarAccessRest
-            default -> throwException();
-            */
+            throwException(); */
         }
     }
 
@@ -649,13 +564,11 @@ public class ParserImpl implements Parser {
     }
 
     private void ChainedOptional() throws SyntacticException {
-        switch (token.getType()) {
-            case dot -> {
-                ChainedIdMetVar();
-            }
+        if (Objects.requireNonNull(token.getType()) == TokenType.dot) {
+            ChainedIdMetVar();
+        } else {
             /* TODO: calculate follow set of ChainedOptional
-            default -> throwException();
-            */
+            throwException(); */
         }
     }
 
@@ -667,9 +580,7 @@ public class ParserImpl implements Parser {
 
     private void ChainedIdMetVarRest() throws SyntacticException {
         switch (token.getType()) {
-            case dot -> {
-                ChainedOptional();
-            }
+            case dot -> ChainedOptional();
             case leftParenthesis -> {
                 ActualArgs();
                 ChainedOptional();
