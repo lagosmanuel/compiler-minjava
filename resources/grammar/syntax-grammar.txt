@@ -7,7 +7,7 @@ The grammar follows the extended-BNF notation where:
 terminal    is a terminal symbol
 <Class>     is a non-terminal symbol, with the first letter in uppercase
 e           is the empty string
-<X>::=a     is a production, whrere a is a sequence of terminals and non-terminals
+<X>::=a     is a production, where a is a sequence of terminals and non-terminals
 <X>::=a|b   is an abbreviation of <X>::=a and <X>::=b
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
