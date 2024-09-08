@@ -83,37 +83,26 @@ public class ParserImpl implements Parser {
     }
 
     private void MemberList() throws SyntacticException {
-        switch (token.getType()) {
-            case kwStatic,
-                 kwVoid,
-                 idClassVar,
-                 kwBoolean, kwChar, kwInt,
-                 kwPublic -> {
-                Member();
-                MemberList();
-            }
-            case rightBrace -> {
-                return;
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.kwStatic || Lookup.Member.contains(token.getType())) {
+            Member();
+            MemberList();
+        } else if (token.getType() == TokenType.rightBrace) {
+            return;
+        } else {
+            throwException();
         }
     }
 
     private void Member() throws SyntacticException {
-        switch (token.getType()) {
-            case kwStatic,
-                 kwVoid,
-                 idClassVar,
-                 kwBoolean, kwChar, kwInt -> {
-                StaticOptional();
-                MemberType();
-                match(TokenType.idMetVar);
-                MemberRest();
-            }
-            case kwPublic -> {
-                Constructor();
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.kwStatic || Lookup.MemberType.contains(token.getType())) {
+            StaticOptional();
+            MemberType();
+            match(TokenType.idMetVar);
+            MemberRest();
+        } else if (Lookup.Constructor.contains(token.getType())) {
+            Constructor();
+        } else {
+            throwException();
         }
     }
 
@@ -138,29 +127,22 @@ public class ParserImpl implements Parser {
     }
 
     private void StaticOptional() throws SyntacticException {
-        switch (token.getType()) {
-            case kwStatic -> {
-                match(TokenType.kwStatic);
-            }
-            case kwVoid,
-                 idClassVar,
-                 kwBoolean, kwChar, kwInt -> {
-                return;
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.kwStatic) {
+            match(TokenType.kwStatic);
+        } else if (Lookup.MemberType.contains(token.getType())) {
+            return;
+        } else {
+            throwException();
         }
     }
 
     private void MemberType() throws SyntacticException {
-        switch (token.getType()) {
-            case idClassVar,
-                 kwBoolean, kwChar, kwInt -> {
-                Type();
-            }
-            case kwVoid -> {
-                match(TokenType.kwVoid);
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.kwVoid) {
+            match(TokenType.kwVoid);
+        } else if (Lookup.Type.contains(token.getType())) {
+            Type();
+        } else {
+            throwException();
         }
     }
 
@@ -198,15 +180,12 @@ public class ParserImpl implements Parser {
     }
 
     private void FormalArgsListOptional() throws SyntacticException {
-        switch (token.getType()) {
-            case idClassVar,
-                 kwBoolean, kwChar, kwInt -> {
-                FormalArgsList();
-            }
-            case rightParenthesis -> {
-                return;
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.rightParenthesis) {
+            return;
+        } else if (Lookup.Type.contains(token.getType())) {
+            FormalArgsList();
+        } else {
+            throwException();
         }
     }
 
@@ -439,16 +418,13 @@ public class ParserImpl implements Parser {
     }
 
     private void CompositeExpressionRest() throws SyntacticException {
-        switch (token.getType()) {
-            case opOr, opAnd, opEqual, opNotEqual, opLess, opGreater, opLessEqual, opGreaterEqual,
-                 opPlus, opMinus, opTimes, opDiv, opMod -> {
-                BinaryOp();
-                BasicExpression();
-                CompositeExpressionRest();
-            }
+        if (Lookup.BinaryOp.contains(token.getType())) {
+            BinaryOp();
+            BasicExpression();
+            CompositeExpressionRest();
+        } else {
             /* TODO: calculate follow set of CompositeExpressionRest
-            default -> throwException();
-            */
+            throwException(); */
         }
     }
 
@@ -498,21 +474,13 @@ public class ParserImpl implements Parser {
     }
 
     private void BasicExpression() throws SyntacticException {
-        switch (token.getType()) {
-            case opPlus, opMinus, opNot ->  {
-                UnaryOp();
-                Operand();
-            }
-            case trueLiteral, falseLiteral, intLiteral, charLiteral,
-                 nullLiteral, stringLiteral,
-                 kwThis,
-                 idMetVar,
-                 kwNew,
-                 idClassVar,
-                 leftParenthesis -> {
-                Operand();
-            }
-            default -> throwException();
+        if (token.getType() == TokenType.opPlus || token.getType() == TokenType.opMinus || token.getType() == TokenType.opNot) {
+            UnaryOp();
+            Operand();
+        } else if (Lookup.Operand.contains(token.getType())) {
+            Operand();
+        } else {
+            throwException();
         }
     }
 
@@ -532,27 +500,22 @@ public class ParserImpl implements Parser {
     }
 
     private void Operand() throws SyntacticException {
-        switch (token.getType()) {
-            case trueLiteral, falseLiteral, intLiteral, charLiteral,
-                 nullLiteral, stringLiteral -> {
-                Literal();
-            }
-            case kwThis, idMetVar, kwNew, idClassVar, leftParenthesis -> {
-                Access();
-            }
-            default -> throwException();
+        if (Lookup.Literal.contains(token.getType())) {
+            Literal();
+        } else if (Lookup.Access.contains(token.getType())) {
+            Access();
+        } else {
+            throwException();
         }
     }
 
     private void Literal() throws SyntacticException {
-        switch (token.getType()) {
-            case trueLiteral, falseLiteral, intLiteral, charLiteral -> {
-                PrimitiveLiteral();
-            }
-            case nullLiteral, stringLiteral -> {
-                ObjectLiteral();
-            }
-            default -> throwException();
+        if (Lookup.PrimitiveLiteral.contains(token.getType())) {
+            PrimitiveLiteral();
+        } else if (Lookup.ObjectLiteral.contains(token.getType())) {
+            ObjectLiteral();
+        } else {
+            throwException();
         }
     }
 
