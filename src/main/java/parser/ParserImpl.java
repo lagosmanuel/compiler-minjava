@@ -337,9 +337,13 @@ public class ParserImpl implements Parser {
         if (Objects.requireNonNull(token.getType()) == TokenType.kwElse) {
             match(TokenType.kwElse);
             Statement();
+        } else if (Follow.Statement.contains(token.getType())) {
+            return;
         } else {
-            /* TODO: calculate follow set of IfRest
-            throwException(); */
+            throwException(List.of(
+                "a statement",
+                TokenType.rightBrace.toString()
+            ));
         }
     }
 
@@ -424,9 +428,14 @@ public class ParserImpl implements Parser {
                 AssignmentOp();
                 CompositeExpression();
             }
-            /* TODO: calculate follow set of ExpressionRest
-            default -> throwException();
-            */
+            default -> {
+                if (Follow.Expression.contains(token.getType())) return;
+                else throwException(List.of(
+                    "a comma and another expression",
+                    TokenType.rightParenthesis.toString(),
+                    TokenType.semicolon.toString()
+                ));
+            }
         }
     }
 
@@ -453,9 +462,15 @@ public class ParserImpl implements Parser {
             BinaryOp();
             BasicExpression();
             CompositeExpressionRest();
+        } else if (Follow.CompositeExpression.contains(token.getType())) {
+            return;
         } else {
-            /* TODO: calculate follow set of CompositeExpressionRest
-            throwException(); */
+            throwException(List.of(
+                "an assignment operator",
+                "a comma and another expression",
+                TokenType.rightParenthesis.toString(),
+                TokenType.semicolon.toString()
+            ));
         }
     }
 
@@ -587,9 +602,14 @@ public class ParserImpl implements Parser {
     private void IdMetVarAccessRest() throws SyntacticException {
         if (Objects.requireNonNull(token.getType()) == TokenType.leftParenthesis) {
             ActualArgs();
+        } else if (Follow.Primary.contains(token.getType())) {
+            return;
         } else {
-            /* TODO: calculate follow set of IdMetVarAccessRest
-            throwException(); */
+            throwException(List.of(
+                "a binary operator",
+                "a composite expression",
+                "a dot"
+            ));
         }
     }
 
@@ -655,9 +675,13 @@ public class ParserImpl implements Parser {
     private void ChainedOptional() throws SyntacticException {
         if (Objects.requireNonNull(token.getType()) == TokenType.dot) {
             ChainedIdMetVar();
+        } else if (Follow.BasicExpression.contains(token.getType())) {
+            return;
         } else {
-            /* TODO: calculate follow set of ChainedOptional
-            throwException(); */
+            throwException(List.of(
+                "a binary operator",
+                "a composite expression"
+            ));
         }
     }
 
@@ -674,9 +698,13 @@ public class ParserImpl implements Parser {
                 ActualArgs();
                 ChainedOptional();
             }
-            /* TODO: calculate follow set of ChainedIdMetVarRest
-            default -> throwException();
-            */
+            default -> {
+                if (Follow.BasicExpression.contains(token.getType())) return;
+                else throwException(List.of(
+                    "a binary operator",
+                    "a composite expression"
+                ));
+            }
         }
     }
 
