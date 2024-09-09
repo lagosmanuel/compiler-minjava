@@ -2,11 +2,13 @@ package main.java.parser;
 
 import main.java.model.TokenType;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Lookup {
-    public static final List<TokenType> Expression = List.of(
+    public static final Collection<TokenType> Expression = Set.of(
         TokenType.opPlus,
         TokenType.opMinus,
         TokenType.opNot,
@@ -23,7 +25,7 @@ public class Lookup {
         TokenType.leftParenthesis
     );
 
-    public static final List<TokenType> Statement = Stream.concat(
+    public static final Collection<TokenType> Statement = Stream.concat(
         Stream.of(
             TokenType.semicolon,
             TokenType.kwVar,
@@ -35,9 +37,9 @@ public class Lookup {
             TokenType.leftBrace
         ),
         Expression.stream()
-    ).toList();
+    ).collect(Collectors.toSet());
 
-    public static final List<TokenType> Access = List.of(
+    public static final Collection<TokenType> Access = Set.of(
         TokenType.kwThis,
         TokenType.idMetVar,
         TokenType.kwNew,
@@ -45,50 +47,50 @@ public class Lookup {
         TokenType.leftParenthesis
     );
 
-    public static final List<TokenType> Type = List.of(
+    public static final Collection<TokenType> Type = Set.of(
         TokenType.idClass,
         TokenType.kwBoolean,
         TokenType.kwChar,
         TokenType.kwInt
     );
 
-    public static final List<TokenType> MemberType = Stream.concat(
+    public static final Collection<TokenType> MemberType = Stream.concat(
         Stream.of(TokenType.kwVoid),
         Type.stream()
-    ).toList();
+    ).collect(Collectors.toSet());
 
-    public static final List<TokenType> Constructor = List.of(
+    public static final Collection<TokenType> Constructor = Set.of(
         TokenType.kwPublic
     );
 
-    public static final List<TokenType> Member = Stream.concat(
+    public static final Collection<TokenType> Member = Stream.concat(
         Constructor.stream(),
         MemberType.stream()
-    ).toList();
+    ).collect(Collectors.toSet());
 
-    public static final List<TokenType> PrimitiveLiteral = List.of(
+    public static final Collection<TokenType> PrimitiveLiteral = Set.of(
         TokenType.trueLiteral,
         TokenType.falseLiteral,
         TokenType.intLiteral,
         TokenType.charLiteral
     );
 
-    public static final List<TokenType> ObjectLiteral = List.of(
+    public static final Collection<TokenType> ObjectLiteral = Set.of(
         TokenType.nullLiteral,
         TokenType.stringLiteral
     );
 
-    public static final List<TokenType> Literal = Stream.concat(
+    public static final Collection<TokenType> Literal = Stream.concat(
         PrimitiveLiteral.stream(),
         ObjectLiteral.stream()
-    ).toList();
+    ).collect(Collectors.toSet());
 
-    public static final List<TokenType> Operand = Stream.concat(
+    public static final Collection<TokenType> Operand = Stream.concat(
         Literal.stream(),
         Access.stream()
-    ).toList();
+    ).collect(Collectors.toSet());
 
-    public static final List<TokenType> BinaryOp = List.of(
+    public static final Collection<TokenType> BinaryOp = Set.of(
         TokenType.opOr,
         TokenType.opAnd,
         TokenType.opEqual,
