@@ -68,7 +68,7 @@ public class ParserImpl implements Parser {
 
     private void Class() throws SyntacticException {
         match(TokenType.kwClass);
-        match(TokenType.idClassVar);
+        match(TokenType.idClass);
         InheritanceOptional();
         match(TokenType.leftBrace);
         MemberList();
@@ -79,7 +79,7 @@ public class ParserImpl implements Parser {
         switch (token.getType()) {
             case kwExtends -> {
                 match(TokenType.kwExtends);
-                match(TokenType.idClassVar);
+                match(TokenType.idClass);
             }
             case leftBrace -> {
                 return;
@@ -137,7 +137,7 @@ public class ParserImpl implements Parser {
 
     private void Constructor() throws SyntacticException {
         match(TokenType.kwPublic);
-        match(TokenType.idClassVar);
+        match(TokenType.idClass);
         FormalArgs();
         Block();
     }
@@ -171,7 +171,7 @@ public class ParserImpl implements Parser {
     private void Type() throws SyntacticException {
         switch (token.getType()) {
             case kwBoolean, kwChar, kwInt -> PrimitiveType();
-            case idClassVar -> match(TokenType.idClassVar);
+            case idClass -> match(TokenType.idClass);
             default -> throwException(List.of(
                 "a primitive type",
                 "a class type"
@@ -567,7 +567,7 @@ public class ParserImpl implements Parser {
             case kwThis -> ThisAccess();
             case idMetVar -> IdMetVarAccess();
             case kwNew -> ConstructorAccess();
-            case idClassVar -> StaticMethodAccess();
+            case idClass -> StaticMethodAccess();
             case leftParenthesis -> ParentizedExpression();
             default -> throwException(List.of(
             "a reference to an object"
@@ -595,12 +595,12 @@ public class ParserImpl implements Parser {
 
     private void ConstructorAccess() throws SyntacticException {
         match(TokenType.kwNew);
-        match(TokenType.idClassVar);
+        match(TokenType.idClass);
         ActualArgs();
     }
 
     private void StaticMethodAccess() throws SyntacticException {
-        match(TokenType.idClassVar);
+        match(TokenType.idClass);
         match(TokenType.dot);
         match(TokenType.idMetVar);
         ActualArgs();

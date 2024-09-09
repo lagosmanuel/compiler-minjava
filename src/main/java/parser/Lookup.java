@@ -19,7 +19,7 @@ public class Lookup {
         TokenType.kwThis,
         TokenType.idMetVar,
         TokenType.kwNew,
-        TokenType.idClassVar,
+        TokenType.idClass,
         TokenType.leftParenthesis
     );
 
@@ -41,12 +41,12 @@ public class Lookup {
         TokenType.kwThis,
         TokenType.idMetVar,
         TokenType.kwNew,
-        TokenType.idClassVar,
+        TokenType.idClass,
         TokenType.leftParenthesis
     );
 
     public static final List<TokenType> Type = List.of(
-        TokenType.idClassVar,
+        TokenType.idClass,
         TokenType.kwBoolean,
         TokenType.kwChar,
         TokenType.kwInt

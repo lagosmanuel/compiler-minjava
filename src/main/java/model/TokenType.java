@@ -2,7 +2,7 @@ package main.java.model;
 
 public enum TokenType {
     idMetVar,
-    idClassVar,
+    idClass,
     intLiteral,
     floatLiteral,
     charLiteral,

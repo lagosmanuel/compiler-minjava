@@ -150,7 +150,7 @@ public class LexerImpl implements Lexer {
             appendCharLexeme(ch);
             return idClassVar();
         } else {
-            return new Token(TokenType.idClassVar, lexeme, line, column);
+            return new Token(TokenType.idClass, lexeme, line, column);
         }
     }
 
