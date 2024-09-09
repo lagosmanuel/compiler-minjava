@@ -45,7 +45,7 @@ public class Formater {
         return String.format(
             ParserErrorMessages.EXPECTED_RESULT,
             expectedString,
-            token.getLexeme()
+            token.getType()
         );
     }
 }
