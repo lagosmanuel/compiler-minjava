@@ -5,11 +5,13 @@ import main.java.model.Error;
 import main.java.model.Pair;
 import main.java.model.Token;
 import main.java.model.TokenType;
+import main.java.model.ErrorType;
 import main.java.config.ParserConfig;
 import main.java.exeptions.LexicalException;
 import main.java.exeptions.SyntacticException;
+import main.java.utils.Formater;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,9 +21,9 @@ public class ParserImpl implements Parser {
     private final Lexer lexer;
     private Token token;
 
-    public ParserImpl(Lexer lexer) {
+    public ParserImpl(Lexer lexer, Map<Integer, Pair<List<Error>, String>> errors) {
         this.lexer = lexer;
-        this.errors = new HashMap<>();
+        this.errors = errors;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ParserImpl implements Parser {
 
     private void match(TokenType tokenType) throws SyntacticException {
         if (token == null || token.getType() != tokenType)
-            throwException();
+            throwException(List.of(tokenType.toString()));
         token = getToken();
     }
 
@@ -57,7 +59,10 @@ public class ParserImpl implements Parser {
             case EOF -> {
                 return;
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.kwClass.toString(),
+                TokenType.EOF.toString()
+            ));
         }
     }
 
@@ -79,7 +84,10 @@ public class ParserImpl implements Parser {
             case leftBrace -> {
                 return;
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.kwExtends.toString(),
+                TokenType.leftBrace.toString()
+            ));
         }
     }
 
@@ -90,7 +98,10 @@ public class ParserImpl implements Parser {
         } else if (token.getType() == TokenType.rightBrace) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                "a member",
+                TokenType.rightBrace.toString()
+            ));
         }
     }
 
@@ -103,7 +114,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.Constructor.contains(token.getType())) {
             Constructor();
         } else {
-            throwException();
+            throwException(List.of(
+                "a member type",
+                "a constructor"
+            ));
         }
     }
 
@@ -114,7 +128,10 @@ public class ParserImpl implements Parser {
                 FormalArgs();
                 Block();
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.semicolon.toString(),
+                TokenType.leftParenthesis.toString()
+            ));
         }
     }
 
@@ -131,7 +148,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.MemberType.contains(token.getType())) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                TokenType.kwStatic.toString(),
+                "a member type"
+            ));
         }
     }
 
@@ -141,7 +161,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.Type.contains(token.getType())) {
             Type();
         } else {
-            throwException();
+            throwException(List.of(
+                TokenType.kwVoid.toString(),
+                "a type"
+            ));
         }
     }
 
@@ -149,7 +172,10 @@ public class ParserImpl implements Parser {
         switch (token.getType()) {
             case kwBoolean, kwChar, kwInt -> PrimitiveType();
             case idClassVar -> match(TokenType.idClassVar);
-            default -> throwException();
+            default -> throwException(List.of(
+                "a primitive type",
+                "a class type"
+            ));
         }
     }
 
@@ -158,7 +184,11 @@ public class ParserImpl implements Parser {
             case kwBoolean -> match(TokenType.kwBoolean);
             case kwChar -> match(TokenType.kwChar);
             case kwInt -> match(TokenType.kwInt);
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.kwBoolean.toString(),
+                TokenType.kwChar.toString(),
+                TokenType.kwInt.toString()
+            ));
         }
     }
 
@@ -174,7 +204,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.Type.contains(token.getType())) {
             FormalArgsList();
         } else {
-            throwException();
+            throwException(List.of(
+                "an argument",
+                TokenType.rightParenthesis.toString()
+            ));
         }
     }
 
@@ -192,7 +225,10 @@ public class ParserImpl implements Parser {
             case rightParenthesis -> {
                 return;
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.comma.toString(),
+                TokenType.rightParenthesis.toString()
+            ));
         }
     }
 
@@ -216,7 +252,10 @@ public class ParserImpl implements Parser {
         } else if (token.getType() == TokenType.rightBrace) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                "a statement",
+                TokenType.rightBrace.toString()
+            ));
         }
     }
 
@@ -228,7 +267,12 @@ public class ParserImpl implements Parser {
                 token.getType() == TokenType.kwDefault) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                "a statement",
+                TokenType.kwCase.toString(),
+                TokenType.kwDefault.toString(),
+                TokenType.rightBrace.toString())
+            );
         }
     }
 
@@ -256,7 +300,9 @@ public class ParserImpl implements Parser {
                    Expression();
                    match(TokenType.semicolon);
                } else {
-                   throwException();
+                   throwException(List.of(
+                   "a statement"
+                   ));
                }
             }
         }
@@ -324,7 +370,11 @@ public class ParserImpl implements Parser {
             case rightBrace -> {
                 return;
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.kwCase.toString(),
+                TokenType.kwDefault.toString(),
+                TokenType.rightBrace.toString()
+            ));
         }
     }
 
@@ -341,7 +391,10 @@ public class ParserImpl implements Parser {
                 match(TokenType.colon);
                 Statement();
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.kwCase.toString(),
+                TokenType.kwDefault.toString()
+            ));
         }
     }
 
@@ -353,7 +406,10 @@ public class ParserImpl implements Parser {
         } else if (token.getType() == TokenType.semicolon) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                "an expression",
+                TokenType.semicolon.toString()
+            ));
         }
     }
 
@@ -379,7 +435,11 @@ public class ParserImpl implements Parser {
             case opAssign -> match(TokenType.opAssign);
             case opPlusAssign -> match(TokenType.opPlusAssign);
             case opMinusAssign -> match(TokenType.opMinusAssign);
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.opAssign.toString(),
+                TokenType.opPlusAssign.toString(),
+                TokenType.opMinusAssign.toString())
+            );
         }
     }
 
@@ -414,7 +474,9 @@ public class ParserImpl implements Parser {
             case opTimes -> match(TokenType.opTimes);
             case opDiv -> match(TokenType.opDiv);
             case opMod -> match(TokenType.opMod);
-            default -> throwException();
+            default -> throwException(List.of(
+            "a binary operator"
+            ));
         }
     }
 
@@ -425,7 +487,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.Operand.contains(token.getType())) {
             Operand();
         } else {
-            throwException();
+            throwException(List.of(
+                "a unary operator",
+                "an operand"
+            ));
         }
     }
 
@@ -434,7 +499,9 @@ public class ParserImpl implements Parser {
             case opPlus -> match(TokenType.opPlus);
             case opMinus -> match(TokenType.opMinus);
             case opNot -> match(TokenType.opNot);
-            default -> throwException();
+            default -> throwException(List.of(
+            "a unary operator"
+            ));
         }
     }
 
@@ -444,7 +511,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.Access.contains(token.getType())) {
             Access();
         } else {
-            throwException();
+            throwException(List.of(
+                "a literal",
+                "an access to an object"
+            ));
         }
     }
 
@@ -454,7 +524,10 @@ public class ParserImpl implements Parser {
         } else if (Lookup.ObjectLiteral.contains(token.getType())) {
             ObjectLiteral();
         } else {
-            throwException();
+            throwException(List.of(
+                "a primitive literal",
+                "an object literal"
+            ));
         }
     }
 
@@ -464,7 +537,12 @@ public class ParserImpl implements Parser {
             case falseLiteral -> match(TokenType.falseLiteral);
             case intLiteral -> match(TokenType.intLiteral);
             case charLiteral -> match(TokenType.charLiteral);
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.trueLiteral.toString(),
+                TokenType.falseLiteral.toString(),
+                TokenType.intLiteral.toString(),
+                TokenType.charLiteral.toString()
+            ));
         }
     }
 
@@ -472,7 +550,10 @@ public class ParserImpl implements Parser {
         switch (token.getType()) {
             case nullLiteral -> match(TokenType.nullLiteral);
             case stringLiteral -> match(TokenType.stringLiteral);
-            default -> throwException();
+            default -> throwException(List.of(
+                TokenType.nullLiteral.toString(),
+                TokenType.stringLiteral.toString()
+            ));
         }
     }
 
@@ -488,7 +569,9 @@ public class ParserImpl implements Parser {
             case kwNew -> ConstructorAccess();
             case idClassVar -> StaticMethodAccess();
             case leftParenthesis -> ParentizedExpression();
-            default -> throwException();
+            default -> throwException(List.of(
+            "a reference to an object"
+            ));
         }
     }
 
@@ -541,7 +624,10 @@ public class ParserImpl implements Parser {
         } else if (token.getType() == TokenType.rightParenthesis) {
             return;
         } else {
-            throwException();
+            throwException(List.of(
+                "an expression",
+                TokenType.rightParenthesis.toString()
+            ));
         }
     }
 
@@ -559,7 +645,10 @@ public class ParserImpl implements Parser {
             case rightParenthesis -> {
                 return;
             }
-            default -> throwException();
+            default -> throwException(List.of(
+                "an expression",
+                TokenType.rightParenthesis.toString()
+            ));
         }
     }
 
@@ -604,7 +693,24 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void throwException() throws SyntacticException {
-        throw new SyntacticException(String.format("[Error:%s|%d]", token.getLexeme(), token.getLine()));
+    private void saveError(String message) {
+        if (token != null) {
+            if (!errors.containsKey(token.getLine()))
+                errors.put(token.getLine(), new Pair<>(new ArrayList<>(), ""));
+
+            errors.get(token.getLine()).getFirst().add(new Error(
+                message,
+                token.getLexeme(),
+                token.getLine(),
+                token.getColumn(),
+                ErrorType.Syntactic
+            ));
+        }
+    }
+
+    private void throwException(List<String> expected) throws SyntacticException {
+        String message = Formater.expectedResult(expected, token);
+        saveError(message);
+        throw new SyntacticException(message);
     }
 }

@@ -1,13 +1,17 @@
 package main.java.utils;
 
 import main.java.messages.ErrorMessages;
-import main.java.messages.LexErrorMessages;
+import main.java.messages.ParserErrorMessages;
 import main.java.model.Error;
+import main.java.model.Token;
+
+import java.util.List;
 
 public class Formater {
     public static String formatError(Error error, String errorLine) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format(LexErrorMessages.FORMAT,
+        stringBuilder.append(String.format(ErrorMessages.FORMAT,
+                error.getType().toString(),
                 error.getLine(),
                 error.getColumn(),
                 error.getLexeme(),
@@ -30,5 +34,18 @@ public class Formater {
         stringBuilder.append(ErrorMessages.POINTER);
         stringBuilder.append("\n");
         return stringBuilder.toString();
+    }
+
+    public static String expectedResult(List<String> expectedList, Token token) {
+        StringBuilder expectedString = new StringBuilder();
+        for (int i = 0; i < expectedList.size(); ++i) {
+            expectedString.append(expectedList.get(i));
+            if (i < expectedList.size() - 1) expectedString.append(" or ");
+        }
+        return String.format(
+            ParserErrorMessages.EXPECTED_RESULT,
+            expectedString,
+            token.getLexeme()
+        );
     }
 }

@@ -21,8 +21,10 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
+    private static Map<Integer, Pair<List<Error>, String>> errors;
     private static SourceManager sourceManager;
     private static Lexer lexer;
     private static Parser parser;
@@ -32,8 +34,9 @@ public class Main {
 
         if (args.length == 1) {
             if (loadFile(args[0])) {
-                compile();
                 //showTokens();
+                compile();
+                if (!errors.isEmpty()) showErrors(errors);
             }
         } else {
             System.out.println(ErrorMessages.BAD_USAGE);
@@ -41,9 +44,10 @@ public class Main {
     }
 
     private static void init() {
+        errors = new HashMap<>();
         sourceManager = new SourceManagerImpl();
-        lexer = new LexerImpl(sourceManager);
-        parser = new ParserImpl(lexer);
+        lexer = new LexerImpl(sourceManager, errors);
+        parser = new ParserImpl(lexer, errors);
     }
 
     private static boolean loadFile(String filename) {
@@ -81,17 +85,14 @@ public class Main {
             }
         } while ((token != null && token.getType() != TokenType.EOF) || (token == null && onRecovery));
 
-        if (onRecovery) {
-            showErrors(lexer.getErrors());
-        } else if (token != null && token.getType() == TokenType.EOF) {
+        if (!onRecovery && token != null && token.getType() == TokenType.EOF)
             System.out.println(ErrorMessages.SUCCESS);
-        }
     }
 
     private static void compile() {
         try {
             parser.parse();
-            System.out.println(ErrorMessages.SUCCESS);
+            if (errors.isEmpty()) System.out.println(ErrorMessages.SUCCESS);
         } catch (SyntacticException error) {
             System.out.println(error.getMessage());
         }

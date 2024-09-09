@@ -1,7 +1,6 @@
 package main.java.messages;
 
 public class LexErrorMessages {
-    public static final String FORMAT = "Lexical error at line %d, column %d: <%s> %s\n";
     public static final String ILLEGAL_CHAR = "Illegal character";
     public static final String LITERAL_CHAR_EMPTY = "Empty character literal";
     public static final String LITERAL_CHAR_NOT_CLOSED = "Unclosed character literal";

@@ -1,7 +1,6 @@
 package main.java.lexer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +9,12 @@ import main.java.model.Error;
 import main.java.model.Pair;
 import main.java.model.Token;
 import main.java.model.TokenType;
-import main.java.utils.Formater;
+import main.java.model.ErrorType;
 import main.java.utils.sourcemanager.SourceManager;
 import main.java.messages.LexErrorMessages;
 import main.java.messages.TokenMessages;
 import main.java.exeptions.LexicalException;
+
 import java.io.IOException;
 
 public class LexerImpl implements Lexer {
@@ -26,15 +26,11 @@ public class LexerImpl implements Lexer {
     private int column;
     private boolean started;
 
-    public LexerImpl(SourceManager sourceManager) {
+    public LexerImpl(SourceManager sourceManager, Map<Integer, Pair<List<Error>, String>> errors) {
         this.sourceManager = sourceManager;
-        this.errors = new HashMap<>();
         this.lexeme = "";
         this.started = false;
-    }
-
-    public Map<Integer, Pair<List<Error>, String>> getErrors() {
-        return errors;
+        this.errors = errors;
     }
 
     public Token nextToken() throws LexicalException {
@@ -385,8 +381,6 @@ public class LexerImpl implements Lexer {
     private Token blockComment() throws LexicalException {
         lexeme = "";
         boolean hasSeenAsterisk = false;
-        boolean readFirstLine = false;
-        String lineText = "";
 
         do {
             ch = readChar();
@@ -399,14 +393,9 @@ public class LexerImpl implements Lexer {
             } else {
                 hasSeenAsterisk = false;
             }
-
-            if (ch == SourceManager.NEWLINE && !readFirstLine) {
-                lineText = saveLine(line);
-                readFirstLine = true;
-            }
         } while (ch != SourceManager.END_OF_FILE);
 
-        throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED, lineText);
+        throwException(LexErrorMessages.COMMENT_BLOCK_NOT_CLOSED);
         return null;
     }
 
@@ -557,34 +546,33 @@ public class LexerImpl implements Lexer {
         if (errors.containsKey(line)) saveLine(line);
     }
 
-    private String saveLine(int line) {
+    private void saveLine(int line) {
         String lineText = sourceManager.getLineText();
         if (!errors.containsKey(line)) {
             errors.put(line, new Pair<>(new ArrayList<>(), lineText));
         } else {
             errors.get(line).setSecond(lineText);
         }
-        return lineText;
     }
 
-    private Error saveError(String message) {
+    private void saveError(String message) {
         if (!errors.containsKey(line))
             errors.put(line, new Pair<>(new ArrayList<>(), ""));
 
-        Error error = new Error(message, lexeme, line, column);
-        errors.get(line).getFirst().add(error);
-        return error;
+        errors.get(line).getFirst().add(
+            new Error(
+                message,
+                lexeme,
+                line,
+                column,
+                ErrorType.Lexical
+            )
+        );
     }
 
     private void throwException(String message) throws LexicalException {
-        if (LexerConfig.ENABLE_OPTIMIZATION) throwException(message, "");
-        String lineText = saveLine(line);
-        throwException(message, lineText);
-    }
-
-    private void throwException(String message, String lineText) throws LexicalException {
-        Error error = saveError(message);
-        throw new LexicalException(Formater.formatError(error, lineText));
+        saveError(message);
+        throw new LexicalException(message);
     }
 
     private void restart() {
