@@ -17,8 +17,10 @@ public class Formater {
                 error.getLexeme(),
                 error.getMessage()
         ));
-        stringBuilder.append(errorLine);
-        stringBuilder.append(formatErrorDetail(error.getColumn() - 1));
+        if (!errorLine.isEmpty()) {
+            stringBuilder.append(errorLine);
+            stringBuilder.append(formatErrorDetail(error.getColumn() - 1));
+        }
         stringBuilder.append(String.format(ErrorMessages.CODE_FORMAT,
                 error.getLexeme(),
                 error.getLine())
