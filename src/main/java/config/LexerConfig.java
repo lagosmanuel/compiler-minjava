@@ -9,5 +9,5 @@ public class LexerConfig {
     public static final char NEWLINE = '\n';
     public static final char CARRY_RETURN = '\r';
     public static final int MAX_INT_LENGTH = 9;
-    public static final Map<String, TokenType> RESERVED_WORDS = Keywords.getKeyWords();
+    public static final Map<String, TokenType> RESERVED_WORDS = Keywords.keywords;
 }

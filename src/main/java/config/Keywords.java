@@ -2,35 +2,32 @@ package main.java.config;
 
 import main.java.model.TokenType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Keywords {
-    static Map<String, TokenType> getKeyWords() {
-        Map<String, TokenType> keywords = new HashMap<>();
-        keywords.put("class", TokenType.kwClass);
-        keywords.put("boolean", TokenType.kwBoolean);
-        keywords.put("if", TokenType.kwIf);
-        keywords.put("switch", TokenType.kwSwitch);
-        keywords.put("this", TokenType.kwThis);
-        keywords.put("extends", TokenType.kwExtends);
-        keywords.put("char", TokenType.kwChar);
-        keywords.put("else", TokenType.kwElse);
-        keywords.put("case", TokenType.kwCase);
-        keywords.put("default", TokenType.kwDefault);
-        keywords.put("var", TokenType.kwVar);
-        keywords.put("void", TokenType.kwVoid);
-        keywords.put("new", TokenType.kwNew);
-        keywords.put("public", TokenType.kwPublic);
-        keywords.put("int", TokenType.kwInt);
-        keywords.put("float", TokenType.kwFloat);
-        keywords.put("while", TokenType.kwWhile);
-        keywords.put("break", TokenType.kwBreak);
-        keywords.put("static", TokenType.kwStatic);
-        keywords.put("return", TokenType.kwReturn);
-        keywords.put("true", TokenType.trueLiteral);
-        keywords.put("false", TokenType.falseLiteral);
-        keywords.put("null", TokenType.nullLiteral);
-        return keywords;
-    }
+    public static final Map<String, TokenType> keywords = Map.ofEntries(
+        Map.entry("class", TokenType.kwClass),
+        Map.entry("boolean", TokenType.kwBoolean),
+        Map.entry("if", TokenType.kwIf),
+        Map.entry("switch", TokenType.kwSwitch),
+        Map.entry("this", TokenType.kwThis),
+        Map.entry("extends", TokenType.kwExtends),
+        Map.entry("char", TokenType.kwChar),
+        Map.entry("else", TokenType.kwElse),
+        Map.entry("case", TokenType.kwCase),
+        Map.entry("default", TokenType.kwDefault),
+        Map.entry("var", TokenType.kwVar),
+        Map.entry("void", TokenType.kwVoid),
+        Map.entry("new", TokenType.kwNew),
+        Map.entry("public", TokenType.kwPublic),
+        Map.entry("int", TokenType.kwInt),
+        Map.entry("float", TokenType.kwFloat),
+        Map.entry("while", TokenType.kwWhile),
+        Map.entry("break", TokenType.kwBreak),
+        Map.entry("static", TokenType.kwStatic),
+        Map.entry("return", TokenType.kwReturn),
+        Map.entry("true", TokenType.trueLiteral),
+        Map.entry("false", TokenType.falseLiteral),
+        Map.entry("null", TokenType.nullLiteral)
+    );
 }
