@@ -306,12 +306,13 @@ public class ParserImpl implements Parser {
                }
             }
         }
+
     }
 
     private void LocalVar() throws SyntacticException {
         match(TokenType.kwVar);
         match(TokenType.idMetVar);
-        match(TokenType.opEqual);
+        match(TokenType.opAssign);
         CompositeExpression();
     }
 
