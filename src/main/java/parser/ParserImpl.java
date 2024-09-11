@@ -21,6 +21,11 @@ public class ParserImpl implements Parser {
     private final Lexer lexer;
     private Token token;
 
+    private boolean inside_member_declaration;
+    private boolean inside_var_declaration;
+    private boolean inside_statement;
+    private boolean inside_expression;
+
     public ParserImpl(Lexer lexer, Map<Integer, Pair<List<Error>, String>> errors) {
         this.lexer = lexer;
         this.errors = errors;
@@ -106,6 +111,7 @@ public class ParserImpl implements Parser {
     }
 
     private void Member() throws SyntacticException {
+        inside_member_declaration = true;
         if (token.getType() == TokenType.kwStatic || Lookup.MemberType.contains(token.getType())) {
             StaticOptional();
             MemberType();
@@ -119,6 +125,7 @@ public class ParserImpl implements Parser {
                 "a constructor"
             ));
         }
+        inside_member_declaration = false;
     }
 
     private void MemberRest() throws SyntacticException {
@@ -277,6 +284,8 @@ public class ParserImpl implements Parser {
     }
 
     private void Statement() throws SyntacticException {
+        inside_statement = true;
+
         switch (token.getType()) {
             case semicolon -> match(TokenType.semicolon);
             case kwVar -> {
@@ -307,13 +316,18 @@ public class ParserImpl implements Parser {
             }
         }
 
+        inside_statement = false;
     }
 
     private void LocalVar() throws SyntacticException {
+        inside_var_declaration = true;
         match(TokenType.kwVar);
         match(TokenType.idMetVar);
         match(TokenType.opAssign);
+        inside_expression = true;
         CompositeExpression();
+        inside_expression = false;
+        inside_var_declaration = false;
     }
 
     private void Return() throws SyntacticException {
@@ -419,8 +433,10 @@ public class ParserImpl implements Parser {
     }
 
     private void Expression() throws SyntacticException {
+        inside_expression = true;
         CompositeExpression();
         ExpressionRest();
+        inside_expression = false;
     }
 
     private void ExpressionRest() throws SyntacticException {
@@ -740,6 +756,31 @@ public class ParserImpl implements Parser {
     private void throwException(List<String> expected) throws SyntacticException {
         String message = Formater.expectedResult(expected, token);
         saveError(message);
-        throw new SyntacticException(message);
+        if (ParserConfig.CONTINUE_ON_ERROR) recoverFromError();
+        else throw new SyntacticException(message);
+    }
+
+    private void recoverFromError() throws SyntacticException {
+        while (token != null && token.getType() != TokenType.EOF) {
+            if (inside_expression) {
+                if (Follow.Expression.contains(token.getType())) {
+                    inside_expression = false; return;
+                }
+            } else if (inside_var_declaration) {
+                if (Follow.Statement.contains(token.getType())) {
+                    inside_var_declaration = false; return;
+                }
+            } else if (inside_statement) {
+                if (Follow.Statement.contains(token.getType())) {
+                    inside_statement = false; return;
+                }
+            } else if (inside_member_declaration) {
+                if (token.getType() == TokenType.semicolon || token.getType() == TokenType.leftBrace) {
+                    inside_member_declaration = false; return;
+                }
+            }
+            token = getToken();
+        }
+        throw new SyntacticException("");
     }
 }
