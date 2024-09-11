@@ -17,18 +17,31 @@ e           is the empty string
 
 <Start> ::= <ClassList>
 <ClassList> ::= <Class> <ClassList> | e
-<Class> ::= class idClass <InheritanceOptional> { <MemberList> }
-<InheritanceOptional> ::= extends idClass | e
+<Class> ::= <AbstractOptional> <ClassType> <InheritanceOptional> { <MemberList> }
+<InheritanceOptional> ::= extends <ClassType> | e
 
-<MemberList> ::= <Member> <MemberList> | e
-<Member> ::= <StaticOptional> <MemberType> idMetVar <MemberRest> | <Constructor>
-<MemberRest> ::= ; | <FormalArgs> <Block>
-<Constructor> ::= public idClass <FormalArgs> <Block>
+<MemberList> ::= <VisibilityOptional> <Member> <MemberList> | e
+<Member> ::= idClass <MaybeConstructor>
+<Member> ::= abstract <MemberType> idMetVar <FormalArgs> ;
+<Member> ::= static <MemberType> idMetVar <MemberRest>
+<Member> ::= void idMetVar <FormalArgs> <Block>
+<Member> ::= <PrimitiveType> idMetVar <MemberRest>
+
+<MaybeConstructor> ::= <FormalArgs> <Block> | <GenericTypeOptional> idMetVar <MemberRest>
+<MemberRest> ::= ; | = <CompositeExpression> ; | <FormalArgs> <Block>
+
 <StaticOptional> ::= static | e
+<AbstractOptional> ::= abstract | e
+<VisibilityOptional> ::= public | private | e
 
 <MemberType> ::= <Type> | void
-<Type> ::= <PrimitiveType> | idClass
+<Type> ::= <PrimitiveType> | <ClassType>
 <PrimitiveType> ::= boolean | char | int
+<ClassType> ::= idClass <GenericTypeOptional>
+
+<GenericTypeOptional> ::= < <GenericTypeList> > | e
+<GenericTypeList> ::= <ClassType> <GenericTypeListRest>
+<GenericTypeListRest> ::= , <GenericTypeList> | e
 
 <FormalArgs> ::= ( <FormalArgsListOptional> )
 <FormalArgsListOptional> ::= <FormalArgsList> | e
@@ -54,7 +67,11 @@ e           is the empty string
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
 
-<LocalVar> ::= var idMetVar = <CompositeExpression>
+<LocalVar> ::= var idMetVar = <ExpressionMaybeNew>
+<LocalVar> ::= <Type> <IdMetVarList> = <ExpressionMaybeNew>
+<IdMetVarList> ::= idMetVar <IdMetVarListRest>
+<IdMetVarListRest> ::= , <IdMetVarList> | e
+
 <Return> ::= return <ExpressionOptional>
 <Break> ::= break
 
@@ -106,9 +123,12 @@ e           is the empty string
 <ThisAccess> ::= this
 <IdMetVarAccess> ::= idMetVar <IdMetVarAccessRest>
 <IdMetVarAccessRest> ::= <ActualArgs> | e
-<ConstructorAccess> ::= new idClass <ActualArgs>
+<ConstructorAccess> ::= new idClass <GenericTypeOptionalEmpty> <ActualArgs>
 <StaticMethodAccess> ::= idClass . idMetVar <ActualArgs>
 <ParenthesizedExpression> ::= ( <Expression> )
+
+<GenericTypeOptionalEmpty> ::= < <GenericListOptional> > | e
+<GenericListOptional> ::= <GenericList> | e
 
 <ActualArgs> ::= ( <ExpressionListOptional> )
 
