@@ -600,7 +600,7 @@ public class ParserImpl implements Parser {
             case idMetVar -> IdMetVarAccess();
             case kwNew -> ConstructorAccess();
             case idClass -> StaticMethodAccess();
-            case leftParenthesis -> ParentizedExpression();
+            case leftParenthesis -> ParenthesizedExpression();
             default -> throwException(List.of(
             "a reference to an object"
             ));
@@ -643,7 +643,7 @@ public class ParserImpl implements Parser {
         ActualArgs();
     }
 
-    private void ParentizedExpression() throws SyntacticException {
+    private void ParenthesizedExpression() throws SyntacticException {
         match(TokenType.leftParenthesis);
         Expression();
         match(TokenType.rightParenthesis);

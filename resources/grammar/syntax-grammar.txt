@@ -101,14 +101,14 @@ e           is the empty string
 <Primary> ::= <IdMetVarAccess> /* VarAccess and MethodAccess */
 <Primary> ::= <ConstructorAccess>
 <Primary> ::= <StaticMethodAccess>
-<Primary> ::= <ParentizedExpression>
+<Primary> ::= <ParenthesizedExpression>
 
 <ThisAccess> ::= this
 <IdMetVarAccess> ::= idMetVar <IdMetVarAccessRest>
 <IdMetVarAccessRest> ::= <ActualArgs> | e
 <ConstructorAccess> ::= new idClass <ActualArgs>
 <StaticMethodAccess> ::= idClass . idMetVar <ActualArgs>
-<ParentizedExpression> ::= ( <Expression> )
+<ParenthesizedExpression> ::= ( <Expression> )
 
 <ActualArgs> ::= ( <ExpressionListOptional> )
 
