@@ -40,7 +40,7 @@ public class Follow {
 
     public static final Collection<TokenType> BasicExpression =
         Stream.concat(
-            CompositeExpression.stream(),
+            Follow.CompositeExpression.stream(),
             Lookup.BinaryOp.stream()
         ).collect(Collectors.toSet());
 
