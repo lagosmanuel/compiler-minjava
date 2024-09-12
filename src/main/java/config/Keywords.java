@@ -7,6 +7,7 @@ import java.util.Map;
 public class Keywords {
     public static final Map<String, TokenType> keywords = Map.ofEntries(
         Map.entry("class", TokenType.kwClass),
+        Map.entry("abstract", TokenType.kwAbstract),
         Map.entry("boolean", TokenType.kwBoolean),
         Map.entry("if", TokenType.kwIf),
         Map.entry("switch", TokenType.kwSwitch),
@@ -20,6 +21,7 @@ public class Keywords {
         Map.entry("void", TokenType.kwVoid),
         Map.entry("new", TokenType.kwNew),
         Map.entry("public", TokenType.kwPublic),
+        Map.entry("private", TokenType.kwPrivate),
         Map.entry("int", TokenType.kwInt),
         Map.entry("float", TokenType.kwFloat),
         Map.entry("while", TokenType.kwWhile),
