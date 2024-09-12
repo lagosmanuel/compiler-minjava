@@ -38,11 +38,6 @@ public class ParserImpl implements Parser {
         match(TokenType.EOF);
     }
 
-    @Override
-    public Map<Integer, Pair<List<Error>, String>> getErrors() {
-        return errors;
-    }
-
     private void match(TokenType tokenType) throws SyntacticException {
         if (token == null || token.getType() != tokenType)
             throwException(List.of(tokenType.toString()));
