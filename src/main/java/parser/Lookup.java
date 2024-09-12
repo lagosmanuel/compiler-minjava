@@ -36,8 +36,8 @@ public class Lookup {
     );
 
     public static final Collection<TokenType> Literal = Stream.concat(
-        PrimitiveLiteral.stream(),
-        ObjectLiteral.stream()
+        Lookup.PrimitiveLiteral.stream(),
+        Lookup.ObjectLiteral.stream()
     ).collect(Collectors.toSet());
 
     public static final Collection<TokenType> Access = Set.of(
@@ -49,8 +49,8 @@ public class Lookup {
     );
 
     public static final Collection<TokenType> Operand = Stream.concat(
-        Literal.stream(),
-        Access.stream()
+        Lookup.Literal.stream(),
+        Lookup.Access.stream()
     ).collect(Collectors.toSet());
 
     public static final Collection<TokenType> BinaryOp = Set.of(
@@ -76,7 +76,7 @@ public class Lookup {
             TokenType.kwStatic,
             TokenType.kwAbstract
         ),
-        MemberType.stream()
+        Lookup.MemberType.stream()
     ).collect(Collectors.toSet());
 
     public static final Collection<TokenType> Expression = Stream.concat(
@@ -85,7 +85,7 @@ public class Lookup {
             TokenType.opMinus,
             TokenType.opNot
         ),
-        Operand.stream()
+        Lookup.Operand.stream()
     ).collect(Collectors.toSet());
 
     public static final Collection<TokenType> Statement = Stream.concat(Stream.concat(
@@ -99,7 +99,7 @@ public class Lookup {
             TokenType.kwSwitch,
             TokenType.leftBrace
         ),
-        Expression.stream()),
-        Type.stream()
+        Lookup.Expression.stream()),
+        Lookup.Type.stream()
     ).collect(Collectors.toSet());
 }
