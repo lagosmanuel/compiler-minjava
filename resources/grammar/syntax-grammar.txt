@@ -17,7 +17,7 @@ e           is the empty string
 
 <Start> ::= <ClassList>
 <ClassList> ::= <Class> <ClassList> | e
-<Class> ::= <AbstractOptional> <ClassType> <InheritanceOptional> { <MemberList> }
+<Class> ::= <AbstractOptional> class <ClassType> <InheritanceOptional> { <MemberList> }
 <InheritanceOptional> ::= extends <ClassType> | e
 
 <MemberList> ::= <VisibilityOptional> <Member> <MemberList> | e
@@ -67,8 +67,8 @@ e           is the empty string
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
 
-<LocalVar> ::= var idMetVar = <ExpressionMaybeNew>
-<LocalVar> ::= <Type> <IdMetVarList> = <ExpressionMaybeNew>
+<LocalVar> ::= var idMetVar = <CompositeExpression>
+<LocalVar> ::= <Type> <IdMetVarList> = <CompositeExpression>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
 
@@ -128,7 +128,7 @@ e           is the empty string
 <ParenthesizedExpression> ::= ( <Expression> )
 
 <GenericTypeOptionalEmpty> ::= < <GenericListOptional> > | e
-<GenericListOptional> ::= <GenericList> | e
+<GenericListOptional> ::= <GenericTypeList> | e
 
 <ActualArgs> ::= ( <ExpressionListOptional> )
 
