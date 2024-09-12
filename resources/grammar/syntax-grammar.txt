@@ -28,7 +28,7 @@ e           is the empty string
 <Member> ::= <PrimitiveType> idMetVar <MemberRest>
 
 <MaybeConstructor> ::= <FormalArgs> <Block> | <GenericTypeOptional> idMetVar <MemberRest>
-<MemberRest> ::= ; | = <CompositeExpression> ; | <FormalArgs> <Block>
+<MemberRest> ::= ; | <AssignmentOp> <CompositeExpression> ; | <FormalArgs> <Block>
 
 <StaticOptional> ::= static | e
 <AbstractOptional> ::= abstract | e
@@ -36,7 +36,7 @@ e           is the empty string
 
 <MemberType> ::= <Type> | void
 <Type> ::= <PrimitiveType> | <ClassType>
-<PrimitiveType> ::= boolean | char | int
+<PrimitiveType> ::= boolean | char | int | float
 <ClassType> ::= idClass <GenericTypeOptional>
 
 <GenericTypeOptional> ::= < <GenericTypeList> > | e
@@ -67,8 +67,8 @@ e           is the empty string
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
 
-<LocalVar> ::= var idMetVar = <CompositeExpression>
-<LocalVar> ::= <Type> <IdMetVarList> = <CompositeExpression>
+<LocalVar> ::= var idMetVar <AssignmentOp> <CompositeExpression>
+<LocalVar> ::= <Type> <IdMetVarList> <AssignmentOp> <CompositeExpression>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
 
@@ -109,7 +109,7 @@ e           is the empty string
 
 <Literal> ::= <PrimitiveLiteral> | <ObjectLiteral>
 
-<PrimitiveLiteral> ::= trueLiteral | falseLiteral | intLiteral | charLiteral
+<PrimitiveLiteral> ::= trueLiteral | falseLiteral | intLiteral | floatLiteral | charLiteral
 <ObjectLiteral> ::= null | stringLiteral
 
 <Access> ::= <Primary> <ChainedOptional>
