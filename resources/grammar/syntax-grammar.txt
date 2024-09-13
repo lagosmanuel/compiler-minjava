@@ -57,24 +57,9 @@ e           is the empty string
 <StatementList> ::= <Statement> <StatementList> | e
 <StatementOptional> ::= <Statement> | e
 
-<Statement> ::= idClass <StatementRest>
-
-/* Static MethodCall - Access - Operand - Composite Expression - Expression (start of expression) */
-<StatementRest> ::= . idMetVar <ActualArgs> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
-
-/* LocalVar of a ClassType (start of LocalVar) */
-<StatementRest> ::= <GenericTypeOptional> <IdMetVarList> <AssignmentOp> <CompositeExpression> ;
-
-/* Expression */
-<Statement> ::= <UnaryOperand> <Operand> <CompositeExpressionRest> <ExpressionRest> ;
-<Statement> ::= <Literal> <CompositeExpressionRest> <ExpressionRest> ;
-<Statement> ::= <ThisAccess> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
-<Statement> ::= <IdMetVarAccess> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
-<Statement> ::= <ConstructorAccess> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
-<Statement> ::= <ParenthesizedExpression> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
-
 <Statement> ::= ;
-<Statement> ::= <LocalVar> ; /* LocalVar of PrimitiveType or var keyword */
+<Statement> ::= <Expression> ; /* Assignment or Call */
+<Statement> ::= <LocalVar> ;
 <Statement> ::= <Return> ;
 <Statement> ::= <Break> ;
 <Statement> ::= <If>
@@ -83,8 +68,7 @@ e           is the empty string
 <Statement> ::= <Block>
 
 <LocalVar> ::= var idMetVar <AssignmentOp> <CompositeExpression>
-<LocalVar> ::= <PrimitiveType> <IdMetVarList> <AssignmentOp> <CompositeExpression>
-
+<LocalVar> ::= <Type> <IdMetVarList> <AssignmentOp> <CompositeExpression>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
 

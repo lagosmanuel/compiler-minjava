@@ -388,65 +388,12 @@ public class ParserImpl implements Parser {
         inside_statement = true;
 
         switch (token.getType()) {
-            case idClass -> {
+            case idClass -> { // Local Var of a Class Type or a Static Method Call
                 match(TokenType.idClass);
                 StatementRest();
             }
-            case opPlus, opMinus, opNot -> {
-                inside_expression = true;
-                UnaryOp();
-                Operand();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
-            case trueLiteral, falseLiteral, intLiteral, floatLiteral, charLiteral, nullLiteral, stringLiteral -> {
-                inside_expression = true;
-                Literal();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
-            case kwThis -> {
-                inside_expression = true;
-                ThisAccess();
-                ChainedOptional();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
-            case idMetVar -> {
-                inside_expression = true;
-                IdMetVarAccess();
-                ChainedOptional();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
-            case kwNew -> {
-                inside_expression = true;
-                ConstructorAccess();
-                ChainedOptional();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
-            case leftParenthesis -> {
-                inside_expression = true;
-                ParenthesizedExpression();
-                ChainedOptional();
-                CompositeExpressionRest();
-                ExpressionRest();
-                inside_expression = false;
-                match(TokenType.semicolon);
-            }
             case semicolon -> match(TokenType.semicolon);
-            case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> LocalVar();
+            case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> LocalVarPrimitiveType();
             case kwReturn -> {
                 Return();
                 match(TokenType.semicolon);
@@ -459,14 +406,27 @@ public class ParserImpl implements Parser {
             case kwWhile -> While();
             case kwSwitch -> Switch();
             case leftBrace -> Block();
-            default -> throwException(List.of(
-               "a statement"
-            ));
+            default -> {
+                if (Lookup.Expression.contains(token.getType())) {
+                    Expression();
+                    match(TokenType.semicolon);
+                }
+                else throwException(List.of(
+                    "a statement"
+                ));
+            }
         }
 
         inside_statement = false;
     }
 
+   /*
+    * Static MethodCall -> Access -> Operand -> Composite Expression -> Expression [Start of Expression]
+    * <StatementRest> ::= . idMetVar <ActualArgs> <ChainedOptional> <CompositeExpressionRest> <ExpressionRest> ;
+    *
+    * LocalVar of a ClassType [Start of LocalVar]
+    * <StatementRest> ::= <GenericTypeOptional> <IdMetVarList> <AssignmentOp> <CompositeExpression> ;
+    */
     private void StatementRest() throws SyntacticException {
         switch (token.getType()) {
             case dot -> {
@@ -490,14 +450,15 @@ public class ParserImpl implements Parser {
                 match(TokenType.semicolon);
             }
             default -> throwException(List.of(
-                "an assignment statement",
-                "a static method call"
+                "a static method call",
+                "an assignment statement"
             ));
         }
     }
 
-    private void LocalVar() throws SyntacticException {
+    private void LocalVarPrimitiveType() throws SyntacticException {
         inside_var_declaration = true;
+
         switch (token.getType()) {
             case kwVar -> {
                 match(TokenType.kwVar);
@@ -520,6 +481,7 @@ public class ParserImpl implements Parser {
                 "a type"
             ));
         }
+
         inside_var_declaration = false;
     }
 
