@@ -388,7 +388,65 @@ public class ParserImpl implements Parser {
         inside_statement = true;
 
         switch (token.getType()) {
+            case idClass -> {
+                match(TokenType.idClass);
+                StatementRest();
+            }
+            case opPlus, opMinus, opNot -> {
+                inside_expression = true;
+                UnaryOp();
+                Operand();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case trueLiteral, falseLiteral, intLiteral, floatLiteral, charLiteral, nullLiteral, stringLiteral -> {
+                inside_expression = true;
+                Literal();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case kwThis -> {
+                inside_expression = true;
+                ThisAccess();
+                ChainedOptional();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case idMetVar -> {
+                inside_expression = true;
+                IdMetVarAccess();
+                ChainedOptional();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case kwNew -> {
+                inside_expression = true;
+                ConstructorAccess();
+                ChainedOptional();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case leftParenthesis -> {
+                inside_expression = true;
+                ParenthesizedExpression();
+                ChainedOptional();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
             case semicolon -> match(TokenType.semicolon);
+            case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> LocalVar();
             case kwReturn -> {
                 Return();
                 match(TokenType.semicolon);
@@ -401,42 +459,63 @@ public class ParserImpl implements Parser {
             case kwWhile -> While();
             case kwSwitch -> Switch();
             case leftBrace -> Block();
-            default -> {
-               if (Lookup.Expression.contains(token.getType())) {
-                   Expression();
-                   match(TokenType.semicolon);
-               } else if (Lookup.Type.contains(token.getType()) || token.getType() == TokenType.kwVar) {
-                   LocalVar();
-                   match(TokenType.semicolon);
-               } else {
-                   throwException(List.of(
-                   "a statement"
-                   ));
-               }
-            }
+            default -> throwException(List.of(
+               "a statement"
+            ));
         }
 
         inside_statement = false;
     }
 
+    private void StatementRest() throws SyntacticException {
+        switch (token.getType()) {
+            case dot -> {
+                inside_expression = true;
+                match(TokenType.dot);
+                match(TokenType.idMetVar);
+                ActualArgs();
+                ChainedOptional();
+                CompositeExpressionRest();
+                ExpressionRest();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            case opLess, idMetVar -> {
+                GenericTypeOptional();
+                IdMetVarList();
+                AssignmentOp();
+                inside_expression = true;
+                CompositeExpression();
+                inside_expression = false;
+                match(TokenType.semicolon);
+            }
+            default -> throwException(List.of(
+                "an assignment statement",
+                "a static method call"
+            ));
+        }
+    }
+
     private void LocalVar() throws SyntacticException {
         inside_var_declaration = true;
-        if (token.getType() == TokenType.kwVar) {
-            match(TokenType.kwVar);
-            match(TokenType.idMetVar);
-            AssignmentOp();
-            inside_expression = true;
-            CompositeExpression();
-            inside_expression = false;
-        } else if (Lookup.Type.contains(token.getType())) {
-            Type();
-            IdMetVarList();
-            AssignmentOp();
-            inside_expression = true;
-            CompositeExpression();
-            inside_expression = false;
-        } else {
-            throwException(List.of(
+        switch (token.getType()) {
+            case kwVar -> {
+                match(TokenType.kwVar);
+                match(TokenType.idMetVar);
+                AssignmentOp();
+                inside_expression = true;
+                CompositeExpression();
+                inside_expression = false;
+            }
+            case kwBoolean, kwChar, kwInt, kwFloat -> {
+                PrimitiveType();
+                IdMetVarList();
+                AssignmentOp();
+                inside_expression = true;
+                CompositeExpression();
+                inside_expression = false;
+            }
+            default -> throwException(List.of(
                 "var",
                 "a type"
             ));
