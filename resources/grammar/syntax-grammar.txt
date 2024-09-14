@@ -63,6 +63,7 @@ e           is the empty string
 <Statement> ::= <Return> ;
 <Statement> ::= <Break> ;
 <Statement> ::= <If>
+<Statement> ::= <For>
 <Statement> ::= <While>
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
@@ -77,6 +78,13 @@ e           is the empty string
 
 <If> ::= if ( <Expression> ) <Statement> <IfRest>
 <IfRest> ::= else <Statement> | e
+
+<For> ::= for ( <ForRest>
+<ForRest> ::= <VarOptional> idMetVar = <CompositeExpression> ; <ExpressionOptional> ; <ExpressionOptional> ) <Statement>
+<ForRest> ::= <ClassType> idMetVar : <Access> ) <Statement>
+<ForRest> ::= ; <ExpressionOptional> ; <ExpressionOptional> ) <Statement>
+
+<VarOptional> ::= var | e
 
 <While> ::= while ( <Expression> ) <Statement>
 

@@ -403,6 +403,7 @@ public class ParserImpl implements Parser {
                 match(TokenType.semicolon);
             }
             case kwIf -> If();
+            case kwFor -> For();
             case kwWhile -> While();
             case kwSwitch -> Switch();
             case leftBrace -> Block();
@@ -538,6 +539,58 @@ public class ParserImpl implements Parser {
         }
     }
 
+    private void For() throws SyntacticException {
+        match(TokenType.kwFor);
+        match(TokenType.leftParenthesis);
+        ForRest();
+    }
+
+    private void ForRest() throws SyntacticException {
+        switch (token.getType()) {
+            case kwVar, idMetVar -> {
+                VarOptional();
+                match(TokenType.idMetVar);
+                match(TokenType.opAssign);
+                inside_expression = true;
+                CompositeExpression();
+                inside_expression = false;
+                match(TokenType.semicolon);
+                ExpressionOptional();
+                match(TokenType.semicolon);
+                ExpressionOptional();
+                match(TokenType.rightParenthesis);
+                Statement();
+            }
+            case idClass -> {
+                ClassType();
+                match(TokenType.idMetVar);
+                match(TokenType.colon);
+                Access();
+                match(TokenType.rightParenthesis);
+                Statement();
+            }
+            case semicolon -> {
+                match(TokenType.semicolon);
+                ExpressionOptional();
+                match(TokenType.semicolon);
+                ExpressionOptional();
+                match(TokenType.rightParenthesis);
+                Statement();
+            }
+        }
+    }
+
+    private void VarOptional() throws SyntacticException {
+        if (token.getType() == TokenType.kwVar) {
+            match(TokenType.kwVar);
+        } else if (token.getType() == TokenType.idMetVar) {
+            return;
+        } else throwException(List.of(
+            "an identifier",
+            "var"
+        ));
+    }
+
     private void While() throws SyntacticException {
         match(TokenType.kwWhile);
         match(TokenType.leftParenthesis);
@@ -598,7 +651,8 @@ public class ParserImpl implements Parser {
     private void ExpressionOptional() throws SyntacticException {
         if (Lookup.Expression.contains(token.getType())) {
             Expression();
-        } else if (token.getType() == TokenType.semicolon) {
+        } else if (token.getType() == TokenType.semicolon ||
+                   token.getType() == TokenType.rightParenthesis) {
             return;
         } else {
             throwException(List.of(

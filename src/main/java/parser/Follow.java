@@ -37,7 +37,6 @@ public class Follow {
             Follow.Expression.stream()
         ).collect(Collectors.toSet());
 
-
     public static final Collection<TokenType> BasicExpression =
         Stream.concat(
             Follow.CompositeExpression.stream(),

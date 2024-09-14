@@ -25,6 +25,7 @@ public class Keywords {
         Map.entry("int", TokenType.kwInt),
         Map.entry("float", TokenType.kwFloat),
         Map.entry("while", TokenType.kwWhile),
+        Map.entry("for", TokenType.kwFor),
         Map.entry("break", TokenType.kwBreak),
         Map.entry("static", TokenType.kwStatic),
         Map.entry("return", TokenType.kwReturn),

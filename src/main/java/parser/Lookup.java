@@ -96,6 +96,7 @@ public class Lookup {
             TokenType.kwBreak,
             TokenType.kwIf,
             TokenType.kwWhile,
+            TokenType.kwFor,
             TokenType.kwSwitch,
             TokenType.leftBrace
         ),
