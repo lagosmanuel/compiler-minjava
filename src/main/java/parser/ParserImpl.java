@@ -576,6 +576,11 @@ public class ParserImpl implements Parser {
                 match(TokenType.rightParenthesis);
                 Statement();
             }
+            default -> throwException(List.of(
+                "a variable declaration",
+                "an assignment",
+                "a semicolon"
+            ));
         }
     }
 
