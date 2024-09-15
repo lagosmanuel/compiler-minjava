@@ -2,6 +2,7 @@ package main.java.utils;
 
 import main.java.messages.ErrorMessages;
 import main.java.messages.ParserErrorMessages;
+import main.java.messages.TokenMessages;
 import main.java.model.Error;
 import main.java.model.Token;
 
@@ -14,7 +15,7 @@ public class Formater {
                 error.getType().toString(),
                 error.getLine(),
                 error.getColumn(),
-                error.getLexeme(),
+                !error.getLexeme().isEmpty()?error.getLexeme():TokenMessages.EOF_SYMBOL,
                 error.getMessage()
         ));
         if (!errorLine.isEmpty()) {
