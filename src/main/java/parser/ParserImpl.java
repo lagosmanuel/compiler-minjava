@@ -393,7 +393,10 @@ public class ParserImpl implements Parser {
                 StatementRest();
             }
             case semicolon -> match(TokenType.semicolon);
-            case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> LocalVarPrimitiveType();
+            case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> {
+                LocalVarPrimitiveType();
+                match(TokenType.semicolon);
+            }
             case kwReturn -> {
                 Return();
                 match(TokenType.semicolon);
