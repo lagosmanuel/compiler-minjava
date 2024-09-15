@@ -65,6 +65,11 @@ public class ParserImpl implements Parser {
                 TokenType.EOF.toString()
             ));
         }
+
+        if (panic_mode) {
+            if (panic_mode) Class();
+            if (token != null && token.getType() != TokenType.EOF) ClassList();
+        }
     }
 
     private void Class() throws SyntacticException {
@@ -73,7 +78,7 @@ public class ParserImpl implements Parser {
         ClassType();
         InheritanceOptional();
         match(TokenType.leftBrace);
-        MemberList();
+        if (!panic_mode) MemberList();
         match(TokenType.rightBrace);
     }
 
