@@ -24,7 +24,7 @@ e           is the empty string
 <Member> ::= idClass <MaybeConstructor>
 <Member> ::= abstract <MemberType> idMetVar <FormalArgs> ;
 <Member> ::= static <MemberType> idMetVar <MemberRest>
-<Member> ::= void idMetVar <FormalArgs> <Block>
+<Member> ::= void idMetVar <MemberRest>
 <Member> ::= <PrimitiveType> idMetVar <MemberRest>
 
 <MaybeConstructor> ::= <FormalArgs> <Block> | <GenericTypeOptional> idMetVar <MemberRest>

@@ -145,8 +145,7 @@ public class ParserImpl implements Parser {
             case kwVoid -> {
                 match(TokenType.kwVoid);
                 match(TokenType.idMetVar);
-                FormalArgs();
-                Block();
+                MemberRest();
             }
             case kwBoolean, kwChar, kwInt, kwFloat -> {
                 PrimitiveType();
