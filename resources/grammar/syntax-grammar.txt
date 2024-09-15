@@ -15,7 +15,7 @@ e           is the empty string
 1. Classes, Methods and Attributes
 --------------------------------------------------------------------------------
 
-<Start> ::= <ClassList>
+<Start> ::= <ClassList> $
 <ClassList> ::= <Class> <ClassList> | e
 <Class> ::= <AbstractOptional> class <ClassType> <InheritanceOptional> { <MemberList> }
 <InheritanceOptional> ::= extends <ClassType> | e
