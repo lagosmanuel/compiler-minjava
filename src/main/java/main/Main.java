@@ -36,6 +36,7 @@ public class Main {
             if (loadFile(args[0])) {
                 //showTokens();
                 compile();
+                closeFile();
                 if (!errors.isEmpty()) showErrors(errors);
             }
         } else {
@@ -100,8 +101,10 @@ public class Main {
 
     private static void showErrors(Map<Integer, Pair<List<Error>, String>> errors) {
         System.out.println();
-        errors.forEach((line, pair) -> pair.getFirst().forEach(error ->
-            System.out.println(Formater.formatError(error, pair.getSecond()))
-        ));
+        errors.keySet().stream().sorted().forEach(line ->
+            errors.get(line).getFirst().forEach(error ->
+                System.out.println(Formater.formatError(error, errors.get(line).getSecond()))
+            )
+        );
     }
 }

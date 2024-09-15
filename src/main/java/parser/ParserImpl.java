@@ -19,11 +19,7 @@ public class ParserImpl implements Parser {
     private final Map<Integer, Pair<List<Error>, String>> errors;
     private final Lexer lexer;
     private Token token;
-
-    private boolean inside_member_declaration;
-    private boolean inside_var_declaration;
-    private boolean inside_statement;
-    private boolean inside_expression;
+    private boolean panic_mode;
 
     public ParserImpl(Lexer lexer, Map<Integer, Pair<List<Error>, String>> errors) {
         this.lexer = lexer;
@@ -35,12 +31,17 @@ public class ParserImpl implements Parser {
         token = getToken();
         Start();
         match(TokenType.EOF);
+        if (token != null && token.getType() != TokenType.EOF)
+            consumeTokens();
     }
 
     private void match(TokenType tokenType) throws SyntacticException {
         if (token == null || token.getType() != tokenType)
             throwException(List.of(tokenType.toString()));
-        token = getToken();
+        else {
+            token = getToken();
+            if (panic_mode) panic_mode = false;
+        }
     }
 
     private void Start() throws SyntacticException {
@@ -108,10 +109,16 @@ public class ParserImpl implements Parser {
                 TokenType.rightBrace.toString()
             ));
         }
+
+        if (panic_mode) {
+            if (panic_mode) match(TokenType.semicolon);
+            if (panic_mode) Block();
+            if (panic_mode) { VisibilityOptional(); Member(); }
+            if (token != null && token.getType() != TokenType.EOF) MemberList();
+        }
     }
 
     private void Member() throws SyntacticException {
-        inside_member_declaration = true;
         switch (token.getType()) {
             case idClass -> {
                 match(TokenType.idClass);
@@ -145,7 +152,6 @@ public class ParserImpl implements Parser {
             "a member"
             ));
         }
-        inside_member_declaration = false;
     }
 
     private void MaybeConstructor() throws SyntacticException {
@@ -171,9 +177,7 @@ public class ParserImpl implements Parser {
             case semicolon -> match(TokenType.semicolon);
             case opAssign, opPlusAssign, opMinusAssign -> {
                 AssignmentOp();
-                inside_expression = true;
                 CompositeExpression();
-                inside_expression = false;
                 match(TokenType.semicolon);
             }
             case leftParenthesis -> {
@@ -365,6 +369,11 @@ public class ParserImpl implements Parser {
                 TokenType.rightBrace.toString()
             ));
         }
+
+        if (panic_mode) {
+            if (panic_mode) Statement();
+            if (!panic_mode && token != null && token.getType() != TokenType.EOF) StatementList();
+        }
     }
 
     private void StatementOptional() throws SyntacticException {
@@ -385,8 +394,6 @@ public class ParserImpl implements Parser {
     }
 
     private void Statement() throws SyntacticException {
-        inside_statement = true;
-
         switch (token.getType()) {
             case idClass -> { // Local Var of a Class Type or a Static Method Call
                 match(TokenType.idClass);
@@ -420,8 +427,6 @@ public class ParserImpl implements Parser {
                 ));
             }
         }
-
-        inside_statement = false;
     }
 
    /*
@@ -434,23 +439,19 @@ public class ParserImpl implements Parser {
     private void StatementRest() throws SyntacticException {
         switch (token.getType()) {
             case dot -> {
-                inside_expression = true;
                 match(TokenType.dot);
                 match(TokenType.idMetVar);
                 ActualArgs();
                 ChainedOptional();
                 CompositeExpressionRest();
                 ExpressionRest();
-                inside_expression = false;
                 match(TokenType.semicolon);
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
                 IdMetVarList();
                 AssignmentOp();
-                inside_expression = true;
                 CompositeExpression();
-                inside_expression = false;
                 match(TokenType.semicolon);
             }
             default -> throwException(List.of(
@@ -461,32 +462,24 @@ public class ParserImpl implements Parser {
     }
 
     private void LocalVarPrimitiveType() throws SyntacticException {
-        inside_var_declaration = true;
-
         switch (token.getType()) {
             case kwVar -> {
                 match(TokenType.kwVar);
                 match(TokenType.idMetVar);
                 AssignmentOp();
-                inside_expression = true;
                 CompositeExpression();
-                inside_expression = false;
             }
             case kwBoolean, kwChar, kwInt, kwFloat -> {
                 PrimitiveType();
                 IdMetVarList();
                 AssignmentOp();
-                inside_expression = true;
                 CompositeExpression();
-                inside_expression = false;
             }
             default -> throwException(List.of(
                 "var",
                 "a type"
             ));
         }
-
-        inside_var_declaration = false;
     }
 
     private void IdMetVarList() throws SyntacticException {
@@ -554,9 +547,7 @@ public class ParserImpl implements Parser {
                 VarOptional();
                 match(TokenType.idMetVar);
                 match(TokenType.opAssign);
-                inside_expression = true;
                 CompositeExpression();
-                inside_expression = false;
                 match(TokenType.semicolon);
                 ExpressionOptional();
                 match(TokenType.semicolon);
@@ -666,10 +657,8 @@ public class ParserImpl implements Parser {
     }
 
     private void Expression() throws SyntacticException {
-        inside_expression = true;
         CompositeExpression();
         ExpressionRest();
-        inside_expression = false;
     }
 
     private void ExpressionRest() throws SyntacticException {
@@ -1032,6 +1021,7 @@ public class ParserImpl implements Parser {
     }
 
     private void throwException(List<String> expected) throws SyntacticException {
+        if (panic_mode) return;
         String message = Formater.expectedResult(expected, token);
         saveError(message);
         if (ParserConfig.CONTINUE_ON_ERROR) recoverFromError();
@@ -1039,26 +1029,15 @@ public class ParserImpl implements Parser {
     }
 
     private void recoverFromError() throws SyntacticException {
+        panic_mode = true;
         while (token != null && token.getType() != TokenType.EOF) {
-            if (inside_expression) {
-                if (Follow.Expression.contains(token.getType())) {
-                    inside_expression = false; return;
-                }
-            } else if (inside_var_declaration) {
-                if (Follow.Statement.contains(token.getType())) {
-                    inside_var_declaration = false; return;
-                }
-            } else if (inside_statement) {
-                if (Follow.Statement.contains(token.getType())) {
-                    inside_statement = false; return;
-                }
-            } else if (inside_member_declaration) {
-                if (token.getType() == TokenType.semicolon || token.getType() == TokenType.leftBrace) {
-                    inside_member_declaration = false; return;
-                }
-            }
+            if (Recovery.synchronize_set.contains(token.getType())) return;
             token = getToken();
         }
         throw new SyntacticException("");
+    }
+
+    private void consumeTokens() throws SyntacticException {
+        while (token != null && token.getType() != TokenType.EOF) token = getToken();
     }
 }
