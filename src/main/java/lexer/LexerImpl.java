@@ -115,6 +115,7 @@ public class LexerImpl implements Lexer {
             token = new Token(TokenType.EOF, TokenMessages.EOF, line, column);
         }  else if (Character.isWhitespace(ch)) {
             do {
+                if (ch == SourceManager.NEWLINE) saveLineIfError(line++);
                 ch = readChar();
             } while (Character.isWhitespace(ch));
             return start();
