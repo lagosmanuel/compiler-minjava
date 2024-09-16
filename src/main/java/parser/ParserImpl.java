@@ -30,7 +30,6 @@ public class ParserImpl implements Parser {
     public void parse() throws SyntacticException {
         token = getToken();
         Start();
-        match(TokenType.EOF);
         if (token != null && token.getType() != TokenType.EOF)
             consumeTokens();
     }
@@ -46,6 +45,7 @@ public class ParserImpl implements Parser {
 
     private void Start() throws SyntacticException {
         ClassList();
+        match(TokenType.EOF);
     }
 
 //------------------------------------------------------------------------------
