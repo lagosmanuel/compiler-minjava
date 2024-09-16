@@ -99,10 +99,7 @@ public class ParserImpl implements Parser {
     }
 
     private void MemberList() throws SyntacticException {
-        if (token.getType() == TokenType.kwPublic ||
-            token.getType() == TokenType.kwPrivate ||
-            Lookup.Member.contains(token.getType())) {
-
+        if (Lookup.Member.contains(token.getType())) {
             VisibilityOptional();
             Member();
             MemberList();
@@ -171,7 +168,7 @@ public class ParserImpl implements Parser {
             }
             default -> throwException(List.of(
                 "an identifier",
-                TokenType.leftParenthesis.toString()
+                "formal arguments and a block"
             ));
         }
     }
@@ -191,7 +188,7 @@ public class ParserImpl implements Parser {
             default -> throwException(List.of(
                 TokenType.semicolon.toString(),
                 "an assignment operator",
-                TokenType.leftParenthesis.toString()
+                "formal arguments and a block"
             ));
         }
     }
@@ -204,7 +201,7 @@ public class ParserImpl implements Parser {
             }
             default -> throwException(List.of(
                 TokenType.kwAbstract.toString(),
-                "a class"
+                TokenType.kwClass.toString()
             ));
         }
     }
@@ -280,8 +277,9 @@ public class ParserImpl implements Parser {
             default -> throwException(List.of(
                 "a generic type",
                 TokenType.idMetVar.toString(),
-                TokenType.kwExtends.toString(),
                 TokenType.comma.toString(),
+                TokenType.kwExtends.toString(),
+                TokenType.opGreater.toString(),
                 TokenType.leftBrace.toString()
             ));
         }
@@ -321,7 +319,7 @@ public class ParserImpl implements Parser {
             FormalArgsList();
         } else {
             throwException(List.of(
-                "a formal parameter",
+                "a formal parameter list",
                 TokenType.rightParenthesis.toString()
             ));
         }
@@ -533,7 +531,8 @@ public class ParserImpl implements Parser {
             return;
         } else {
             throwException(List.of(
-                "a statement",
+                "an else statement",
+                "another statement",
                 TokenType.rightBrace.toString()
             ));
         }
@@ -578,7 +577,8 @@ public class ParserImpl implements Parser {
             default -> throwException(List.of(
                 "a variable declaration",
                 "an assignment",
-                "a semicolon"
+                "a semicolon",
+                "an iterable object declaration"
             ));
         }
     }
@@ -660,7 +660,8 @@ public class ParserImpl implements Parser {
         } else {
             throwException(List.of(
                 "an expression",
-                TokenType.semicolon.toString()
+                TokenType.semicolon.toString(),
+                TokenType.rightParenthesis.toString()
             ));
         }
     }
@@ -681,8 +682,8 @@ public class ParserImpl implements Parser {
                 else throwException(List.of(
                     "an assignment operator",
                     TokenType.rightParenthesis.toString(),
-                    "a comma and another expression",
-                    TokenType.semicolon.toString()
+                    TokenType.semicolon.toString(),
+                    "a comma and another expression"
                 ));
             }
         }
@@ -718,8 +719,8 @@ public class ParserImpl implements Parser {
                 "a binary operator",
                 "an assignment operator",
                 TokenType.rightParenthesis.toString(),
-                "a comma and another expression",
-                TokenType.semicolon.toString()
+                TokenType.semicolon.toString(),
+                "a comma and another expression"
             ));
         }
     }
@@ -768,7 +769,9 @@ public class ParserImpl implements Parser {
             case opMinus -> match(TokenType.opMinus);
             case opNot -> match(TokenType.opNot);
             default -> throwException(List.of(
-            "a unary operator"
+                TokenType.opPlus.toString(),
+                TokenType.opMinus.toString(),
+                TokenType.opNot.toString()
             ));
         }
     }
@@ -864,7 +867,10 @@ public class ParserImpl implements Parser {
                 "a dot",
                 "actual arguments",
                 "a binary operator",
-                "an assignment operator"
+                "an assignment operator",
+                TokenType.comma.toString(),
+                TokenType.rightParenthesis.toString(),
+                TokenType.semicolon.toString()
             ));
         }
     }
@@ -967,8 +973,8 @@ public class ParserImpl implements Parser {
                 TokenType.dot.toString(),
                 "a binary operator",
                 "an assignment operator",
-                "a comma and another expression",
-                "a right parenthesis",
+                TokenType.comma.toString(),
+                TokenType.rightParenthesis.toString(),
                 TokenType.semicolon.toString()
             ));
         }
@@ -991,10 +997,11 @@ public class ParserImpl implements Parser {
                 if (Follow.BasicExpression.contains(token.getType())) return;
                 else throwException(List.of(
                     TokenType.dot.toString(),
+                    "actual arguments",
                     "a binary operator",
                     "an assignment operator",
-                    "a comma and another expression",
-                    "a right parenthesis",
+                    TokenType.comma.toString(),
+                    TokenType.rightParenthesis.toString(),
                     TokenType.semicolon.toString()
                 ));
             }
