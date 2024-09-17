@@ -175,10 +175,8 @@ public class ParserImpl implements Parser {
 
     private void MemberRest() throws SyntacticException {
         switch (token.getType()) {
-            case semicolon -> match(TokenType.semicolon);
-            case opAssign, opPlusAssign, opMinusAssign -> {
-                AssignmentOp();
-                CompositeExpression();
+            case opAssign, opPlusAssign, opMinusAssign, semicolon -> {
+                AssignmentOptional();
                 match(TokenType.semicolon);
             }
             case leftParenthesis -> {
@@ -400,6 +398,7 @@ public class ParserImpl implements Parser {
             case idClass -> { // Local Var of a Class Type or a Static Method Call
                 match(TokenType.idClass);
                 StatementRest();
+                match(TokenType.semicolon);
             }
             case semicolon -> match(TokenType.semicolon);
             case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> {
@@ -447,14 +446,11 @@ public class ParserImpl implements Parser {
                 ChainedOptional();
                 CompositeExpressionRest();
                 ExpressionRest();
-                match(TokenType.semicolon);
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
                 IdMetVarList();
-                AssignmentOp();
-                CompositeExpression();
-                match(TokenType.semicolon);
+                AssignmentOptional();
             }
             default -> throwException(List.of(
                 "a static method call",
@@ -474,8 +470,7 @@ public class ParserImpl implements Parser {
             case kwBoolean, kwChar, kwInt, kwFloat -> {
                 PrimitiveType();
                 IdMetVarList();
-                AssignmentOp();
-                CompositeExpression();
+                AssignmentOptional();
             }
             default -> throwException(List.of(
                 "var",
@@ -495,12 +490,28 @@ public class ParserImpl implements Parser {
                 match(TokenType.comma);
                 IdMetVarList();
             }
-            case opAssign, opPlusAssign, opMinusAssign -> {
+            case opAssign, opPlusAssign, opMinusAssign, semicolon -> {
                 return;
             }
             default -> throwException(List.of(
                 "a comma and another identifier",
                 "an assignment operator"
+            ));
+        }
+    }
+
+    private void AssignmentOptional() throws SyntacticException {
+        switch (token.getType()) {
+            case opAssign, opPlusAssign, opMinusAssign -> {
+                AssignmentOp();
+                CompositeExpression();
+            }
+            case semicolon -> {
+                return;
+            }
+            default -> throwException(List.of(
+                "an assignment operator",
+                TokenType.semicolon.toString()
             ));
         }
     }

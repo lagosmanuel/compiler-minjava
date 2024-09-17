@@ -28,7 +28,7 @@ e           is the empty string
 <Member> ::= <PrimitiveType> idMetVar <MemberRest>
 
 <MaybeConstructor> ::= <FormalArgs> <Block> | <GenericTypeOptional> idMetVar <MemberRest>
-<MemberRest> ::= ; | <AssignmentOp> <CompositeExpression> ; | <FormalArgs> <Block>
+<MemberRest> ::= <AssignmentOptional> ; | <FormalArgs> <Block>
 
 <StaticOptional> ::= static | e
 <AbstractOptional> ::= abstract | e
@@ -69,9 +69,10 @@ e           is the empty string
 <Statement> ::= <Block>
 
 <LocalVar> ::= var idMetVar <AssignmentOp> <CompositeExpression>
-<LocalVar> ::= <Type> <IdMetVarList> <AssignmentOp> <CompositeExpression>
+<LocalVar> ::= <Type> <IdMetVarList> <AssignmentOptional>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
+<AssignmentOptional> ::= <AssignmentOp> <CompositeExpression> | e
 
 <Return> ::= return <ExpressionOptional>
 <Break> ::= break
