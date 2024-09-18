@@ -269,13 +269,12 @@ public class ParserImpl implements Parser {
                 GenericTypeList();
                 match(TokenType.opGreater);
             }
-            case idMetVar, comma, kwExtends, opGreater, leftBrace -> {
+            case idMetVar, kwExtends, opGreater, leftBrace -> {
                 return;
             }
             default -> throwException(List.of(
                 "a generic type",
                 TokenType.idMetVar.toString(),
-                TokenType.comma.toString(),
                 TokenType.kwExtends.toString(),
                 TokenType.opGreater.toString(),
                 TokenType.leftBrace.toString()
@@ -284,7 +283,7 @@ public class ParserImpl implements Parser {
     }
 
     private void GenericTypeList() throws SyntacticException {
-        ClassType();
+        match(TokenType.idClass);
         GenericTypeListRest();
     }
 

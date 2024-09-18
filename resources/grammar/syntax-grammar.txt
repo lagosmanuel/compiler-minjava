@@ -40,7 +40,7 @@ e           is the empty string
 <ClassType> ::= idClass <GenericTypeOptional>
 
 <GenericTypeOptional> ::= < <GenericTypeList> > | e
-<GenericTypeList> ::= <ClassType> <GenericTypeListRest>
+<GenericTypeList> ::= idClass <GenericTypeListRest>
 <GenericTypeListRest> ::= , <GenericTypeList> | e
 
 <FormalArgs> ::= ( <FormalArgsListOptional> )
