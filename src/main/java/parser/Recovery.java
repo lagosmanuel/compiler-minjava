@@ -8,6 +8,7 @@ import java.util.Set;
 public class Recovery {
     public static final Collection<TokenType> synchronize_set = Set.of(
         TokenType.semicolon,
+        TokenType.comma,
         TokenType.leftBrace,
         TokenType.kwFor,
         TokenType.kwWhile,
