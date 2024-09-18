@@ -103,4 +103,9 @@ public class Lookup {
         Lookup.Expression.stream()),
         Lookup.Type.stream()
     ).collect(Collectors.toSet());
+
+    public static final Collection<TokenType> Class = Set.of(
+        TokenType.kwClass,
+        TokenType.kwAbstract
+    );
 }

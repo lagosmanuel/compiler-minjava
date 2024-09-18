@@ -51,24 +51,25 @@ public class ParserImpl implements Parser {
 //------------------------------------------------------------------------------
 
     private void ClassList() throws SyntacticException {
-        switch (token.getType()) {
-            case kwAbstract, kwClass -> {
-                Class();
-                ClassList();
-            }
-            case EOF -> {
-                return;
-            }
-            default -> throwException(List.of(
-                TokenType.kwAbstract.toString(),
-                TokenType.kwClass.toString(),
-                TokenType.EOF.toString()
-            ));
-        }
+        if (Lookup.Class.contains(token.getType())) {
+            Class();
+            ClassList();
+        } else if (token.getType() == TokenType.EOF) {
+            return;
+        } else throwException(List.of(
+            TokenType.kwAbstract.toString(),
+            TokenType.kwClass.toString(),
+            TokenType.EOF.toString()
+        ));
 
-        if (panic_mode) {
-            if (panic_mode) Class();
-            if (token != null && token.getType() != TokenType.EOF) ClassList();
+        while (panic_mode && token.getType() != TokenType.EOF) {
+            if (token.getType() == TokenType.leftBrace) Class();
+            if (Lookup.Class.contains(token.getType())) ClassList();
+
+            if (panic_mode && token.getType() != TokenType.EOF) {
+                token = getToken();
+                recoverFromError();
+            }
         }
     }
 
@@ -112,11 +113,15 @@ public class ParserImpl implements Parser {
             ));
         }
 
-        if (panic_mode) {
-            if (panic_mode) match(TokenType.semicolon);
-            if (panic_mode) Block();
-            if (panic_mode) { VisibilityOptional(); Member(); }
-            if (token != null && token.getType() != TokenType.EOF) MemberList();
+        while (panic_mode && token.getType() != TokenType.EOF) {
+            if (Lookup.Statement.contains(token.getType())) {StatementList(); match(TokenType.rightBrace);}
+            if (Lookup.Member.contains(token.getType())) MemberList();
+            if (Lookup.Class.contains(token.getType())) ClassList();
+
+            if (panic_mode && token.getType() != TokenType.EOF) {
+                token = getToken();
+                recoverFromError();
+            }
         }
     }
 
@@ -368,11 +373,7 @@ public class ParserImpl implements Parser {
                 TokenType.rightBrace.toString()
             ));
         }
-
-        if (panic_mode) {
-            if (panic_mode) Statement();
-            if (!panic_mode && token != null && token.getType() != TokenType.EOF) StatementList();
-        }
+        if (panic_mode && token != null && Lookup.Statement.contains(token.getType())) StatementList();
     }
 
     private void StatementOptional() throws SyntacticException {
