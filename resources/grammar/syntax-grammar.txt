@@ -72,7 +72,7 @@ e           is the empty string
 <LocalVar> ::= <Type> <IdMetVarList> <AssignmentOptional>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
-<AssignmentOptional> ::= <AssignmentOp> <CompositeExpression> | e
+<AssignmentOptional> ::= = <CompositeExpression> | e
 
 <Return> ::= return <ExpressionOptional>
 <Break> ::= break

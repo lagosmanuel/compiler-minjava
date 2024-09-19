@@ -502,15 +502,15 @@ public class ParserImpl implements Parser {
 
     private void AssignmentOptional() throws SyntacticException {
         switch (token.getType()) {
-            case opAssign, opPlusAssign, opMinusAssign -> {
-                AssignmentOp();
+            case opAssign -> {
+                match(TokenType.opAssign);
                 CompositeExpression();
             }
             case semicolon -> {
                 return;
             }
             default -> throwException(List.of(
-                "an assignment operator",
+                TokenType.opAssign.toString(),
                 TokenType.semicolon.toString()
             ));
         }
