@@ -1,12 +1,12 @@
 package main.java.model;
 
 public enum TokenType {
-    idMetVar ("variable/method identifier"),
-    idClass ("class identifier"),
-    intLiteral ("int literal"),
-    floatLiteral ("float literal"),
-    charLiteral ("char literal"),
-    stringLiteral ("string literal"),
+    idMetVar ("a variable/method identifier"),
+    idClass ("a class identifier"),
+    intLiteral ("an int literal"),
+    floatLiteral ("a float literal"),
+    charLiteral ("a char literal"),
+    stringLiteral ("a string literal"),
     trueLiteral ("true"),
     falseLiteral ("false"),
     nullLiteral ("null"),

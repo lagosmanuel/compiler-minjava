@@ -172,7 +172,8 @@ public class ParserImpl implements Parser {
                 MemberRest();
             }
             default -> throwException(List.of(
-                "an identifier",
+                TokenType.idMetVar.toString(),
+                "a parameterized type",
                 "formal arguments and a block"
             ));
         }
@@ -189,8 +190,8 @@ public class ParserImpl implements Parser {
                 Block();
             }
             default -> throwException(List.of(
-                TokenType.semicolon.toString(),
                 TokenType.opAssign.toString(),
+                TokenType.semicolon.toString(),
                 "formal arguments and a block"
             ));
         }
@@ -274,14 +275,13 @@ public class ParserImpl implements Parser {
                 GenericTypeList();
                 match(TokenType.opGreater);
             }
-            case idMetVar, kwExtends, opGreater, leftBrace -> {
+            case idMetVar, kwExtends, leftBrace -> {
                 return;
             }
             default -> throwException(List.of(
-                "a generic type",
+                "a parameterized type",
                 TokenType.idMetVar.toString(),
                 TokenType.kwExtends.toString(),
-                TokenType.opGreater.toString(),
                 TokenType.leftBrace.toString()
             ));
         }
@@ -471,7 +471,7 @@ public class ParserImpl implements Parser {
                 AssignmentOptional();
             }
             default -> throwException(List.of(
-                "var",
+                TokenType.kwVar.toString(),
                 "a type"
             ));
         }
@@ -612,8 +612,8 @@ public class ParserImpl implements Parser {
         } else if (token.getType() == TokenType.idMetVar) {
             return;
         } else throwException(List.of(
-            "an identifier",
-            "var"
+            TokenType.idMetVar.toString(),
+            TokenType.kwVar.toString()
         ));
     }
 
@@ -887,7 +887,7 @@ public class ParserImpl implements Parser {
             return;
         } else {
             throwException(List.of(
-                "a dot",
+                TokenType.dot.toString(),
                 "actual arguments",
                 "a binary operator",
                 "an assignment operator",
@@ -928,7 +928,7 @@ public class ParserImpl implements Parser {
         } else {
             throwException(List.of(
                 TokenType.leftParenthesis.toString(),
-                "a generic type"
+                "a parameterized type instantiation"
             ));
         }
     }
@@ -940,7 +940,7 @@ public class ParserImpl implements Parser {
             return;
         } else {
             throwException(List.of(
-                "a class identifier",
+                TokenType.idClass.toString(),
                 TokenType.opGreater.toString()
             ));
         }
