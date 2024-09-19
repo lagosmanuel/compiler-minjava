@@ -32,7 +32,8 @@ public class Follow {
                 TokenType.opAssign,
                 TokenType.opPlusAssign,
                 TokenType.opMinusAssign,
-                TokenType.semicolon
+                TokenType.semicolon,
+                TokenType.rightParenthesis
             ),
             Follow.Expression.stream()
         ).collect(Collectors.toSet());
