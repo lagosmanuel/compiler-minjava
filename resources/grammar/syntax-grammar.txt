@@ -81,10 +81,12 @@ e           is the empty string
 <IfRest> ::= else <Statement> | e
 
 <For> ::= for ( <ForRest>
-<ForRest> ::= <VarOptional> idMetVar = <CompositeExpression> ; <ExpressionOptional> ; <ExpressionOptional> ) <Statement>
-<ForRest> ::= <ClassType> idMetVar : <Access> ) <Statement>
-<ForRest> ::= ; <ExpressionOptional> ; <ExpressionOptional> ) <Statement>
+<ForRest> ::= <VarOptional> idMetVar <ForWithAssignment>
+<ForRest> ::= <PrimitiveType> idMetVar <ForWithAssignment>
+<ForRest> ::= <ClassType> idMetVar <ForClass>
 
+<ForClass> ::= : <CompositeExpression> ) <Statement> | <ForWithAssignment>
+<ForWithAssignment> ::= = <CompositeExpression> ; <CompositeExpression> ; <Expression> ) <Statement>
 <VarOptional> ::= var | e
 
 <While> ::= while ( <Expression> ) <Statement>

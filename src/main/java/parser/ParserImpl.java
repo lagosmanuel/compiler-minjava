@@ -560,38 +560,51 @@ public class ParserImpl implements Parser {
             case kwVar, idMetVar -> {
                 VarOptional();
                 match(TokenType.idMetVar);
-                match(TokenType.opAssign);
-                CompositeExpression();
-                match(TokenType.semicolon);
-                ExpressionOptional();
-                match(TokenType.semicolon);
-                ExpressionOptional();
-                match(TokenType.rightParenthesis);
-                Statement();
+                ForWithAssignment();
+            }
+            case kwBoolean, kwChar, kwInt, kwFloat -> {
+                PrimitiveType();
+                match(TokenType.idMetVar);
+                ForWithAssignment();
             }
             case idClass -> {
                 ClassType();
                 match(TokenType.idMetVar);
-                match(TokenType.colon);
-                Access();
-                match(TokenType.rightParenthesis);
-                Statement();
-            }
-            case semicolon -> {
-                match(TokenType.semicolon);
-                ExpressionOptional();
-                match(TokenType.semicolon);
-                ExpressionOptional();
-                match(TokenType.rightParenthesis);
-                Statement();
+                ForClass();
             }
             default -> throwException(List.of(
-                "a variable declaration",
+                "a variable initialization",
                 "an assignment",
-                "a semicolon",
                 "an iterable object declaration"
             ));
         }
+    }
+
+    private void ForClass() throws SyntacticException {
+        switch (token.getType()) {
+            case colon -> {
+                match(TokenType.colon);
+                CompositeExpression();
+                match(TokenType.rightParenthesis);
+                Statement();
+            }
+            case opAssign -> ForWithAssignment();
+            default -> throwException(List.of(
+                TokenType.colon.toString(),
+                TokenType.opAssign.toString()
+            ));
+        }
+    }
+
+    private void ForWithAssignment() throws SyntacticException {
+        match(TokenType.opAssign);
+        CompositeExpression();
+        match(TokenType.semicolon);
+        CompositeExpression();
+        match(TokenType.semicolon);
+        ExpressionOptional();
+        match(TokenType.rightParenthesis);
+        Statement();
     }
 
     private void VarOptional() throws SyntacticException {
