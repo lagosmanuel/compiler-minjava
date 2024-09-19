@@ -180,7 +180,7 @@ public class ParserImpl implements Parser {
 
     private void MemberRest() throws SyntacticException {
         switch (token.getType()) {
-            case opAssign, opPlusAssign, opMinusAssign, semicolon -> {
+            case opAssign, semicolon -> {
                 AssignmentOptional();
                 match(TokenType.semicolon);
             }
@@ -190,7 +190,7 @@ public class ParserImpl implements Parser {
             }
             default -> throwException(List.of(
                 TokenType.semicolon.toString(),
-                "an assignment operator",
+                TokenType.opAssign.toString(),
                 "formal arguments and a block"
             ));
         }
@@ -488,12 +488,13 @@ public class ParserImpl implements Parser {
                 match(TokenType.comma);
                 IdMetVarList();
             }
-            case opAssign, opPlusAssign, opMinusAssign, semicolon -> {
+            case opAssign, semicolon -> {
                 return;
             }
             default -> throwException(List.of(
+                TokenType.opAssign.toString(),
                 "a comma and another identifier",
-                "an assignment operator"
+                TokenType.semicolon.toString()
             ));
         }
     }
