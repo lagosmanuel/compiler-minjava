@@ -383,14 +383,12 @@ public class ParserImpl implements Parser {
                    token.getType() == TokenType.kwCase ||
                    token.getType() == TokenType.kwDefault) {
             return;
-        } else {
-            throwException(List.of(
-                "a statement",
-                TokenType.rightBrace.toString(),
-                TokenType.kwCase.toString(),
-                TokenType.kwDefault.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a statement",
+            TokenType.rightBrace.toString(),
+            TokenType.kwCase.toString(),
+            TokenType.kwDefault.toString()
+        ));
     }
 
     private void Statement() throws SyntacticException {
