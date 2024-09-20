@@ -800,12 +800,10 @@ public class ParserImpl implements Parser {
             Literal();
         } else if (Lookup.Access.contains(token.getType())) {
             Access();
-        } else {
-            throwException(List.of(
-                "a literal",
-                "an access to an object"
-            ));
-        }
+        } else throwException(List.of(
+            "a literal",
+            "an access to an object"
+        ));
     }
 
     private void Literal() throws SyntacticException {
