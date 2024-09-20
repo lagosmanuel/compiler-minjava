@@ -737,9 +737,9 @@ public class ParserImpl implements Parser {
             throwException(List.of(
                 "a binary operator",
                 "an assignment operator",
-                TokenType.rightParenthesis.toString(),
                 TokenType.semicolon.toString(),
-                "a comma and another expression"
+                TokenType.rightParenthesis.toString(),
+                TokenType.comma.toString()
             ));
         }
     }
