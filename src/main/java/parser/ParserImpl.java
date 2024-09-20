@@ -570,9 +570,9 @@ public class ParserImpl implements Parser {
                 ForClass();
             }
             default -> throwException(List.of(
-                "a variable initialization",
-                "an assignment",
-                "an iterable object declaration"
+                TokenType.kwVar.toString(),
+                "a type",
+                TokenType.idMetVar.toString()
             ));
         }
     }
