@@ -700,9 +700,9 @@ public class ParserImpl implements Parser {
                 if (Follow.Expression.contains(token.getType())) return;
                 else throwException(List.of(
                     "an assignment operator",
+                    TokenType.comma.toString(),
                     TokenType.rightParenthesis.toString(),
-                    TokenType.semicolon.toString(),
-                    "a comma and another expression"
+                    TokenType.semicolon.toString()
                 ));
             }
         }
