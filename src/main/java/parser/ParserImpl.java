@@ -342,8 +342,8 @@ public class ParserImpl implements Parser {
                 return;
             }
             default -> throwException(List.of(
-                TokenType.rightParenthesis.toString(),
-                "a comma and another formal parameter"
+                TokenType.comma.toString(),
+                TokenType.rightParenthesis.toString()
             ));
         }
     }
@@ -490,8 +490,8 @@ public class ParserImpl implements Parser {
                 return;
             }
             default -> throwException(List.of(
+                TokenType.comma.toString(),
                 TokenType.opAssign.toString(),
-                "a comma and another identifier",
                 TokenType.semicolon.toString()
             ));
         }
@@ -970,7 +970,7 @@ public class ParserImpl implements Parser {
                 return;
             }
             default -> throwException(List.of(
-                "a comma and another expression",
+                TokenType.comma.toString(),
                 TokenType.rightParenthesis.toString()
             ));
         }
