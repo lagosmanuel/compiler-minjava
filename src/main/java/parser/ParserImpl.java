@@ -599,7 +599,7 @@ public class ParserImpl implements Parser {
         match(TokenType.semicolon);
         CompositeExpression();
         match(TokenType.semicolon);
-        ExpressionOptional();
+        Expression();
         match(TokenType.rightParenthesis);
         Statement();
     }
