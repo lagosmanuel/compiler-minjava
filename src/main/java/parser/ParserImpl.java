@@ -460,7 +460,7 @@ public class ParserImpl implements Parser {
             case kwVar -> {
                 match(TokenType.kwVar);
                 match(TokenType.idMetVar);
-                AssignmentOp();
+                match(TokenType.opAssign);
                 CompositeExpression();
             }
             case kwBoolean, kwChar, kwInt, kwFloat -> {

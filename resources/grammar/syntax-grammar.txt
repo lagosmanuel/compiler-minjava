@@ -68,7 +68,7 @@ e           is the empty string
 <Statement> ::= <Switch>
 <Statement> ::= <Block>
 
-<LocalVar> ::= var idMetVar <AssignmentOp> <CompositeExpression>
+<LocalVar> ::= var idMetVar = <CompositeExpression>
 <LocalVar> ::= <Type> <IdMetVarList> <AssignmentOptional>
 <IdMetVarList> ::= idMetVar <IdMetVarListRest>
 <IdMetVarListRest> ::= , <IdMetVarList> | e
