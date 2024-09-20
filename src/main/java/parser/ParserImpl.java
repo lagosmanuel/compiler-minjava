@@ -675,14 +675,12 @@ public class ParserImpl implements Parser {
     private void ExpressionOptional() throws SyntacticException {
         if (Lookup.Expression.contains(token.getType())) {
             Expression();
-        } else if (token.getType() == TokenType.semicolon ||
-                   token.getType() == TokenType.rightParenthesis) {
+        } else if (token.getType() == TokenType.semicolon) {
             return;
         } else {
             throwException(List.of(
                 "an expression",
-                TokenType.semicolon.toString(),
-                TokenType.rightParenthesis.toString()
+                TokenType.semicolon.toString()
             ));
         }
     }
