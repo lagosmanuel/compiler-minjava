@@ -981,16 +981,14 @@ public class ParserImpl implements Parser {
             ChainedIdMetVar();
         } else if (Follow.BasicExpression.contains(token.getType())) {
             return;
-        } else {
-            throwException(List.of(
-                TokenType.dot.toString(),
-                "a binary operator",
-                "an assignment operator",
-                TokenType.comma.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.semicolon.toString()
-            ));
-        }
+        } else throwException(List.of(
+            TokenType.dot.toString(),
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString(),
+            "a binary operator"
+        ));
     }
 
     private void ChainedIdMetVar() throws SyntacticException {
