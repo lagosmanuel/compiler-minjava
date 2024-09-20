@@ -949,12 +949,10 @@ public class ParserImpl implements Parser {
             ExpressionList();
         } else if (token.getType() == TokenType.rightParenthesis) {
             return;
-        } else {
-            throwException(List.of(
-                "a list of expressions",
-                TokenType.rightParenthesis.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a list of expressions",
+            TokenType.rightParenthesis.toString()
+        ));
     }
 
     private void ExpressionList() throws SyntacticException {
