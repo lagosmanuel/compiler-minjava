@@ -21,9 +21,9 @@ public class Follow {
 
     public static final Collection<TokenType> Expression =
         Set.of(
-            TokenType.comma,
+            TokenType.semicolon,
             TokenType.rightParenthesis,
-            TokenType.semicolon
+            TokenType.comma
         );
 
     public static final Collection<TokenType> CompositeExpression =
