@@ -367,12 +367,10 @@ public class ParserImpl implements Parser {
             StatementList();
         } else if (token.getType() == TokenType.rightBrace) {
             return;
-        } else {
-            throwException(List.of(
-                "a statement",
-                TokenType.rightBrace.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a statement",
+            TokenType.rightBrace.toString()
+        ));
         if (panic_mode && token != null && Lookup.Statement.contains(token.getType())) StatementList();
     }
 
