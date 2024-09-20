@@ -605,14 +605,14 @@ public class ParserImpl implements Parser {
     }
 
     private void VarOptional() throws SyntacticException {
-        if (token.getType() == TokenType.kwVar) {
-            match(TokenType.kwVar);
-        } else if (token.getType() == TokenType.idMetVar) {
-            return;
-        } else throwException(List.of(
-            TokenType.idMetVar.toString(),
-            TokenType.kwVar.toString()
-        ));
+        switch (token.getType()) {
+            case kwVar -> match(TokenType.kwVar);
+            case idMetVar -> {return;}
+            default -> throwException(List.of(
+                TokenType.kwVar.toString(),
+                TokenType.idMetVar.toString()
+            ));
+        }
     }
 
     private void While() throws SyntacticException {
