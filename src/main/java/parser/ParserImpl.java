@@ -877,17 +877,15 @@ public class ParserImpl implements Parser {
             ActualArgs();
         } else if (Follow.Primary.contains(token.getType())) {
             return;
-        } else {
-            throwException(List.of(
-                TokenType.dot.toString(),
-                "actual arguments",
-                "a binary operator",
-                "an assignment operator",
-                TokenType.comma.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.semicolon.toString()
-            ));
-        }
+        } else throwException(List.of(
+            TokenType.leftParenthesis.toString(),
+            TokenType.dot.toString(),
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString(),
+            "a binary operator"
+        ));
     }
 
     private void ConstructorAccess() throws SyntacticException {
