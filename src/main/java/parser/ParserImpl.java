@@ -811,12 +811,10 @@ public class ParserImpl implements Parser {
             PrimitiveLiteral();
         } else if (Lookup.ObjectLiteral.contains(token.getType())) {
             ObjectLiteral();
-        } else {
-            throwException(List.of(
-                "a primitive literal",
-                "an object literal"
-            ));
-        }
+        } else throwException(List.of(
+            "a primitive literal",
+            "an object literal"
+        ));
     }
 
     private void PrimitiveLiteral() throws SyntacticException {
