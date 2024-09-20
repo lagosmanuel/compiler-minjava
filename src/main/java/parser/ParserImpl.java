@@ -909,14 +909,16 @@ public class ParserImpl implements Parser {
     }
 
     private void GenericTypeOptionalEmpty() throws SyntacticException {
-        if (token.getType() == TokenType.opLess) {
-            match(TokenType.opLess);
-            GenericListOptional();
-            match(TokenType.opGreater);
-        } else if (token.getType() == TokenType.leftParenthesis) {
-            return;
-        } else {
-            throwException(List.of(
+        switch (token.getType()) {
+            case opLess -> {
+                match(TokenType.opLess);
+                GenericListOptional();
+                match(TokenType.opGreater);
+            }
+            case leftParenthesis -> {
+                return;
+            }
+            default -> throwException(List.of(
                 TokenType.leftParenthesis.toString(),
                 "a parameterized type instantiation"
             ));
@@ -924,12 +926,12 @@ public class ParserImpl implements Parser {
     }
 
     private void GenericListOptional() throws SyntacticException {
-        if (token.getType() == TokenType.idClass) {
-            GenericTypeList();
-        } else if (token.getType() == TokenType.opGreater) {
-            return;
-        } else {
-            throwException(List.of(
+        switch (token.getType()) {
+            case idClass -> GenericTypeList();
+            case opGreater -> {
+                return;
+            }
+            default -> throwException(List.of(
                 TokenType.idClass.toString(),
                 TokenType.opGreater.toString()
             ));
