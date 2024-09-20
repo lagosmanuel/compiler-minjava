@@ -1008,12 +1008,12 @@ public class ParserImpl implements Parser {
                 if (Follow.BasicExpression.contains(token.getType())) return;
                 else throwException(List.of(
                     TokenType.dot.toString(),
-                    "actual arguments",
-                    "a binary operator",
+                    TokenType.leftParenthesis.toString(),
                     "an assignment operator",
-                    TokenType.comma.toString(),
+                    TokenType.semicolon.toString(),
                     TokenType.rightParenthesis.toString(),
-                    TokenType.semicolon.toString()
+                    TokenType.comma.toString(),
+                    "a binary operator"
                 ));
             }
         }
