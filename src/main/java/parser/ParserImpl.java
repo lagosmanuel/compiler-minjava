@@ -51,20 +51,28 @@ public class ParserImpl implements Parser {
 //------------------------------------------------------------------------------
 
     private void ClassList() throws SyntacticException {
-        if (Lookup.Class.contains(token.getType())) {
-            Class();
-            ClassList();
-        } else if (token.getType() == TokenType.EOF) {
-            return;
-        } else throwException(List.of(
-            TokenType.kwAbstract.toString(),
-            TokenType.kwClass.toString(),
-            TokenType.EOF.toString()
-        ));
+        switch (token.getType()) {
+            case kwClass -> {
+                Class();
+                ClassList();
+            }
+            case kwAbstract -> {
+                AbstractClass();
+                ClassList();
+            }
+            case EOF -> {
+                return;
+            }
+            default -> throwException(List.of(
+                TokenType.kwClass.toString(),
+                TokenType.kwAbstract.toString(),
+                TokenType.EOF.toString()
+            ));
+        }
 
         while (panic_mode && token.getType() != TokenType.EOF) {
             if (token.getType() == TokenType.leftBrace) Class();
-            if (Lookup.Class.contains(token.getType())) ClassList();
+            if (Lookup.ClassList.contains(token.getType())) ClassList();
 
             if (panic_mode && token.getType() != TokenType.EOF) {
                 token = getToken();
@@ -74,12 +82,21 @@ public class ParserImpl implements Parser {
     }
 
     private void Class() throws SyntacticException {
-        AbstractOptional();
         match(TokenType.kwClass);
         ClassType();
         InheritanceOptional();
         match(TokenType.leftBrace);
         if (!panic_mode) MemberList();
+        match(TokenType.rightBrace);
+    }
+
+    private void AbstractClass() throws SyntacticException {
+        match(TokenType.kwAbstract);
+        match(TokenType.kwClass);
+        ClassType();
+        InheritanceOptional();
+        match(TokenType.leftBrace);
+        if (!panic_mode) AbstractMemberList();
         match(TokenType.rightBrace);
     }
 
@@ -106,17 +123,40 @@ public class ParserImpl implements Parser {
             MemberList();
         } else if (token.getType() == TokenType.rightBrace) {
             return;
-        } else {
-            throwException(List.of(
-                "a member",
-                TokenType.rightBrace.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a member",
+            TokenType.rightBrace.toString()
+        ));
 
         while (panic_mode && token.getType() != TokenType.EOF) {
             if (Lookup.Statement.contains(token.getType())) {StatementList(); match(TokenType.rightBrace);}
             if (Lookup.Member.contains(token.getType())) MemberList();
-            if (Lookup.Class.contains(token.getType())) ClassList();
+            if (Lookup.ClassList.contains(token.getType())) ClassList();
+
+            if (panic_mode && token.getType() != TokenType.EOF) {
+                token = getToken();
+                recoverFromError();
+            }
+        }
+    }
+
+    private void AbstractMemberList() throws SyntacticException {
+        if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) {
+            VisibilityOptional();
+            AbstractMember();
+            AbstractMemberList();
+        } else if (token.getType() == TokenType.rightBrace) {
+            return;
+        } else throwException(List.of(
+            "a member",
+            TokenType.kwAbstract.toString(),
+            TokenType.rightBrace.toString()
+        ));
+
+        while (panic_mode && token.getType() != TokenType.EOF) {
+            if (Lookup.Statement.contains(token.getType())) {StatementList(); match(TokenType.rightBrace);}
+            if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) AbstractMemberList();
+            if (Lookup.ClassList.contains(token.getType())) ClassList();
 
             if (panic_mode && token.getType() != TokenType.EOF) {
                 token = getToken();
@@ -130,13 +170,6 @@ public class ParserImpl implements Parser {
             case idClass -> {
                 match(TokenType.idClass);
                 MaybeConstructor();
-            }
-            case kwAbstract -> {
-                match(TokenType.kwAbstract);
-                MemberType();
-                match(TokenType.idMetVar);
-                FormalArgs();
-                match(TokenType.semicolon);
             }
             case kwStatic -> {
                 match(TokenType.kwStatic);
@@ -158,6 +191,21 @@ public class ParserImpl implements Parser {
             "a member"
             ));
         }
+    }
+
+    private void AbstractMember() throws SyntacticException {
+        if (token.getType() == TokenType.kwAbstract) {
+            match(TokenType.kwAbstract);
+            MemberType();
+            match(TokenType.idMetVar);
+            FormalArgs();
+            match(TokenType.semicolon);
+        } else if (Lookup.Member.contains(token.getType())) {
+            Member();
+        } else throwException(List.of(
+            TokenType.kwAbstract.toString(),
+            "a member"
+        ));
     }
 
     private void MaybeConstructor() throws SyntacticException {
@@ -197,25 +245,12 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void AbstractOptional() throws SyntacticException {
-        switch (token.getType()) {
-            case kwAbstract -> match(TokenType.kwAbstract);
-            case kwClass -> {
-                return;
-            }
-            default -> throwException(List.of(
-                TokenType.kwAbstract.toString(),
-                TokenType.kwClass.toString()
-            ));
-        }
-    }
-
     private void VisibilityOptional() throws SyntacticException {
         switch (token.getType()) {
             case kwPublic -> match(TokenType.kwPublic);
             case kwPrivate -> match(TokenType.kwPrivate);
             default -> {
-               if (Lookup.Member.contains(token.getType())) return;
+               if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) return;
                else throwException(List.of(
                    TokenType.kwPublic.toString(),
                    TokenType.kwPrivate.toString(),
@@ -230,11 +265,9 @@ public class ParserImpl implements Parser {
             match(TokenType.kwVoid);
         } else if (Lookup.Type.contains(token.getType())) {
             Type();
-        } else {
-            throwException(List.of(
-            "a type"
-            ));
-        }
+        } else throwException(List.of(
+        "a type"
+        ));
     }
 
     private void Type() throws SyntacticException {
@@ -319,12 +352,10 @@ public class ParserImpl implements Parser {
             return;
         } else if (Lookup.Type.contains(token.getType())) {
             FormalArgsList();
-        } else {
-            throwException(List.of(
-                "a formal parameter list",
-                TokenType.rightParenthesis.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a formal parameter list",
+            TokenType.rightParenthesis.toString()
+        ));
     }
 
     private void FormalArgsList() throws SyntacticException {
@@ -537,13 +568,11 @@ public class ParserImpl implements Parser {
             Statement();
         } else if (Follow.Statement.contains(token.getType())) {
             return;
-        } else {
-            throwException(List.of(
-                "an else statement",
-                "another statement",
-                TokenType.rightBrace.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "an else statement",
+            "another statement",
+            TokenType.rightBrace.toString()
+        ));
     }
 
     private void For() throws SyntacticException {
@@ -677,12 +706,10 @@ public class ParserImpl implements Parser {
             Expression();
         } else if (token.getType() == TokenType.semicolon) {
             return;
-        } else {
-            throwException(List.of(
-                "an expression",
-                TokenType.semicolon.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "an expression",
+            TokenType.semicolon.toString()
+        ));
     }
 
     private void Expression() throws SyntacticException {
@@ -733,15 +760,13 @@ public class ParserImpl implements Parser {
             CompositeExpressionRest();
         } else if (Follow.CompositeExpression.contains(token.getType())) {
             return;
-        } else {
-            throwException(List.of(
-                "a binary operator",
-                "an assignment operator",
-                TokenType.semicolon.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.comma.toString()
-            ));
-        }
+        } else throwException(List.of(
+            "a binary operator",
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString()
+        ));
     }
 
     private void BinaryOp() throws SyntacticException {
@@ -774,12 +799,10 @@ public class ParserImpl implements Parser {
             Operand();
         } else if (Lookup.Operand.contains(token.getType())) {
             Operand();
-        } else {
-            throwException(List.of(
-                "a unary operator",
-                "an operand"
-            ));
-        }
+        } else throwException(List.of(
+            "a unary operator",
+            "an operand"
+        ));
     }
 
     private void UnaryOp() throws SyntacticException {

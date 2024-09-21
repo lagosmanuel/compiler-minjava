@@ -16,13 +16,18 @@ e           is the empty string
 --------------------------------------------------------------------------------
 
 <Start> ::= <ClassList> $
-<ClassList> ::= <Class> <ClassList> | e
-<Class> ::= <AbstractOptional> class <ClassType> <InheritanceOptional> { <MemberList> }
+<ClassList> ::= <Class> <ClassList> | <AbstractClass> <ClassList> | e
+
+<Class> ::= class <ClassType> <InheritanceOptional> { <MemberList> }
+<AbstractClass> ::= abstract class <ClassType> <InheritanceOptional> { <AbstractMemberList> }
+
 <InheritanceOptional> ::= extends <ClassType> | e
 
 <MemberList> ::= <VisibilityOptional> <Member> <MemberList> | e
+<AbstractMemberList> ::= <VisibilityOptional> <AbstractMember> <AbstractMemberList> | e
+
+<AbstractMember> ::= abstract <MemberType> idMetVar <FormalArgs> ; | <Member>
 <Member> ::= idClass <MaybeConstructor>
-<Member> ::= abstract <MemberType> idMetVar <FormalArgs> ;
 <Member> ::= static <MemberType> idMetVar <MemberRest>
 <Member> ::= void idMetVar <MemberRest>
 <Member> ::= <PrimitiveType> idMetVar <MemberRest>
@@ -31,7 +36,6 @@ e           is the empty string
 <MemberRest> ::= <AssignmentOptional> ; | <FormalArgs> <Block>
 
 <StaticOptional> ::= static | e
-<AbstractOptional> ::= abstract | e
 <VisibilityOptional> ::= public | private | e
 
 <MemberType> ::= <Type> | void

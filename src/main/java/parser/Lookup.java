@@ -73,8 +73,7 @@ public class Lookup {
         Stream.of(
             TokenType.kwPublic,
             TokenType.kwPrivate,
-            TokenType.kwStatic,
-            TokenType.kwAbstract
+            TokenType.kwStatic
         ),
         Lookup.MemberType.stream()
     ).collect(Collectors.toSet());
@@ -104,7 +103,7 @@ public class Lookup {
         Lookup.Type.stream()
     ).collect(Collectors.toSet());
 
-    public static final Collection<TokenType> Class = Set.of(
+    public static final Collection<TokenType> ClassList = Set.of(
         TokenType.kwClass,
         TokenType.kwAbstract
     );
