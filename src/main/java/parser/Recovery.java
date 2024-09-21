@@ -20,7 +20,6 @@ public class Recovery {
         TokenType.kwPublic,
         TokenType.kwPrivate,
         TokenType.kwStatic,
-        TokenType.kwClass,
-        TokenType.kwAbstract
+        TokenType.kwClass
     );
 }
