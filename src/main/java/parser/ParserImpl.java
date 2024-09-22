@@ -73,11 +73,7 @@ public class ParserImpl implements Parser {
         while (panic_mode && token.getType() != TokenType.EOF) {
             if (token.getType() == TokenType.leftBrace) Class();
             if (Lookup.ClassList.contains(token.getType())) ClassList();
-
-            if (panic_mode && token.getType() != TokenType.EOF) {
-                token = getToken();
-                recoverFromError();
-            }
+            if (panic_mode && token.getType() != TokenType.EOF) {token = getToken(); recoverFromError();}
         }
     }
 
@@ -127,17 +123,7 @@ public class ParserImpl implements Parser {
             "a member",
             TokenType.rightBrace.toString()
         ));
-
-        while (panic_mode && token.getType() != TokenType.EOF) {
-            if (Lookup.Statement.contains(token.getType())) {StatementList(); match(TokenType.rightBrace);}
-            if (Lookup.Member.contains(token.getType())) MemberList();
-            if (Lookup.ClassList.contains(token.getType())) ClassList();
-
-            if (panic_mode && token.getType() != TokenType.EOF) {
-                token = getToken();
-                recoverFromError();
-            }
-        }
+        if (panic_mode) recover_member_list(false);
     }
 
     private void AbstractMemberList() throws SyntacticException {
@@ -152,12 +138,22 @@ public class ParserImpl implements Parser {
             TokenType.kwAbstract.toString(),
             TokenType.rightBrace.toString()
         ));
+        if (panic_mode) recover_member_list(true);
+    }
 
+    private void recover_member_list(boolean is_abstract) throws SyntacticException {
         while (panic_mode && token.getType() != TokenType.EOF) {
-            if (Lookup.Statement.contains(token.getType())) {StatementList(); match(TokenType.rightBrace);}
-            if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) AbstractMemberList();
-            if (Lookup.ClassList.contains(token.getType())) ClassList();
-
+            while (Lookup.Statement.contains(token.getType())) {
+                if (token.getType() == TokenType.leftBrace) Block();
+                else {StatementList(); match(TokenType.rightBrace);}
+            }
+            if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) {
+                if (is_abstract) AbstractMemberList();
+                else MemberList();
+            }
+            if (Lookup.ClassList.contains(token.getType())) {
+                ClassList();
+            }
             if (panic_mode && token.getType() != TokenType.EOF) {
                 token = getToken();
                 recoverFromError();
@@ -402,7 +398,7 @@ public class ParserImpl implements Parser {
             "a statement",
             TokenType.rightBrace.toString()
         ));
-        if (panic_mode && token != null && Lookup.Statement.contains(token.getType())) StatementList();
+        if (panic_mode && Lookup.Statement.contains(token.getType())) StatementList();
     }
 
     private void StatementOptional() throws SyntacticException {

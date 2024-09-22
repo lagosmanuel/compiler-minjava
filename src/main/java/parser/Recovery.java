@@ -10,6 +10,7 @@ public class Recovery {
         TokenType.semicolon,
         TokenType.comma,
         TokenType.leftBrace,
+        TokenType.rightBrace,
         TokenType.kwFor,
         TokenType.kwWhile,
         TokenType.kwIf,
