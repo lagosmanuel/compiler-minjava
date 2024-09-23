@@ -37,7 +37,6 @@ public class Main {
                 //showTokens();
                 compile();
                 closeFile();
-                if (!errors.isEmpty()) showErrors(errors);
             }
         } else {
             System.out.println(ErrorMessages.BAD_USAGE);
@@ -93,9 +92,11 @@ public class Main {
     private static void compile() {
         try {
             parser.parse();
-            if (errors.isEmpty()) System.out.println(ErrorMessages.SUCCESS);
         } catch (SyntacticException error) {
             System.out.println(error.getMessage());
+        } finally {
+            if (errors.isEmpty()) System.out.println(ErrorMessages.SUCCESS);
+            else showErrors(errors);
         }
     }
 
