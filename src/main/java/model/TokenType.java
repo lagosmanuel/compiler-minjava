@@ -58,7 +58,8 @@ public enum TokenType {
     rightParenthesis ("')'"),
     leftBrace ("'{'"),
     rightBrace ("'}'"),
-    opAssign ("'='"),;
+    opAssign ("'='"),
+    empty ("");
 
     private final String name;
 

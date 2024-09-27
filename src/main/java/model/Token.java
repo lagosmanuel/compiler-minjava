@@ -8,6 +8,8 @@ public class Token {
     private final int line;
     private final int column;
 
+    public static final Token empty = new Token(TokenType.empty, "*", 0, 0);
+
     public Token(TokenType type, String lexeme, int line, int column) {
         this.type = type;
         this.lexeme = lexeme;

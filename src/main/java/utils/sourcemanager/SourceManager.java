@@ -11,6 +11,7 @@ public interface SourceManager {
     int getLineNumber();
     int getColumnNumber();
     String getLineText();
+    String getLineText(int lineNumber);
     char END_OF_FILE = LexerConfig.END_OF_FILE;
     char NEWLINE = LexerConfig.NEWLINE;
     char CARRY_RETURN = LexerConfig.CARRY_RETURN;

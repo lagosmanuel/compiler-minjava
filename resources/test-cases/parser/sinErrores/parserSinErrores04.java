@@ -1,19 +1,11 @@
 ///[SinErrores]
 // Prueba un bloque con una asignacion, un atributo y un constructor
 
-class Prueba1{
+abstract class Prueba1<A> {
 
-    int x;
+    abstract void prueba1(A a);
 
-    static  void prueba1(int a) 
-    {
-        this.b().a = 5; 
-    
-    }
-
-    public Prueba1(int y){
+    public int prueba1(int y){
 
     }
-    
 }
-

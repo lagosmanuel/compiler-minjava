@@ -1,5 +1,6 @@
 package main.java.main;
 
+import main.java.exeptions.SemanticException;
 import main.java.lexer.Lexer;
 import main.java.lexer.LexerImpl;
 import main.java.config.LexerConfig;
@@ -9,6 +10,7 @@ import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.model.Pair;
 import main.java.model.Error;
+import main.java.semantic.SymbolTable;
 import main.java.utils.sourcemanager.SourceManager;
 import main.java.utils.sourcemanager.SourceManagerImpl;
 import main.java.utils.Formater;
@@ -91,8 +93,10 @@ public class Main {
 
     private static void compile() {
         try {
+            SymbolTable.init(errors);
             parser.parse();
-        } catch (SyntacticException error) {
+            SymbolTable.validate();
+        } catch (SyntacticException | SemanticException error) {
             System.out.println(error.getMessage());
         } finally {
             if (errors.isEmpty()) System.out.println(ErrorMessages.SUCCESS);
@@ -103,9 +107,9 @@ public class Main {
     private static void showErrors(Map<Integer, Pair<List<Error>, String>> errors) {
         System.out.println();
         errors.keySet().stream().sorted().forEach(line ->
-            errors.get(line).getFirst().forEach(error ->
-                System.out.println(Formater.formatError(error, errors.get(line).getSecond()))
-            )
+            errors.get(line).getFirst().forEach(error -> {
+                System.out.println(Formater.formatError(error, sourceManager.getLineText(line)));
+            })
         );
     }
 }

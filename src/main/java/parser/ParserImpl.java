@@ -1,5 +1,6 @@
 package main.java.parser;
 
+import main.java.config.SemanticConfig;
 import main.java.lexer.Lexer;
 import main.java.model.Error;
 import main.java.model.Pair;
@@ -9,6 +10,10 @@ import main.java.model.ErrorType;
 import main.java.config.ParserConfig;
 import main.java.exeptions.LexicalException;
 import main.java.exeptions.SyntacticException;
+import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.*;
+import main.java.semantic.entities.Class;
+import main.java.semantic.entities.model.Unit;
 import main.java.utils.Formater;
 
 import java.util.ArrayList;
@@ -20,6 +25,18 @@ public class ParserImpl implements Parser {
     private final Lexer lexer;
     private Token token;
     private boolean panic_mode;
+
+    private Token entity_type_token;
+    private Token entity_name_token;
+    private final List<Token> entity_generic_types = new ArrayList<>();
+
+    private boolean entity_is_static = false;
+    private boolean entity_is_private = false;
+
+    private Method actualMethod;
+    private Constructor actualConstructor;
+    private AbstractMethod actualAbstractMethod;
+    private Unit actualUnit;
 
     public ParserImpl(Lexer lexer, Map<Integer, Pair<List<Error>, String>> errors) {
         this.lexer = lexer;
@@ -34,18 +51,20 @@ public class ParserImpl implements Parser {
             consumeTokens();
     }
 
-    private void match(TokenType tokenType) throws SyntacticException {
+    private Token match(TokenType tokenType) throws SyntacticException {
+        Token previous = token;
         if (token == null || token.getType() != tokenType)
             throwException(List.of(tokenType.toString()));
         else {
             token = getToken();
             if (panic_mode) panic_mode = false;
         }
+        return previous;
     }
 
     private void Start() throws SyntacticException {
         ClassList();
-        match(TokenType.EOF);
+        SymbolTable.saveEOF(match(TokenType.EOF));
     }
 
 //------------------------------------------------------------------------------
@@ -78,19 +97,28 @@ public class ParserImpl implements Parser {
     }
 
     private void Class() throws SyntacticException {
+        reset_entity();
         match(TokenType.kwClass);
-        ClassType();
+        setName(ClassType());
+        createClass();
+        setGenericTypes();
         InheritanceOptional();
+        setSuperGenericTypes();
         match(TokenType.leftBrace);
         if (!panic_mode) MemberList();
         match(TokenType.rightBrace);
     }
 
     private void AbstractClass() throws SyntacticException {
+        reset_entity();
         match(TokenType.kwAbstract);
         match(TokenType.kwClass);
-        ClassType();
+        setName(ClassType());
+        createClass();
+        setGenericTypes();
+        setAbstractClass();
         InheritanceOptional();
+        setSuperGenericTypes();
         match(TokenType.leftBrace);
         if (!panic_mode) AbstractMemberList();
         match(TokenType.rightBrace);
@@ -100,7 +128,7 @@ public class ParserImpl implements Parser {
         switch (token.getType()) {
             case kwExtends -> {
                 match(TokenType.kwExtends);
-                ClassType();
+                setSuperToken(ClassType());
             }
             case leftBrace -> {
                 return;
@@ -114,8 +142,10 @@ public class ParserImpl implements Parser {
 
     private void MemberList() throws SyntacticException {
         if (Lookup.Member.contains(token.getType())) {
+            reset_entity();
             VisibilityOptional();
             Member();
+            saveMember();
             MemberList();
         } else if (token.getType() == TokenType.rightBrace) {
             return;
@@ -128,8 +158,10 @@ public class ParserImpl implements Parser {
 
     private void AbstractMemberList() throws SyntacticException {
         if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) {
+            reset_entity();
             VisibilityOptional();
             AbstractMember();
+            saveMember();
             AbstractMemberList();
         } else if (token.getType() == TokenType.rightBrace) {
             return;
@@ -164,23 +196,24 @@ public class ParserImpl implements Parser {
     private void Member() throws SyntacticException {
         switch (token.getType()) {
             case idClass -> {
-                match(TokenType.idClass);
+                setName(match(TokenType.idClass));
                 MaybeConstructor();
             }
             case kwStatic -> {
                 match(TokenType.kwStatic);
-                MemberType();
-                match(TokenType.idMetVar);
+                setStatic();
+                setType(MemberType());
+                setName(match(TokenType.idMetVar));
                 MemberRest();
             }
             case kwVoid -> {
-                match(TokenType.kwVoid);
-                match(TokenType.idMetVar);
+                setType(match(TokenType.kwVoid));
+                setName(match(TokenType.idMetVar));
                 MemberRest();
             }
             case kwBoolean, kwChar, kwInt, kwFloat -> {
-                PrimitiveType();
-                match(TokenType.idMetVar);
+                setType(PrimitiveType());
+                setName(match(TokenType.idMetVar));
                 MemberRest();
             }
             default -> throwException(List.of(
@@ -192,8 +225,9 @@ public class ParserImpl implements Parser {
     private void AbstractMember() throws SyntacticException {
         if (token.getType() == TokenType.kwAbstract) {
             match(TokenType.kwAbstract);
-            MemberType();
-            match(TokenType.idMetVar);
+            setType(MemberType());
+            setName(match(TokenType.idMetVar));
+            createAbstractMethod();
             FormalArgs();
             match(TokenType.semicolon);
         } else if (Lookup.Member.contains(token.getType())) {
@@ -207,12 +241,14 @@ public class ParserImpl implements Parser {
     private void MaybeConstructor() throws SyntacticException {
         switch (token.getType()) {
             case leftParenthesis -> {
+                createConstructor();
                 FormalArgs();
                 Block();
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
-                match(TokenType.idMetVar);
+                setType(entity_name_token);
+                setName(match(TokenType.idMetVar));
                 MemberRest();
             }
             default -> throwException(List.of(
@@ -226,10 +262,12 @@ public class ParserImpl implements Parser {
     private void MemberRest() throws SyntacticException {
         switch (token.getType()) {
             case opAssign, semicolon -> {
+                createAttribute();
                 AssignmentOptional();
                 match(TokenType.semicolon);
             }
             case leftParenthesis -> {
+                createMethod();
                 FormalArgs();
                 Block();
             }
@@ -244,7 +282,7 @@ public class ParserImpl implements Parser {
     private void VisibilityOptional() throws SyntacticException {
         switch (token.getType()) {
             case kwPublic -> match(TokenType.kwPublic);
-            case kwPrivate -> match(TokenType.kwPrivate);
+            case kwPrivate -> {match(TokenType.kwPrivate); setPrivate();}
             default -> {
                if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) return;
                else throwException(List.of(
@@ -256,29 +294,29 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void MemberType() throws SyntacticException {
+    private Token MemberType() throws SyntacticException {
         if (token.getType() == TokenType.kwVoid) {
-            match(TokenType.kwVoid);
+            return match(TokenType.kwVoid);
         } else if (Lookup.Type.contains(token.getType())) {
-            Type();
-        } else throwException(List.of(
+            return Type();
+        } else return throwException(List.of(
         "a type"
         ));
     }
 
-    private void Type() throws SyntacticException {
-        switch (token.getType()) {
+    private Token Type() throws SyntacticException {
+        return switch (token.getType()) {
             case kwBoolean, kwChar, kwInt, kwFloat -> PrimitiveType();
             case idClass -> ClassType();
             default -> throwException(List.of(
                 "a primitive type",
                 "a class type"
             ));
-        }
+        };
     }
 
-    private void PrimitiveType() throws SyntacticException {
-        switch (token.getType()) {
+    private Token PrimitiveType() throws SyntacticException {
+        return switch (token.getType()) {
             case kwBoolean -> match(TokenType.kwBoolean);
             case kwChar -> match(TokenType.kwChar);
             case kwInt -> match(TokenType.kwInt);
@@ -289,12 +327,13 @@ public class ParserImpl implements Parser {
                 TokenType.kwInt.toString(),
                 TokenType.kwFloat.toString()
             ));
-        }
+        };
     }
 
-    private void ClassType() throws SyntacticException {
-        match(TokenType.idClass);
+    private Token ClassType() throws SyntacticException {
+        Token token = match(TokenType.idClass);
         GenericTypeOptional();
+        return token;
     }
 
     private void GenericTypeOptional() throws SyntacticException {
@@ -317,7 +356,7 @@ public class ParserImpl implements Parser {
     }
 
     private void GenericTypeList() throws SyntacticException {
-        match(TokenType.idClass);
+        entity_generic_types.add(match(TokenType.idClass));
         GenericTypeListRest();
     }
 
@@ -376,8 +415,9 @@ public class ParserImpl implements Parser {
     }
 
     private void FormalArg() throws SyntacticException {
-        Type();
-        match(TokenType.idMetVar);
+        Token type = Type();
+        Token name = match(TokenType.idMetVar);
+        addParameter(type, name);
     }
 
 //------------------------------------------------------------------------------
@@ -1052,26 +1092,27 @@ public class ParserImpl implements Parser {
     }
 
     private void saveError(String message) {
-        if (token != null) {
-            if (!errors.containsKey(token.getLine()))
-                errors.put(token.getLine(), new Pair<>(new ArrayList<>(), ""));
+        if (token == null) return;
 
-            errors.get(token.getLine()).getFirst().add(new Error(
-                message,
-                token.getLexeme(),
-                token.getLine(),
-                token.getColumn(),
-                ErrorType.Syntactic
-            ));
-        }
+        if (!errors.containsKey(token.getLine()))
+            errors.put(token.getLine(), new Pair<>(new ArrayList<>(), ""));
+
+        errors.get(token.getLine()).getFirst().add(new Error(
+            message,
+            token.getLexeme(),
+            token.getLine(),
+            token.getColumn(),
+            ErrorType.Syntactic
+        ));
     }
 
-    private void throwException(List<String> expected) throws SyntacticException {
-        if (panic_mode) return;
+    private Token throwException(List<String> expected) throws SyntacticException {
+        if (panic_mode) return null;
         String message = Formater.expectedResult(expected, token);
         saveError(message);
         if (ParserConfig.CONTINUE_ON_ERROR) recoverFromError();
         else throw new SyntacticException(message);
+        return null;
     }
 
     private void recoverFromError() throws SyntacticException {
@@ -1085,5 +1126,156 @@ public class ParserImpl implements Parser {
 
     private void consumeTokens() throws SyntacticException {
         while (token != null && token.getType() != TokenType.EOF) token = getToken();
+    }
+
+//------------------------------------------------------------------------------
+
+    private void createClass() {
+        if (panic_mode) return;
+        SymbolTable.addClass(
+            entity_name_token.getLexeme(),
+            new Class(
+                entity_name_token.getLexeme(),
+                entity_name_token
+            )
+        );
+        SymbolTable.actualClass = SymbolTable.getClass(entity_name_token.getLexeme());
+    }
+
+    private void setName(Token name) {
+        entity_name_token = name;
+    }
+
+    private void setType(Token type) {
+        entity_type_token = type;
+    }
+
+    private void setSuperToken(Token super_token) {
+        if (panic_mode) return;
+        if (SymbolTable.actualClass != null) SymbolTable.actualClass.setSuperToken(super_token);
+    }
+
+    private void setStatic() {
+        entity_is_static = true;
+    }
+
+    private void setPrivate() {
+        entity_is_private = true;
+    }
+
+    private void setAbstractClass() {
+        if (panic_mode) return;
+        if (SymbolTable.actualClass != null) SymbolTable.actualClass.setAbstract();
+    }
+
+    private void createAttribute() {
+        if (panic_mode) return;
+        if (SymbolTable.actualClass != null) {
+            Attribute new_attribute = SymbolTable.actualClass.addAttribute(
+                entity_name_token.getLexeme(),
+                new Attribute(
+                    entity_name_token.getLexeme(),
+                    entity_name_token,
+                    entity_type_token,
+                    entity_is_static,
+                    entity_is_private
+                )
+            );
+        }
+    }
+
+    private void createMethod() {
+        if (panic_mode) return;
+        actualUnit = actualMethod = new Method(
+            withParameterSeparator(entity_name_token.getLexeme()),
+            entity_name_token
+        );
+        actualUnit.setReturn(entity_type_token);
+        if (entity_is_private) actualUnit.setPrivate();
+        if (entity_is_static) actualUnit.setStatic();
+        SymbolTable.actualMethod = actualMethod;
+    }
+
+    private void createConstructor() {
+        if (panic_mode) return;
+        actualUnit = actualConstructor = new Constructor(
+            withParameterSeparator(entity_name_token.getLexeme()),
+            entity_name_token
+        );
+        if (entity_is_private) actualUnit.setPrivate();
+        if (entity_is_static) actualUnit.setStatic();
+        SymbolTable.actualConstructor = actualConstructor;
+    }
+
+    private void createAbstractMethod() {
+        if (panic_mode) return;
+        actualUnit = actualAbstractMethod = new AbstractMethod(
+            withParameterSeparator(entity_name_token.getLexeme()),
+            entity_name_token
+        );
+        actualUnit.setReturn(entity_type_token);
+        if (entity_is_private) actualUnit.setPrivate();
+        if (entity_is_static) actualUnit.setStatic();
+        SymbolTable.actualAbstractMethod = actualAbstractMethod;
+    }
+
+    private void addParameter(Token type, Token name) {
+        if (panic_mode) return;
+        if (actualUnit != null) {
+            actualUnit.addParameter(name.getLexeme(), name, type);
+            actualUnit.setName(actualUnit.getName() + type.getLexeme() + ",");
+        }
+    }
+
+    private void saveMember() {
+        if (panic_mode) return;
+        if (SymbolTable.actualClass == null || actualUnit == null) return;
+
+        actualUnit.setName(removeLastChar(actualUnit.getName()));
+        //actualUnit.setName(withReturnType(actualUnit.getName(), actualUnit.getReturnToken()));
+
+        if (actualMethod != null) {
+            SymbolTable.actualClass.addMethod(actualMethod.getName(), actualMethod);
+        } else if (actualConstructor != null) {
+            SymbolTable.actualClass.setConstructor(actualConstructor);
+        } else if (actualAbstractMethod != null) {
+            SymbolTable.actualClass.addAbstractMethod(actualAbstractMethod.getName(), actualAbstractMethod);
+        }
+    }
+
+    private String withParameterSeparator(String name) {
+        return name + SemanticConfig.PARAMETER_TYPE_SEPARATOR;
+    }
+
+    private String removeLastChar(String string) {
+        return string != null? string.substring(0, actualUnit.getName().length()-1):null;
+    }
+
+    private String withReturnType(String string, Token returnType) {
+        return returnType != null? string + SemanticConfig.RETURN_TYPE_SEPARATOR + returnType.getLexeme() : string;
+    }
+
+    public void setGenericTypes() {
+        if (panic_mode) return;
+        entity_generic_types.forEach(type -> SymbolTable.actualClass.addGenericType(type.getLexeme(), type));
+        entity_generic_types.clear();
+    }
+
+    public void setSuperGenericTypes() {
+        if (panic_mode) return;
+        entity_generic_types.forEach(type -> SymbolTable.actualClass.addSuperGenericType(type.getLexeme(), type));
+        entity_generic_types.clear();
+    }
+
+    private void reset_entity() {
+        entity_type_token = null;
+        entity_name_token = null;
+        entity_is_static = false;
+        entity_is_private = false;
+        actualMethod = null;
+        actualConstructor = null;
+        actualAbstractMethod = null;
+        actualUnit = null;
+        entity_generic_types.clear();
     }
 }

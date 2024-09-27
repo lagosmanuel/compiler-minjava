@@ -3,6 +3,8 @@ package main.java.utils.sourcemanager;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SourceManagerImpl implements SourceManager {
     private int line;
@@ -11,12 +13,14 @@ public class SourceManagerImpl implements SourceManager {
     private char pushBackChar;
     private FileReader fileReader;
     private final StringBuilder stringBuilder;
+    private final Map<Integer, String> lines;
 
     public SourceManagerImpl() {
         line = 1;
         column = 0;
         hasLineEnded = false;
         stringBuilder = new StringBuilder();
+        lines = new HashMap<>();
     }
 
     @Override
@@ -27,6 +31,8 @@ public class SourceManagerImpl implements SourceManager {
     @Override
     public void close() throws IOException {
         fileReader.close();
+        lines.clear();
+        stringBuilder.delete(0, stringBuilder.length());
     }
 
     @Override
@@ -59,13 +65,19 @@ public class SourceManagerImpl implements SourceManager {
         ++column;
 
         if (ch != NEWLINE && ch != END_OF_FILE) stringBuilder.append(ch);
+        if (ch == END_OF_FILE) saveLine();
         return ch;
     }
 
     private void resetLine() {
+        saveLine();
         ++line;
         column = 0;
         stringBuilder.delete(0, stringBuilder.length());
+    }
+
+    private void saveLine() {
+        lines.put(line, stringBuilder.toString());
     }
 
     char getPushBackChar() {
@@ -97,5 +109,10 @@ public class SourceManagerImpl implements SourceManager {
     @Override
     public String getLineText() {
         return stringBuilder.toString();
+    }
+
+    @Override
+    public String getLineText(int lineNumber) {
+        return lines.get(lineNumber) != null? lines.get(lineNumber):"";
     }
 }
