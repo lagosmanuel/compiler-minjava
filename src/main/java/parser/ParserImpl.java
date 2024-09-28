@@ -1169,19 +1169,18 @@ public class ParserImpl implements Parser {
     }
 
     private void createAttribute() {
-        if (panic_mode) return;
-        if (SymbolTable.actualClass != null) {
-            Attribute new_attribute = SymbolTable.actualClass.addAttribute(
+        if (panic_mode || SymbolTable.actualClass == null) return;
+
+        SymbolTable.actualClass.addAttribute(
+            entity_name_token.getLexeme(),
+            new Attribute(
                 entity_name_token.getLexeme(),
-                new Attribute(
-                    entity_name_token.getLexeme(),
-                    entity_name_token,
-                    entity_type_token,
-                    entity_is_static,
-                    entity_is_private
-                )
-            );
-        }
+                entity_name_token,
+                entity_type_token,
+                entity_is_static,
+                entity_is_private
+            )
+        );
     }
 
     private void createMethod() {

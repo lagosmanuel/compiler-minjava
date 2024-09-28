@@ -150,7 +150,7 @@ public class Class extends Type {
         return attributes;
     }
 
-    public Attribute addAttribute(String attr_name, Attribute attribute) {
+    public void addAttribute(String attr_name, Attribute attribute) {
         if (attributes.containsKey(attr_name))
             SymbolTable.saveError(SemanticErrorMessages.ATTRIBUTE_ALREADY_DEFINED, attribute.getToken());
         else {
@@ -158,7 +158,6 @@ public class Class extends Type {
             if (attribute.isStatic()) class_attributes.addLast(attribute);
             else instance_attributes.addLast(attribute);
         }
-        return attribute;
     }
 
     public void addAttributes(String attr_name, List<Attribute> attr_list) {
