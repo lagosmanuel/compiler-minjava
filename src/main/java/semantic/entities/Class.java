@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class Class extends Type {
     protected final Map<String, Method> methods = new HashMap<>();
+    protected final Map<String, Constructor> constructors = new HashMap<>();
     protected final Map<String, AbstractMethod> abstractMethods = new HashMap<>();
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
     protected final Map<String, Token> generic_types = new HashMap<>();
@@ -22,7 +23,6 @@ public class Class extends Type {
     protected final List<Attribute> class_attributes = new ArrayList<>();
     protected final List<Method> methods_list = new ArrayList<>();
 
-    protected Constructor constructor;
     protected Token super_token = Object.token;
     protected boolean is_abstract;
     protected boolean is_consolidated = false;
@@ -38,7 +38,7 @@ public class Class extends Type {
         superNotDeclared();
         cyclicInheritance(Stream.of(token.getLexeme()).collect(Collectors.toSet()));
 
-        if (constructor != null) constructor.validate();
+        for (Constructor constructor:constructors.values()) constructor.validate();
         for (Method method:methods.values()) method.validate();
         for (AbstractMethod abstractMethod:abstractMethods.values()) abstractMethod.validate();
         for (List<Attribute> attribute_list:attributes.values()) attribute_list.getLast().validate();
@@ -118,14 +118,14 @@ public class Class extends Type {
 
 // ------------------------------------- Constructors  ----------------------------------------------------------------
 
-    public Constructor getConstructor() {
-        return constructor;
+    public Constructor getConstructor(String constructor_name) {
+        return constructors.get(constructor_name);
     }
 
-    public void setConstructor(Constructor constructor) {
-        if (this.constructor != null)
+    public void addConstructor(String constructor_name, Constructor constructor) {
+        if (constructors.containsKey(constructor_name))
             SymbolTable.saveError(SemanticErrorMessages.CONSTRUCTOR_ALREADY_DEFINED, constructor.getToken());
-        else this.constructor = constructor;
+        else constructors.put(constructor_name, constructor);
     }
 
 // -------------------------------------- Abstract Methods  -----------------------------------------------------------
