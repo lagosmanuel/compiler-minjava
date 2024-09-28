@@ -49,6 +49,7 @@ public class Class extends Type {
     public void consolidate() {
         if (Objects.equals(name, Object.name) || is_consolidated) return;
         Class superClass = SymbolTable.getClass(super_token.getLexeme());
+        superClass = superClass == null? Object.Class():superClass; // TODO: check
         superClass.consolidate();
         inheritAttributes(superClass);
         inheritMethods(superClass);
@@ -70,7 +71,7 @@ public class Class extends Type {
                 Method redefined = methods.get(method.getName());
 
                 if (!method.isCompatible(redefined))
-                    SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, method.getToken());
+                    SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
 
                 if (!method.isPrivate()) {
                     methods_list.remove(redefined);
