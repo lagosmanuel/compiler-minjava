@@ -22,7 +22,7 @@ public class TesterDeCasosConErrores {
     
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
-    private static final String testFilesDirectoryPath = "resources/test-cases/parser/conErrores/";
+    private static final String testFilesDirectoryPath = "resources/test-cases/semantic/conErrores/";
     private boolean fullCompilerOuputPrintingInEachTest = true;
      
     @Before
