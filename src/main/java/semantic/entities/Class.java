@@ -1,31 +1,43 @@
 package main.java.semantic.entities;
 
 import main.java.model.Token;
+
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.model.Entity;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.predefined.Object;
-import main.java.messages.SemanticErrorMessages;
-import main.java.exeptions.SemanticException;
 
-import java.util.*;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
-public class Class extends Type {
+import main.java.messages.SemanticErrorMessages;
+import main.java.exeptions.SemanticException;
+
+public class Class extends Entity {
     protected final Map<String, Method> methods = new HashMap<>();
     protected final Map<String, Constructor> constructors = new HashMap<>();
     protected final Map<String, AbstractMethod> abstractMethods = new HashMap<>();
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
     protected final Map<String, Token> generic_types = new HashMap<>();
-    protected final Map<String, Token> super_generic_types = new HashMap<>();
 
     protected final List<Attribute> instance_attributes = new ArrayList<>();
     protected final List<Attribute> class_attributes = new ArrayList<>();
     protected final List<Method> methods_list = new ArrayList<>();
 
-    protected Token super_token = Object.token;
+    protected Type super_type = Object.type;
     protected boolean is_abstract;
-    protected boolean is_consolidated = false;
+    protected boolean is_consolidated;
+
+    public Class(String class_name, Token class_token, List<Token> type_params_tokens) {
+        super(class_name, class_token);
+        type_params_tokens.forEach(type_param -> generic_types.put(type_param.getLexeme(), type_param));
+    }
 
     public Class(String class_name, Token class_token) {
         super(class_name, class_token);
@@ -36,7 +48,7 @@ public class Class extends Type {
         super.validate();
 
         superNotDeclared();
-        cyclicInheritance(Stream.of(token.getLexeme()).collect(Collectors.toSet()));
+        cyclicInheritance(Stream.of(getName()).collect(Collectors.toSet()));
 
         for (Constructor constructor:constructors.values()) constructor.validate();
         for (Method method:methods.values()) method.validate();
@@ -48,7 +60,7 @@ public class Class extends Type {
 
     public void consolidate() {
         if (Objects.equals(name, Object.name) || is_consolidated) return;
-        Class superClass = SymbolTable.getClass(super_token.getLexeme());
+        Class superClass = SymbolTable.getClass(super_type.getName());
         superClass = superClass == null? Object.Class():superClass; // TODO: check
         superClass.consolidate();
         inheritAttributes(superClass);
@@ -83,10 +95,10 @@ public class Class extends Type {
         });
     }
 
-    public void setSuperToken(Token super_token) {
-        if (hasGenericType(super_token.getLexeme()))
-            SymbolTable.saveError(SemanticErrorMessages.SUPERCLASS_GENERIC_TYPE, super_token);
-        else this.super_token = super_token;
+    public void setSuperType(Type super_type) {
+        if (hasGenericType(super_type.getName()))
+            SymbolTable.saveError(SemanticErrorMessages.SUPERCLASS_GENERIC_TYPE, super_type.getToken());
+        else this.super_type = super_type;
     }
 
     public boolean isAbstract() {
@@ -193,20 +205,6 @@ public class Class extends Type {
         else generic_types.put(generic_type_name, type_token);
     }
 
-    public boolean hasSuperGenericType(String super_generic_type_name) {
-        return super_generic_types.containsKey(super_generic_type_name);
-    }
-
-    public Token getSuperGenericType(String super_generic_type_name) {
-        return super_generic_types.get(super_generic_type_name);
-    }
-
-    public void addSuperGenericType(String super_generic_type_name, Token type_token) {
-        if (classNameAlreadyDefined(super_generic_type_name))
-            SymbolTable.saveError(SemanticErrorMessages.SUPER_GENERIC_TYPE_ALREADY_DEFINED, type_token);
-        else super_generic_types.put(super_generic_type_name, type_token);
-    }
-
 // -------------------------------------- Errors ---------------------------------------------------------------------
     private boolean methodNameAlreadyDefined(String unitName) {
         return (methods.containsKey(unitName) || abstractMethods.containsKey(unitName));
@@ -214,25 +212,24 @@ public class Class extends Type {
 
     private boolean classNameAlreadyDefined(String className) {
         return (generic_types.containsKey(className) ||
-                super_generic_types.containsKey(className) ||
-                Objects.equals(token.getLexeme(), className) ||
-                Objects.equals(super_token.getLexeme(), className));
+                Objects.equals(getName(), className) ||
+                Objects.equals(super_type.getName(), className));
     }
 
     private void cyclicInheritance(Set<String> visited) throws SemanticException {
-        if (Objects.equals(super_token.getLexeme(), Object.name)) return;
+        if (Objects.equals(super_type.getName(), Object.name)) return;
 
-        if (visited.contains(super_token.getLexeme())) {
-            SymbolTable.throwException(SemanticErrorMessages.CYCLIC_INHERITANCE, super_token);
+        if (visited.contains(super_type.getName())) {
+            SymbolTable.throwException(SemanticErrorMessages.CYCLIC_INHERITANCE, super_type.getToken());
         } else {
-            visited.add(super_token.getLexeme());
-            if (SymbolTable.hasClass(super_token.getLexeme()))
-                SymbolTable.getClass(super_token.getLexeme()).cyclicInheritance(visited);
+            visited.add(super_type.getName());
+            if (SymbolTable.hasClass(super_type.getName()))
+                SymbolTable.getClass(super_type.getName()).cyclicInheritance(visited);
         }
     }
 
     private void superNotDeclared() throws SemanticException {
-        if (!SymbolTable.hasClass(super_token.getLexeme()))
-            SymbolTable.throwException(SemanticErrorMessages.CLASS_NOT_DECLARED, super_token);
+        if (!SymbolTable.hasClass(super_type.getName()))
+            SymbolTable.throwException(SemanticErrorMessages.CLASS_NOT_DECLARED, super_type.getToken());
     }
 }

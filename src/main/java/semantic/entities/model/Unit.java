@@ -38,14 +38,14 @@ public abstract class Unit extends Entity {
         return return_type;
     }
 
-    public void setReturn(Token return_type_token) {
-        this.return_type = Type.createType(return_type_token);
+    public void setReturn(Type return_type) {
+        this.return_type = return_type;
     }
 
-    public void addParameter(String param_name, Token param_token, Token type_token) {
+    public void addParameter(String param_name, Parameter parameter) {
         if (parameters.containsKey(param_name))
-            SymbolTable.saveError(SemanticErrorMessages.PARAMETER_REDECLARATION, param_token);
-        else parameters.put(param_name, new Parameter(param_name, param_token, type_token));
+            SymbolTable.saveError(SemanticErrorMessages.PARAMETER_REDECLARATION, parameter.getToken());
+        else parameters.put(param_name, parameter);
     }
 
     @Override

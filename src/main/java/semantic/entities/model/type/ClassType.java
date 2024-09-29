@@ -6,9 +6,11 @@ import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 
+import java.util.List;
+
 public class ClassType extends Type {
-    public ClassType(String class_name, Token class_token) {
-        super(class_name, class_token);
+    public ClassType(String class_name, Token class_token, List<Token> type_params_tokens) {
+        super(class_name, class_token, type_params_tokens);
     }
 
     @Override

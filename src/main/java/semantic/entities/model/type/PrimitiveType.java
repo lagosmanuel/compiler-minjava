@@ -7,6 +7,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 
 import java.lang.String;
+import java.util.List;
 import java.util.Set;
 
 public class PrimitiveType extends Type {
@@ -14,8 +15,8 @@ public class PrimitiveType extends Type {
         "int", "float", "string", "boolean", "char", "void"
     );
 
-    public PrimitiveType(String type_name, Token type_token) {
-        super(type_name, type_token);
+    public PrimitiveType(String type_name, Token type_token, List<Token> type_params_tokens) {
+        super(type_name, type_token, type_params_tokens);
     }
 
     @Override

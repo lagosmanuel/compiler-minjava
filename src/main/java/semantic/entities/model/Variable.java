@@ -6,9 +6,9 @@ import main.java.exeptions.SemanticException;
 public abstract class Variable extends Entity {
     protected Type type;
 
-    public Variable(String var_name, Token var_token, Token type_token) {
+    public Variable(String var_name, Token var_token, Type var_type) {
         super(var_name, var_token);
-        this.type = Type.createType(type_token);
+        type = var_type;
     }
 
     @Override

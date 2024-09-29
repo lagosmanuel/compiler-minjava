@@ -1,24 +1,32 @@
 package main.java.parser;
 
-import main.java.config.SemanticConfig;
 import main.java.lexer.Lexer;
+import main.java.utils.Formater;
+import main.java.config.ParserConfig;
+import main.java.config.SemanticConfig;
+
 import main.java.model.Error;
 import main.java.model.Pair;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.model.ErrorType;
-import main.java.config.ParserConfig;
-import main.java.exeptions.LexicalException;
-import main.java.exeptions.SyntacticException;
+
 import main.java.semantic.SymbolTable;
-import main.java.semantic.entities.*;
 import main.java.semantic.entities.Class;
+import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.Attribute;
+import main.java.semantic.entities.Parameter;
 import main.java.semantic.entities.model.Unit;
-import main.java.utils.Formater;
+import main.java.semantic.entities.Method;
+import main.java.semantic.entities.Constructor;
+import main.java.semantic.entities.AbstractMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import main.java.exeptions.LexicalException;
+import main.java.exeptions.SyntacticException;
 
 public class ParserImpl implements Parser {
     private final Map<Integer, Pair<List<Error>, String>> errors;
@@ -101,9 +109,7 @@ public class ParserImpl implements Parser {
         match(TokenType.kwClass);
         setName(ClassType());
         createClass();
-        setGenericTypes();
         InheritanceOptional();
-        setSuperGenericTypes();
         match(TokenType.leftBrace);
         if (!panic_mode) MemberList();
         match(TokenType.rightBrace);
@@ -115,10 +121,8 @@ public class ParserImpl implements Parser {
         match(TokenType.kwClass);
         setName(ClassType());
         createClass();
-        setGenericTypes();
         setAbstractClass();
         InheritanceOptional();
-        setSuperGenericTypes();
         match(TokenType.leftBrace);
         if (!panic_mode) AbstractMemberList();
         match(TokenType.rightBrace);
@@ -128,7 +132,7 @@ public class ParserImpl implements Parser {
         switch (token.getType()) {
             case kwExtends -> {
                 match(TokenType.kwExtends);
-                setSuperToken(ClassType());
+                setSuperType(ClassType());
             }
             case leftBrace -> {
                 return;
@@ -1136,7 +1140,8 @@ public class ParserImpl implements Parser {
             entity_name_token.getLexeme(),
             new Class(
                 entity_name_token.getLexeme(),
-                entity_name_token
+                entity_name_token,
+                getGenericTypes()
             )
         );
         SymbolTable.actualClass = SymbolTable.getClass(entity_name_token.getLexeme());
@@ -1150,9 +1155,9 @@ public class ParserImpl implements Parser {
         entity_type_token = type;
     }
 
-    private void setSuperToken(Token super_token) {
-        if (panic_mode) return;
-        if (SymbolTable.actualClass != null) SymbolTable.actualClass.setSuperToken(super_token);
+    private void setSuperType(Token super_token) {
+        if (SymbolTable.actualClass == null || panic_mode) return;
+        SymbolTable.actualClass.setSuperType(Type.createType(super_token, getGenericTypes()));
     }
 
     private void setStatic() {
@@ -1176,7 +1181,7 @@ public class ParserImpl implements Parser {
             new Attribute(
                 entity_name_token.getLexeme(),
                 entity_name_token,
-                entity_type_token,
+                Type.createType(entity_type_token, getGenericTypes()),
                 entity_is_static,
                 entity_is_private
             )
@@ -1189,7 +1194,7 @@ public class ParserImpl implements Parser {
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
         );
-        actualUnit.setReturn(entity_type_token);
+        actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
         SymbolTable.actualMethod = actualMethod;
@@ -1212,17 +1217,21 @@ public class ParserImpl implements Parser {
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
         );
-        actualUnit.setReturn(entity_type_token);
+        actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
         SymbolTable.actualAbstractMethod = actualAbstractMethod;
     }
 
-    private void addParameter(Token type, Token name) {
+    private void addParameter(Token param_type_token, Token param_name_token) {
         if (panic_mode) return;
         if (actualUnit != null) {
-            actualUnit.addParameter(name.getLexeme(), name, type);
-            actualUnit.setName(actualUnit.getName() + type.getLexeme() + ",");
+            actualUnit.addParameter(param_name_token.getLexeme(), new Parameter(
+                param_name_token.getLexeme(),
+                param_name_token,
+                Type.createType(param_type_token, getGenericTypes())
+            ));
+            actualUnit.setName(actualUnit.getName() + param_type_token.getLexeme() + ",");
         }
     }
 
@@ -1231,7 +1240,6 @@ public class ParserImpl implements Parser {
         if (SymbolTable.actualClass == null || actualUnit == null) return;
 
         actualUnit.setName(removeLastChar(actualUnit.getName()));
-        //actualUnit.setName(withReturnType(actualUnit.getName(), actualUnit.getReturnToken()));
 
         if (actualMethod != null) {
             SymbolTable.actualClass.addMethod(actualMethod.getName(), actualMethod);
@@ -1250,20 +1258,10 @@ public class ParserImpl implements Parser {
         return string != null? string.substring(0, actualUnit.getName().length()-1):null;
     }
 
-    private String withReturnType(String string, Token returnType) {
-        return returnType != null? string + SemanticConfig.RETURN_TYPE_SEPARATOR + returnType.getLexeme() : string;
-    }
-
-    public void setGenericTypes() {
-        if (panic_mode) return;
-        entity_generic_types.forEach(type -> SymbolTable.actualClass.addGenericType(type.getLexeme(), type));
+    public List<Token> getGenericTypes() {
+        List<Token> list_copy = new ArrayList<>(entity_generic_types);
         entity_generic_types.clear();
-    }
-
-    public void setSuperGenericTypes() {
-        if (panic_mode) return;
-        entity_generic_types.forEach(type -> SymbolTable.actualClass.addSuperGenericType(type.getLexeme(), type));
-        entity_generic_types.clear();
+        return list_copy;
     }
 
     private void reset_entity() {
