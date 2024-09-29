@@ -13,6 +13,7 @@ public abstract class Variable extends Entity {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         type.validate();
     }

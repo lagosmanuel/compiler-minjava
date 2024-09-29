@@ -50,6 +50,7 @@ public abstract class Unit extends Entity {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         for (Parameter parameter : parameters.values())
             parameter.validate();

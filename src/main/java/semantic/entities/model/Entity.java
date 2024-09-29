@@ -6,7 +6,7 @@ import main.java.exeptions.SemanticException;
 public abstract class Entity {
     protected String name;
     protected Token token;
-    private boolean isValidated = false;
+    private boolean is_validated;
 
     public Entity(String name, Token token) {
         this.name = name;
@@ -26,11 +26,10 @@ public abstract class Entity {
     }
 
     public boolean isValidated() {
-        return isValidated;
+        return is_validated;
     }
 
     public void validate() throws SemanticException {
-        if (isValidated) return;
-        isValidated = true;
+        is_validated = true;
     }
 }

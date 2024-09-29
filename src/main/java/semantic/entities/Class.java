@@ -45,6 +45,7 @@ public class Class extends Entity {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
 
         superNotDeclared();
@@ -58,8 +59,10 @@ public class Class extends Entity {
         consolidate();
     }
 
-    public void consolidate() {
+    public void consolidate() throws SemanticException {
         if (Objects.equals(name, Object.name) || is_consolidated) return;
+        if (!isValidated()) validate();
+
         Class superClass = SymbolTable.getClass(super_type.getName());
         superClass = superClass == null? Object.Class():superClass; // TODO: check
         superClass.consolidate();

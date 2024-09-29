@@ -29,6 +29,7 @@ public class Attribute extends Variable {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         if (Objects.equals(type.getName(), "void"))
             SymbolTable.throwException(SemanticErrorMessages.ATTRIBUTE_VOID, type.getToken());

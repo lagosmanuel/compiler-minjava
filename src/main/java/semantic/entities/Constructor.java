@@ -15,6 +15,7 @@ public class Constructor extends Unit {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         if (!Objects.equals(getToken().getLexeme(), SymbolTable.actualClass.getName()))
             SymbolTable.throwException(SemanticErrorMessages.CONSTRUCTOR_NAME_MISMATCH, getToken());

@@ -12,6 +12,7 @@ public class AbstractMethod extends Method {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         if (!SymbolTable.actualClass.isAbstract())
             SymbolTable.throwException(SemanticErrorMessages.ABSTRACT_METHOD_IN_NON_ABSTRACT_CLASS, getToken());

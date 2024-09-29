@@ -14,6 +14,7 @@ public class Method extends Unit {
 
     @Override
     public void validate() throws SemanticException {
+        if (isValidated()) return;
         super.validate();
         if (is_static && Objects.equals(name, "main") && Objects.equals(return_type.getName(), "void")) //TODO: check
             SymbolTable.foundMain();
