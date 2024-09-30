@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class PrimitiveType extends Type {
     public static final Set<String> types = Set.of(
-        "int", "float", "string", "boolean", "char", "void"
+        "int", "float", "boolean", "char", "void"
     );
 
     public PrimitiveType(String type_name, Token type_token, List<Token> type_params_tokens) {

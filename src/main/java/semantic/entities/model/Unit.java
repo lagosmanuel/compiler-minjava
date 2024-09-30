@@ -22,6 +22,10 @@ public abstract class Unit extends Entity {
         this.parameters = new HashMap<>();
     }
 
+    public boolean isStatic() {
+        return is_static;
+    }
+
     public void setStatic() {
         this.is_static = true;
     }
@@ -52,7 +56,7 @@ public abstract class Unit extends Entity {
     public void validate() throws SemanticException {
         if (isValidated()) return;
         super.validate();
-        for (Parameter parameter : parameters.values())
+        for (Parameter parameter:parameters.values())
             parameter.validate();
         if (return_type != null) return_type.validate();
     }

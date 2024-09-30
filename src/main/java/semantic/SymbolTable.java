@@ -44,17 +44,18 @@ public class SymbolTable {
         hasMain = true;
     }
 
-    public static boolean hasClass(String name) {
-        return classes.containsKey(name);
+    public static boolean hasClass(String class_name) {
+        return classes.containsKey(class_name);
     }
 
-    public static Class getClass(String name) {
-        return classes.get(name);
+    public static Class getClass(String class_name) {
+        return classes.get(class_name);
     }
 
-    public static void addClass(String name, Class newClass) {
-        if (!classes.containsKey(name)) classes.put(name, newClass);
-        else saveError(SemanticErrorMessages.CLASS_REDECLARATION, newClass.getToken());
+    public static void addClass(String class_name, Class newClass) {
+        if (classes.containsKey(class_name))
+            saveError(SemanticErrorMessages.CLASS_REDECLARATION, newClass.getToken());
+        else classes.put(class_name, newClass);
     }
 
     public static void resetActualClass() {

@@ -17,7 +17,7 @@ public class ClassType extends Type {
     public void validate() throws SemanticException {
         if (isValidated()) return;
         super.validate();
-        if (!SymbolTable.hasClass(getName()) && !SymbolTable.actualClass.hasGenericType(getName()))
+        if (!SymbolTable.hasClass(getName()) && !SymbolTable.actualClass.hasTypeParameter(getName()))
             SymbolTable.throwException(SemanticErrorMessages.TYPE_NOTFOUND, getToken());
     }
 }

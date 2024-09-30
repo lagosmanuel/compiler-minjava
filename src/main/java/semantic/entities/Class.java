@@ -24,11 +24,12 @@ public class Class extends Entity {
     protected final Map<String, Constructor> constructors = new HashMap<>();
     protected final Map<String, AbstractMethod> abstractMethods = new HashMap<>();
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
-    protected final Map<String, Token> generic_types = new HashMap<>();
+    protected final Map<String, Token> type_parameters = new HashMap<>();
 
     protected final List<Attribute> instance_attributes = new ArrayList<>();
     protected final List<Attribute> class_attributes = new ArrayList<>();
-    protected final List<Method> methods_list = new ArrayList<>();
+    protected final List<Method> static_methods_list = new ArrayList<>();
+    protected final List<Method> dynamic_methods_list = new ArrayList<>();
 
     protected Type super_type = Object.type;
     protected boolean is_abstract;
@@ -36,7 +37,7 @@ public class Class extends Entity {
 
     public Class(String class_name, Token class_token, List<Token> type_params_tokens) {
         super(class_name, class_token);
-        type_params_tokens.forEach(type_param -> generic_types.put(type_param.getLexeme(), type_param));
+        type_params_tokens.forEach(this::addTypeParameter);
     }
 
     public Class(String class_name, Token class_token) {
@@ -54,18 +55,23 @@ public class Class extends Entity {
         for (Constructor constructor:constructors.values()) constructor.validate();
         for (Method method:methods.values()) method.validate();
         for (AbstractMethod abstractMethod:abstractMethods.values()) abstractMethod.validate();
-        for (List<Attribute> attribute_list:attributes.values()) attribute_list.getLast().validate();
+        for (List<Attribute> attribute_list:attributes.values()) attribute_list.getFirst().validate();
 
         consolidate();
     }
 
     public void consolidate() throws SemanticException {
-        if (Objects.equals(name, Object.name) || is_consolidated) return;
+        if (Objects.equals(name, Object.name)) return;
         if (!isValidated()) validate();
+        if (is_consolidated) return;
 
         Class superClass = SymbolTable.getClass(super_type.getName());
         superClass = superClass == null? Object.Class():superClass; // TODO: check
+
+        SymbolTable.actualClass = superClass;
         superClass.consolidate();
+        SymbolTable.actualClass = this;
+
         inheritAttributes(superClass);
         inheritMethods(superClass);
         is_consolidated = true;
@@ -78,28 +84,33 @@ public class Class extends Entity {
     }
 
     private void inheritMethods(Class superClass) {
-        superClass.getMethods().reversed().forEach(method -> {
-            if (!methods.containsKey(method.getName())) {
-                if (!method.isPrivate()) methods.put(method.getName(), method);
-                methods_list.addFirst(method);
+        superClass.getStaticMethods().reversed().forEach(this::inheritMethod);
+        superClass.getDynamicMethods().reversed().forEach(this::inheritMethod);
+    }
+
+    private void inheritMethod(Method method) {
+        List<Method> methods_list = method.isStatic()? static_methods_list:dynamic_methods_list;
+
+        if (!methods.containsKey(method.getName())) {
+            if (!method.isPrivate()) methods.put(method.getName(), method);
+            methods_list.addFirst(method);
+        } else {
+            Method redefined = methods.get(method.getName());
+
+            if (!method.isCompatible(redefined))
+                SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
+
+            if (!method.isPrivate()) {
+                methods_list.remove(redefined);
+                methods_list.addFirst(redefined);
             } else {
-                Method redefined = methods.get(method.getName());
-
-                if (!method.isCompatible(redefined))
-                    SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
-
-                if (!method.isPrivate()) {
-                    methods_list.remove(redefined);
-                    methods_list.addFirst(redefined);
-                } else {
-                    methods_list.addFirst(method);
-                }
+                methods_list.addFirst(method);
             }
-        });
+        }
     }
 
     public void setSuperType(Type super_type) {
-        if (hasGenericType(super_type.getName()))
+        if (hasTypeParameter(super_type.getName()))
             SymbolTable.saveError(SemanticErrorMessages.SUPERCLASS_GENERIC_TYPE, super_type.getToken());
         else this.super_type = super_type;
     }
@@ -118,8 +129,12 @@ public class Class extends Entity {
         return methods.get(method_name);
     }
 
-    public List<Method> getMethods() {
-        return methods_list;
+    public List<Method> getStaticMethods() {
+        return static_methods_list;
+    }
+
+    public List<Method> getDynamicMethods() {
+        return dynamic_methods_list;
     }
 
     public void addMethod(String method_name, Method method) {
@@ -127,7 +142,8 @@ public class Class extends Entity {
             SymbolTable.saveError(SemanticErrorMessages.METHOD_ALREADY_DEFINED, method.getToken());
         } else {
             methods.put(method_name, method);
-            methods_list.add(method);
+            if (method.isStatic()) static_methods_list.add(method);
+            else dynamic_methods_list.addFirst(method);
         }
     }
 
@@ -176,7 +192,7 @@ public class Class extends Entity {
     }
 
     public void addAttributes(String attr_name, List<Attribute> attr_list) {
-        if (attr_list.isEmpty()) return;
+        if (attr_list == null || attr_list.isEmpty()) return;
         if (attributes.containsKey(attr_name)) attributes.get(attr_name).addAll(attr_list);
         else attributes.put(attr_name, attr_list);
     }
@@ -194,29 +210,23 @@ public class Class extends Entity {
     }
 // ------------------------------------- Generics --------------------------------------------------------------------
 
-    public boolean hasGenericType(String generic_type_name) {
-        return generic_types.containsKey(generic_type_name);
+    public boolean hasTypeParameter(String type_param_name) {
+        return type_parameters.containsKey(type_param_name);
     }
 
-    public Token getGenericType(String generic_type_name) {
-        return generic_types.get(generic_type_name);
+    public Token getTypeParameter(String type_param_name) {
+        return type_parameters.get(type_param_name);
     }
 
-    public void addGenericType(String generic_type_name, Token type_token) {
-        if (classNameAlreadyDefined(generic_type_name))
-            SymbolTable.saveError(SemanticErrorMessages.GENERIC_TYPE_ALREADY_DEFINED, type_token);
-        else generic_types.put(generic_type_name, type_token);
+    public void addTypeParameter(Token type_param_token) {
+        if (type_parameters.containsKey(type_param_token.getLexeme()))
+            SymbolTable.saveError(SemanticErrorMessages.GENERIC_TYPE_ALREADY_DEFINED, type_param_token);
+        else type_parameters.put(type_param_token.getLexeme(), type_param_token);
     }
 
 // -------------------------------------- Errors ---------------------------------------------------------------------
     private boolean methodNameAlreadyDefined(String unitName) {
         return (methods.containsKey(unitName) || abstractMethods.containsKey(unitName));
-    }
-
-    private boolean classNameAlreadyDefined(String className) {
-        return (generic_types.containsKey(className) ||
-                Objects.equals(getName(), className) ||
-                Objects.equals(super_type.getName(), className));
     }
 
     private void cyclicInheritance(Set<String> visited) throws SemanticException {
