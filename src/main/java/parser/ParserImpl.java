@@ -20,6 +20,7 @@ import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.Method;
 import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.AbstractMethod;
+import main.java.semantic.entities.model.type.TypeVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1258,10 +1259,16 @@ public class ParserImpl implements Parser {
         return string != null? string.substring(0, actualUnit.getName().length()-1):null;
     }
 
-    public List<Token> getGenericTypes() {
-        List<Token> list_copy = new ArrayList<>(entity_generic_types);
+    public List<TypeVar> getGenericTypes() {
+        List<TypeVar> type_vars = new ArrayList<>();
+        entity_generic_types.forEach(token -> type_vars.add(
+            new TypeVar(
+                token.getLexeme(),
+                token
+            )
+        ));
         entity_generic_types.clear();
-        return list_copy;
+        return type_vars;
     }
 
     private void reset_entity() {

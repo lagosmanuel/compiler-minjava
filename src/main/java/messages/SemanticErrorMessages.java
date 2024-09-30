@@ -9,7 +9,6 @@ public class SemanticErrorMessages {
     public static final String ABSTRACT_METHOD_ALREADY_DEFINED = "Abstract method is already defined";
     public static final String ATTRIBUTE_ALREADY_DEFINED = "Attribute is already defined";
     public static final String GENERIC_TYPE_ALREADY_DEFINED = "Generic Type Parameter is already defined";
-    public static final String SUPER_GENERIC_TYPE_ALREADY_DEFINED = "Superclass Generic Type Parameter is already defined";
     public static final String SUPERCLASS_GENERIC_TYPE = "Superclass type cannot be a type variable";
     public static final String CYCLIC_INHERITANCE = "Cyclic inheritance detected";
     public static final String ATTRIBUTE_VOID = "Attribute cannot be of type void";
@@ -20,4 +19,6 @@ public class SemanticErrorMessages {
     public static final String ABSTRACT_METHOD_STATIC = "Abstract method cannot be static";
     public static final String MAIN_NOT_FOUND = "Main method not found";
     public static final String METHOD_BAD_REDEFINED = "Method redefinition is not compatible";
+    public static final String INVALID_TYPE_PARAMETERS_COUNT = "Invalid type parameters count";
+    public static final String TYPE_PARAMETER_RECURSIVE = "Type parameter cannot have type parameters";
 }

@@ -5,6 +5,7 @@ import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Entity;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.predefined.Object;
 
 import java.util.Set;
@@ -24,7 +25,7 @@ public class Class extends Entity {
     protected final Map<String, Constructor> constructors = new HashMap<>();
     protected final Map<String, AbstractMethod> abstractMethods = new HashMap<>();
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
-    protected final Map<String, Token> type_parameters = new HashMap<>();
+    protected final Map<String, TypeVar> type_parameters = new HashMap<>();
 
     protected final List<Attribute> instance_attributes = new ArrayList<>();
     protected final List<Attribute> class_attributes = new ArrayList<>();
@@ -35,9 +36,9 @@ public class Class extends Entity {
     protected boolean is_abstract;
     protected boolean is_consolidated;
 
-    public Class(String class_name, Token class_token, List<Token> type_params_tokens) {
+    public Class(String class_name, Token class_token, List<TypeVar> type_params) {
         super(class_name, class_token);
-        type_params_tokens.forEach(this::addTypeParameter);
+        type_params.forEach(this::addTypeParameter);
     }
 
     public Class(String class_name, Token class_token) {
@@ -49,7 +50,7 @@ public class Class extends Entity {
         if (isValidated()) return;
         super.validate();
 
-        superNotDeclared();
+        super_type.validate();
         cyclicInheritance(Stream.of(getName()).collect(Collectors.toSet()));
 
         for (Constructor constructor:constructors.values()) constructor.validate();
@@ -214,14 +215,22 @@ public class Class extends Entity {
         return type_parameters.containsKey(type_param_name);
     }
 
-    public Token getTypeParameter(String type_param_name) {
+    public TypeVar getTypeParameter(String type_param_name) {
         return type_parameters.get(type_param_name);
     }
 
-    public void addTypeParameter(Token type_param_token) {
-        if (type_parameters.containsKey(type_param_token.getLexeme()))
-            SymbolTable.saveError(SemanticErrorMessages.GENERIC_TYPE_ALREADY_DEFINED, type_param_token);
-        else type_parameters.put(type_param_token.getLexeme(), type_param_token);
+    public List<TypeVar> getTypeParameters() {
+        return type_parameters.values().stream().toList();
+    }
+
+    public int getTypeParametersCount() {
+        return type_parameters.size();
+    }
+
+    public void addTypeParameter(TypeVar type_var) {
+        if (type_parameters.containsKey(type_var.getName()))
+            SymbolTable.saveError(SemanticErrorMessages.GENERIC_TYPE_ALREADY_DEFINED, type_var.getToken());
+        else type_parameters.put(type_var.getName(), type_var);
     }
 
 // -------------------------------------- Errors ---------------------------------------------------------------------
@@ -239,10 +248,5 @@ public class Class extends Entity {
             if (SymbolTable.hasClass(super_type.getName()))
                 SymbolTable.getClass(super_type.getName()).cyclicInheritance(visited);
         }
-    }
-
-    private void superNotDeclared() throws SemanticException {
-        if (!SymbolTable.hasClass(super_type.getName()))
-            SymbolTable.throwException(SemanticErrorMessages.CLASS_NOT_DECLARED, super_type.getToken());
     }
 }
