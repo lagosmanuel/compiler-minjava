@@ -16,7 +16,10 @@ public class Method extends Unit {
     public void validate() throws SemanticException {
         if (isValidated()) return;
         super.validate();
-        if (is_static && Objects.equals(name, "main") && Objects.equals(return_type.getName(), "void")) //TODO: check
-            SymbolTable.foundMain();
+
+        if (!isPrivate() &&
+            isStatic() &&
+            Objects.equals(return_type.getName(), "void") &&
+            Objects.equals(name, "main")) SymbolTable.foundMain();
     }
 }

@@ -37,7 +37,7 @@ public class SymbolTable {
 
     public static void validate() throws SemanticException {
         for (Class myClass:classes.values()) { actualClass = myClass; myClass.validate(); }
-        if (!hasMain) throwException(SemanticErrorMessages.MAIN_NOT_FOUND, EOF); // TODO: check
+        if (!hasMain) throwException(SemanticErrorMessages.MAIN_NOT_FOUND, EOF);
     }
 
     public static void foundMain() {

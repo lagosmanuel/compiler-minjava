@@ -67,7 +67,7 @@ public class Class extends Entity {
         if (is_consolidated) return;
 
         Class superClass = SymbolTable.getClass(super_type.getName());
-        superClass = superClass == null? Object.Class():superClass; // TODO: check
+        superClass = superClass == null? Object.Class():superClass;
 
         SymbolTable.actualClass = superClass;
         superClass.consolidate();
