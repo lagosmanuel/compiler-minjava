@@ -80,19 +80,19 @@ public class SourceManagerImpl implements SourceManager {
         lines.put(line, stringBuilder.toString());
     }
 
-    char getPushBackChar() {
+    private char getPushBackChar() {
         return pushBackChar;
     }
 
-    boolean hasPushBackChar() {
+    private boolean hasPushBackChar() {
         return pushBackChar != 0;
     }
 
-    void setPushBackChar(char pushBackChar) {
+    private void setPushBackChar(char pushBackChar) {
         this.pushBackChar = pushBackChar;
     }
 
-    void resetPushBackChar() {
+    private void resetPushBackChar() {
         pushBackChar = 0;
     }
 
@@ -113,6 +113,6 @@ public class SourceManagerImpl implements SourceManager {
 
     @Override
     public String getLineText(int lineNumber) {
-        return lines.get(lineNumber) != null? lines.get(lineNumber):"";
+        return lines.getOrDefault(lineNumber, "");
     }
 }
