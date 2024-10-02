@@ -72,7 +72,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printSnl@String", method);
+        system.addMethod("printSln@String", method);
     }
 
     private static void addMethodPrintIln() {
