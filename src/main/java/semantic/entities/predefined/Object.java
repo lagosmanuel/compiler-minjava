@@ -3,8 +3,11 @@ package main.java.semantic.entities.predefined;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.entities.Class;
+import main.java.semantic.entities.Method;
+import main.java.semantic.entities.Parameter;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.ClassType;
+import main.java.semantic.entities.model.type.PrimitiveType;
 
 public class Object {
     private static boolean initialized = false;
@@ -28,5 +31,45 @@ public class Object {
 
     private static void init() {
         initialized = true;
+        addDebugPrint();
+    }
+
+    private static void addDebugPrint() {
+        Method method = new Method(
+            "debugPrint@int",
+            new Token(
+                TokenType.idMetVar,
+                "debugPrint",
+                0,
+                0
+            )
+        );
+
+        method.setStatic();
+
+        method.setReturn(new PrimitiveType("void", new Token(
+            TokenType.idMetVar,
+            "void",
+            0,
+            0
+        )));
+
+        method.addParameter("i", new Parameter(
+            "i",
+            new Token(
+                TokenType.idMetVar,
+                "i",
+                0,
+                0
+            ),
+            new PrimitiveType("int", new Token(
+                TokenType.idMetVar,
+                "int",
+                0,
+                0
+            ))
+        ));
+
+        object.addMethod("debugPrint@int", method);
     }
 }
