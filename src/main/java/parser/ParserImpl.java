@@ -1170,12 +1170,12 @@ public class ParserImpl implements Parser {
     }
 
     private void setAbstractClass() {
-        if (panic_mode) return;
-        if (SymbolTable.actualClass != null) SymbolTable.actualClass.setAbstract();
+        if (SymbolTable.actualClass == null || panic_mode) return;
+        SymbolTable.actualClass.setAbstract();
     }
 
     private void createAttribute() {
-        if (panic_mode || SymbolTable.actualClass == null) return;
+        if (SymbolTable.actualClass == null || panic_mode) return;
 
         SymbolTable.actualClass.addAttribute(
             entity_name_token.getLexeme(),
@@ -1225,20 +1225,17 @@ public class ParserImpl implements Parser {
     }
 
     private void addParameter(Token param_type_token, Token param_name_token) {
-        if (panic_mode) return;
-        if (actualUnit != null) {
-            actualUnit.addParameter(param_name_token.getLexeme(), new Parameter(
-                param_name_token.getLexeme(),
-                param_name_token,
-                Type.createType(param_type_token, getGenericTypes())
-            ));
-            actualUnit.setName(actualUnit.getName() + param_type_token.getLexeme() + ",");
-        }
+        if (actualUnit == null || panic_mode) return;
+        actualUnit.addParameter(param_name_token.getLexeme(), new Parameter(
+            param_name_token.getLexeme(),
+            param_name_token,
+            Type.createType(param_type_token, getGenericTypes())
+        ));
+        actualUnit.setName(actualUnit.getName() + param_type_token.getLexeme() + ",");
     }
 
     private void saveMember() {
-        if (panic_mode) return;
-        if (SymbolTable.actualClass == null || actualUnit == null) return;
+        if (SymbolTable.actualClass == null || actualUnit == null || panic_mode) return;
 
         actualUnit.setName(removeLastChar(actualUnit.getName()));
 
@@ -1256,7 +1253,7 @@ public class ParserImpl implements Parser {
     }
 
     private String removeLastChar(String string) {
-        return string != null? string.substring(0, actualUnit.getName().length()-1):null;
+        return string != null? string.substring(0, string.length()-1):null;
     }
 
     public List<TypeVar> getGenericTypes() {
