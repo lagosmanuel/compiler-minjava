@@ -72,6 +72,18 @@ public class SymbolTable {
         SymbolTable.EOF = EOF;
     }
 
+    public static Constructor getNewDefaultConstructor() {
+        return new Constructor(
+            actualClass.getName(),
+            new Token(
+                TokenType.idClass,
+                actualClass.getName(),
+                0,
+                0
+            )
+        );
+    }
+
 // --------------------------------------------------------------------------------------------------------------------
 
     private static void addPrimitiveClasses() {

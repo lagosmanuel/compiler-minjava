@@ -58,6 +58,12 @@ public class Class extends Entity {
         for (AbstractMethod abstractMethod:abstractMethods.values()) abstractMethod.validate();
         for (List<Attribute> attribute_list:attributes.values()) attribute_list.getFirst().validate();
 
+        if (constructors.isEmpty()) {
+            Constructor constructor = SymbolTable.getNewDefaultConstructor();
+            constructor.validate();
+            addConstructor(constructor.getName(), constructor);
+        }
+
         consolidate();
     }
 
