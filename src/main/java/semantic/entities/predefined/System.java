@@ -42,7 +42,7 @@ public class System {
 
     private static void addMethodPrintSln() {
         Method method = new Method(
-            "printSln@String",
+            "printSln@X",
             new Token(
                 TokenType.idMetVar,
                 "printSln",
@@ -72,12 +72,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printSln@String", method);
+        system.addMethod("printSln@X", method);
     }
 
     private static void addMethodPrintIln() {
         Method method = new Method(
-            "printIln@int",
+            "printIln@X",
             new Token(
                 TokenType.idMetVar,
                 "printIln",
@@ -107,12 +107,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printIln@int", method);
+        system.addMethod("printIln@X", method);
     }
 
     private static void addMethodPrintCln() {
         Method method = new Method(
-            "printCln@char",
+            "printCln@X",
             new Token(
                 TokenType.idMetVar,
                 "printCln",
@@ -142,12 +142,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printCln@char", method);
+        system.addMethod("printCln@X", method);
     }
 
     private static void addMethodPrintBln() {
         Method method = new Method(
-            "printBln@boolean",
+            "printBln@X",
             new Token(
                 TokenType.idMetVar,
                 "printBln",
@@ -177,7 +177,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printBln@boolean", method);
+        system.addMethod("printBln@X", method);
     }
 
     private static void addMethodPrintln() {
@@ -202,7 +202,7 @@ public class System {
 
     private static void addMethodPrintS() {
         Method method = new Method(
-            "printS@String",
+            "printS@X",
             new Token(
                 TokenType.idMetVar,
                 "printS",
@@ -232,12 +232,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printS@String", method);
+        system.addMethod("printS@X", method);
     }
 
     private static void addMethodPrintI() {
         Method method = new Method(
-            "printI@int",
+            "printI@X",
             new Token(
                 TokenType.idMetVar,
                 "printI",
@@ -267,12 +267,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printI@int", method);
+        system.addMethod("printI@X", method);
     }
 
     private static void addMethodPrintC() {
         Method method = new Method(
-            "printC@char",
+            "printC@X",
             new Token(
                 TokenType.idMetVar,
                 "printC",
@@ -302,12 +302,12 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printC@char", method);
+        system.addMethod("printC@X", method);
     }
 
     private static void addMethodPrintB() {
         Method method = new Method(
-            "printB@boolean",
+            "printB@X",
             new Token(
                 TokenType.idMetVar,
                 "printB",
@@ -337,7 +337,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printB@boolean", method);
+        system.addMethod("printB@X", method);
     }
 
     private static void addMethodRead() {

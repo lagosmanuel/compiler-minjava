@@ -11,6 +11,10 @@ public abstract class Variable extends Entity {
         type = var_type;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public void validate() throws SemanticException {
         if (isValidated()) return;

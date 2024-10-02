@@ -36,7 +36,7 @@ public class Object {
 
     private static void addDebugPrint() {
         Method method = new Method(
-            "debugPrint@int",
+            "debugPrint@X",
             new Token(
                 TokenType.idMetVar,
                 "debugPrint",
@@ -70,6 +70,6 @@ public class Object {
             ))
         ));
 
-        object.addMethod("debugPrint@int", method);
+        object.addMethod("debugPrint@X", method);
     }
 }

@@ -6,13 +6,16 @@ import main.java.semantic.entities.Parameter;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 
 public abstract class Unit extends Entity {
     protected Type return_type;
     protected final Map<String, Parameter> parameters;
+    protected final List<Parameter> parameter_list = new ArrayList<>();
 
     protected boolean is_private = false;
     protected boolean is_static = false;
@@ -47,9 +50,12 @@ public abstract class Unit extends Entity {
     }
 
     public void addParameter(String param_name, Parameter parameter) {
-        if (parameters.containsKey(param_name))
+        if (parameters.containsKey(param_name)) {
             SymbolTable.saveError(SemanticErrorMessages.PARAMETER_REDECLARATION, parameter.getToken());
-        else parameters.put(param_name, parameter);
+        } else {
+            parameters.put(param_name, parameter);
+            parameter_list.add(parameter);
+        }
     }
 
     @Override
@@ -65,6 +71,17 @@ public abstract class Unit extends Entity {
         return Objects.equals(name, unit.name) &&
                Objects.equals(return_type.getName(), unit.return_type.getName()) &&
                is_static == unit.is_static &&
-               is_private == unit.is_private;
+               is_private == unit.is_private &&
+               parametersMatch(unit);
+    }
+
+    public boolean parametersMatch(Unit unit) {
+        boolean match = parameter_list.size() == unit.parameter_list.size();
+        for (int i = 0; i < parameter_list.size() && match; ++i)
+            match = Objects.equals(
+                parameter_list.get(i).getType().getName(),
+                unit.parameter_list.get(i).getType().getName()
+            );
+        return match;
     }
 }

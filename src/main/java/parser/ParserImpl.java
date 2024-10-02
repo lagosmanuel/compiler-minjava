@@ -1231,13 +1231,14 @@ public class ParserImpl implements Parser {
             param_name_token,
             Type.createType(param_type_token, getGenericTypes())
         ));
-        actualUnit.setName(actualUnit.getName() + param_type_token.getLexeme() + ",");
+        actualUnit.setName(actualUnit.getName() + SemanticConfig.PARAMETER_TYPE_COUNTER);
     }
 
     private void saveMember() {
         if (SymbolTable.actualClass == null || actualUnit == null || panic_mode) return;
 
-        actualUnit.setName(removeLastChar(actualUnit.getName()));
+        if (actualUnit.getName().endsWith(SemanticConfig.PARAMETER_TYPE_SEPARATOR))
+            actualUnit.setName(removeLastChar(actualUnit.getName()));
 
         if (actualMethod != null) {
             SymbolTable.actualClass.addMethod(actualMethod.getName(), actualMethod);
