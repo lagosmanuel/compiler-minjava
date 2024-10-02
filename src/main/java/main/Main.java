@@ -105,11 +105,13 @@ public class Main {
     }
 
     private static void showErrors(Map<Integer, Pair<List<Error>, String>> errors) {
-        System.out.println();
         errors.keySet().stream().sorted().forEach(line ->
-            errors.get(line).getFirst().forEach(error -> {
-                System.out.println(Formater.formatError(error, sourceManager.getLineText(line)));
-            })
+            errors.get(line).getFirst().forEach(error ->
+                System.out.println("\n" + Formater.formatError(
+                    error,
+                    sourceManager.getLineText(line))
+                )
+            )
         );
     }
 }
