@@ -10,8 +10,8 @@ import main.java.exeptions.SemanticException;
 import java.util.Objects;
 
 public class Attribute extends Variable {
-    protected boolean is_private;
-    protected boolean is_static;
+    protected final boolean is_private;
+    protected final boolean is_static;
 
     public Attribute(String attr_name, Token attr_token, Type attr_type, boolean is_static, boolean is_private) {
         super(attr_name, attr_token, attr_type);

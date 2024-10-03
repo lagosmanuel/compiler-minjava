@@ -5,7 +5,7 @@ import main.java.exeptions.SemanticException;
 
 public abstract class Entity {
     protected String name;
-    protected Token token;
+    protected final Token token;
     private boolean is_validated;
 
     public Entity(String name, Token token) {

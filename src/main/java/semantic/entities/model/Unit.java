@@ -51,7 +51,13 @@ public abstract class Unit extends Entity {
 
     public void addParameter(String param_name, Parameter parameter) {
         if (parameters.containsKey(param_name)) {
-            SymbolTable.saveError(SemanticErrorMessages.PARAMETER_REDECLARATION, parameter.getToken());
+            SymbolTable.saveError(
+                String.format(
+                    SemanticErrorMessages.PARAMETER_DUPLICATE,
+                    param_name
+                ),
+                parameter.getToken()
+            );
         } else {
             parameters.put(param_name, parameter);
             parameter_list.add(parameter);

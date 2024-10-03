@@ -23,8 +23,13 @@ public class ClassType extends Type {
         super.validate();
 
         if (!SymbolTable.hasClass(getName()) && !SymbolTable.actualClass.hasTypeParameter(getName()))
-            SymbolTable.throwException(SemanticErrorMessages.CLASS_NOT_DECLARED, getToken());
-
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CLASS_NOT_DECLARED,
+                    getName()
+                ),
+                getToken()
+            );
         if (SymbolTable.actualClass.hasTypeParameter(getName()) && getTypeParamsCount() > 0) {
             SymbolTable.throwException(SemanticErrorMessages.TYPE_PARAMETER_RECURSIVE, getToken());
         } else if (SymbolTable.hasClass(getName())) {

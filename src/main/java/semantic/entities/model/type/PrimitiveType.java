@@ -21,7 +21,12 @@ public class PrimitiveType extends Type {
     public void validate() throws SemanticException {
         if (isValidated()) return;
         super.validate();
-        if (!types.contains(getName()))
-            SymbolTable.throwException(SemanticErrorMessages.TYPE_NOTFOUND, getToken());
+        if (!types.contains(getName())) SymbolTable.throwException(
+            String.format(
+                SemanticErrorMessages.TYPE_NOTFOUND,
+                getName()
+            ),
+            getToken()
+        );
     }
 }

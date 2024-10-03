@@ -8,6 +8,7 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.predefined.Object;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
@@ -81,6 +82,9 @@ public class Class extends Entity {
 
         inheritAttributes(superClass);
         inheritMethods(superClass);
+        inheritAbstractMethods(superClass);
+        if(!isAbstract() && !abstractMethods.isEmpty()) abstractMethodsNotImplemented();
+
         is_consolidated = true;
     }
 
@@ -93,6 +97,22 @@ public class Class extends Entity {
     private void inheritMethods(Class superClass) {
         superClass.getStaticMethods().reversed().forEach(this::inheritMethod);
         superClass.getDynamicMethods().reversed().forEach(this::inheritMethod);
+    }
+
+    private void inheritAbstractMethods(Class superClass) {
+        superClass.getAbstractMethods().forEach(method -> {
+            if (abstractMethods.containsKey(method.getName())) {
+                SymbolTable.saveError(
+                    SemanticErrorMessages.ABSTRACT_METHOD_REDEFINED,
+                    abstractMethods.get(method.getName()).getToken()
+                );
+            } else if (methods.containsKey(method.getName())) {
+                if (!methods.get(method.getName()).isCompatible(method)) SymbolTable.saveError(
+                    SemanticErrorMessages.ABSTRACT_METHOD_BAD_IMPLEMENTED,
+                    methods.get(method.getName()).getToken()
+                );
+            } else abstractMethods.put(method.getName(), method);
+        });
     }
 
     private void inheritMethod(Method method) {
@@ -132,10 +152,6 @@ public class Class extends Entity {
 
 // ---------------------------------------- Methods -------------------------------------------------------------------
 
-    public Method getMethod(String method_name) {
-        return methods.get(method_name);
-    }
-
     public List<Method> getStaticMethods() {
         return static_methods_list;
     }
@@ -146,7 +162,7 @@ public class Class extends Entity {
 
     public void addMethod(String method_name, Method method) {
         if (methodNameAlreadyDefined(method_name)) {
-            SymbolTable.saveError(SemanticErrorMessages.METHOD_ALREADY_DEFINED, method.getToken());
+            SymbolTable.saveError(SemanticErrorMessages.METHOD_DUPLICATE, method.getToken());
         } else {
             methods.put(method_name, method);
             if (method.isStatic()) static_methods_list.add(method);
@@ -156,33 +172,25 @@ public class Class extends Entity {
 
 // ------------------------------------- Constructors  ----------------------------------------------------------------
 
-    public Constructor getConstructor(String constructor_name) {
-        return constructors.get(constructor_name);
-    }
-
     public void addConstructor(String constructor_name, Constructor constructor) {
         if (constructors.containsKey(constructor_name))
-            SymbolTable.saveError(SemanticErrorMessages.CONSTRUCTOR_ALREADY_DEFINED, constructor.getToken());
+            SymbolTable.saveError(SemanticErrorMessages.CONSTRUCTOR_DUPLICATE, constructor.getToken());
         else constructors.put(constructor_name, constructor);
     }
 
 // -------------------------------------- Abstract Methods  -----------------------------------------------------------
 
-    public AbstractMethod getAbstractMethod(String method_name) {
-        return abstractMethods.get(method_name);
+    public Collection<AbstractMethod> getAbstractMethods() {
+        return abstractMethods.values();
     }
 
     public void addAbstractMethod(String method_name, AbstractMethod method) {
         if (methodNameAlreadyDefined(method_name))
-            SymbolTable.saveError(SemanticErrorMessages.ABSTRACT_METHOD_ALREADY_DEFINED, method.getToken());
+            SymbolTable.saveError(SemanticErrorMessages.ABSTRACT_METHOD_DUPLICATE, method.getToken());
         else abstractMethods.put(method_name, method);
     }
 
     // ------------------------------------- Attributes  --------------------------------------------------------------
-
-    public Attribute getAttribute(String attr_name) {
-        return attributes.containsKey(attr_name)? attributes.get(attr_name).getFirst():null;
-    }
 
     public Map<String, List<Attribute>> getAttributes() {
         return attributes;
@@ -190,7 +198,13 @@ public class Class extends Entity {
 
     public void addAttribute(String attr_name, Attribute attribute) {
         if (attributes.containsKey(attr_name))
-            SymbolTable.saveError(SemanticErrorMessages.ATTRIBUTE_ALREADY_DEFINED, attribute.getToken());
+            SymbolTable.saveError(
+                String.format(
+                    SemanticErrorMessages.ATTRIBUTE_DUPLICATE,
+                    attr_name
+                ),
+                attribute.getToken()
+            );
         else {
             attributes.put(attr_name, new ArrayList<>(List.of(attribute)));
             if (attribute.isStatic()) class_attributes.addLast(attribute);
@@ -221,21 +235,19 @@ public class Class extends Entity {
         return type_parameters.containsKey(type_param_name);
     }
 
-    public TypeVar getTypeParameter(String type_param_name) {
-        return type_parameters.get(type_param_name);
-    }
-
-    public List<TypeVar> getTypeParameters() {
-        return type_parameters.values().stream().toList();
-    }
-
     public int getTypeParametersCount() {
         return type_parameters.size();
     }
 
     public void addTypeParameter(TypeVar type_var) {
         if (type_parameters.containsKey(type_var.getName()))
-            SymbolTable.saveError(SemanticErrorMessages.GENERIC_TYPE_ALREADY_DEFINED, type_var.getToken());
+            SymbolTable.saveError(
+                String.format(
+                    SemanticErrorMessages.GENERIC_TYPE_DUPLICATE,
+                    type_var.getName()
+                ),
+                type_var.getToken()
+            );
         else type_parameters.put(type_var.getName(), type_var);
     }
 
@@ -254,5 +266,16 @@ public class Class extends Entity {
             if (SymbolTable.hasClass(super_type.getName()))
                 SymbolTable.getClass(super_type.getName()).cyclicInheritance(visited);
         }
+    }
+
+    private void abstractMethodsNotImplemented() {
+        abstractMethods.values().forEach(method -> SymbolTable.saveError(
+            String.format(
+                SemanticErrorMessages.ABSTRACT_METHOD_NOT_IMPLEMENTED,
+                this.getName(),
+                method.getName()
+            ),
+            this.getToken()
+        ));
     }
 }

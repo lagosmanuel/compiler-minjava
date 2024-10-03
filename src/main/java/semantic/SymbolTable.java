@@ -53,8 +53,13 @@ public class SymbolTable {
     }
 
     public static void addClass(String class_name, Class newClass) {
-        if (classes.containsKey(class_name))
-            saveError(SemanticErrorMessages.CLASS_REDECLARATION, newClass.getToken());
+        if (classes.containsKey(class_name)) saveError(
+            String.format(
+                SemanticErrorMessages.CLASS_DUPLICATE,
+                class_name
+            ),
+            newClass.getToken()
+        );
         else classes.put(class_name, newClass);
     }
 

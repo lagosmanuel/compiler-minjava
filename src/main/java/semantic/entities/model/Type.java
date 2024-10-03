@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public abstract class Type extends Entity {
-    protected List<TypeVar> type_params = new ArrayList<>();
+    protected final List<TypeVar> type_params = new ArrayList<>();
 
     public Type(String type_name, Token type_token, List<TypeVar> type_params) {
         super(type_name, type_token);

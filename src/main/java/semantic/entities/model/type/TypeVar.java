@@ -10,15 +10,7 @@ public class TypeVar extends ClassType {
         super(type_name, type_token);
     }
 
-    public boolean hasInstanceType() {
-        return instanceType != null;
-    }
-
     public Type getInstaceType() {
         return instanceType;
-    }
-
-    public void setInstanceType(Type instanceType) {
-        this.instanceType = instanceType;
     }
 }

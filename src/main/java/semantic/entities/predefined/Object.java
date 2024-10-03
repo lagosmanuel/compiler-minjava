@@ -11,16 +11,16 @@ import main.java.semantic.entities.model.type.PrimitiveType;
 
 public class Object {
     private static boolean initialized = false;
-    public static java.lang.String name = "Object";
+    public static final java.lang.String name = "Object";
 
-    public static Token token = new Token(
+    public static final Token token = new Token(
         TokenType.idClass,
         name,
         0,
         0
     );
 
-    public static Type type = new ClassType(name, token, null);
+    public static final Type type = new ClassType(name, token, null);
 
     private static final Class object = new Class(name, token);
 

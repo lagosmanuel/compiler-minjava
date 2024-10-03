@@ -6,9 +6,9 @@ import main.java.semantic.entities.Class;
 
 public class String {
     private static boolean initialized = false;
-    public static java.lang.String name = "String";
+    public static final java.lang.String name = "String";
 
-    public static Token token = new Token(
+    public static final Token token = new Token(
         TokenType.idClass,
         name,
         0,
