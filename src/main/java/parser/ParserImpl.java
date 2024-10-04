@@ -1136,7 +1136,7 @@ public class ParserImpl implements Parser {
 //------------------------------------------------------------------------------
 
     private void createClass() {
-        if (panic_mode) return;
+        if (entity_name_token == null || panic_mode) return;
         Class newClass = new Class(
             entity_name_token.getLexeme(),
             entity_name_token,
@@ -1155,7 +1155,7 @@ public class ParserImpl implements Parser {
     }
 
     private void setSuperType(Token super_token) {
-        if (SymbolTable.actualClass == null || panic_mode) return;
+        if (SymbolTable.actualClass == null || super_token == null || panic_mode) return;
         SymbolTable.actualClass.setSuperType(Type.createType(super_token, getGenericTypes()));
     }
 
@@ -1173,7 +1173,8 @@ public class ParserImpl implements Parser {
     }
 
     private void createAttribute() {
-        if (SymbolTable.actualClass == null || panic_mode) return;
+        if (SymbolTable.actualClass == null || entity_name_token == null || entity_type_token == null || panic_mode)
+            return;
 
         SymbolTable.actualClass.addAttribute(
             new Attribute(
@@ -1187,7 +1188,7 @@ public class ParserImpl implements Parser {
     }
 
     private void createMethod() {
-        if (panic_mode) return;
+        if (entity_name_token == null || entity_type_token == null || panic_mode) return;
         actualUnit = actualMethod = new Method(
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
@@ -1199,7 +1200,7 @@ public class ParserImpl implements Parser {
     }
 
     private void createConstructor() {
-        if (panic_mode) return;
+        if (entity_name_token == null || panic_mode) return;
         actualUnit = actualConstructor = new Constructor(
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
@@ -1210,7 +1211,7 @@ public class ParserImpl implements Parser {
     }
 
     private void createAbstractMethod() {
-        if (panic_mode) return;
+        if (entity_name_token == null || entity_type_token == null || panic_mode) return;
         actualUnit = actualAbstractMethod = new AbstractMethod(
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
@@ -1222,7 +1223,7 @@ public class ParserImpl implements Parser {
     }
 
     private void addParameter(Token param_type_token, Token param_name_token) {
-        if (actualUnit == null || panic_mode) return;
+        if (param_type_token == null || param_name_token == null || actualUnit == null || panic_mode) return;
         actualUnit.addParameter(new Parameter(
             param_name_token.getLexeme(),
             param_name_token,
