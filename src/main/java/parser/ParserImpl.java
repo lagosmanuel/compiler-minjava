@@ -1252,7 +1252,7 @@ public class ParserImpl implements Parser {
     }
 
     private String removeLastChar(String string) {
-        return string != null? string.substring(0, string.length()-1):null;
+        return string != null && !string.isEmpty()? string.substring(0, string.length()-1):"";
     }
 
     public List<TypeVar> getGenericTypes() {
