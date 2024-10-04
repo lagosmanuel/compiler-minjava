@@ -54,7 +54,7 @@ public class Object {
             0
         )));
 
-        method.addParameter("i", new Parameter(
+        method.addParameter(new Parameter(
             "i",
             new Token(
                 TokenType.idMetVar,

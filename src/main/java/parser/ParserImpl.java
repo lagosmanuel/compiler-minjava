@@ -1226,7 +1226,7 @@ public class ParserImpl implements Parser {
 
     private void addParameter(Token param_type_token, Token param_name_token) {
         if (actualUnit == null || panic_mode) return;
-        actualUnit.addParameter(param_name_token.getLexeme(), new Parameter(
+        actualUnit.addParameter(new Parameter(
             param_name_token.getLexeme(),
             param_name_token,
             Type.createType(param_type_token, getGenericTypes())

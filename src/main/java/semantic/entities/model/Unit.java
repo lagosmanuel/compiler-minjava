@@ -50,17 +50,18 @@ public abstract class Unit extends Entity {
         this.return_type = return_type;
     }
 
-    public void addParameter(String param_name, Parameter parameter) {
-        if (parameters.containsKey(param_name)) {
+    public void addParameter(Parameter parameter) {
+        if (parameter == null) return;
+        if (parameters.containsKey(parameter.getName())) {
             SymbolTable.saveError(
                 String.format(
                     SemanticErrorMessages.PARAMETER_DUPLICATE,
-                    param_name
+                    parameter.getName()
                 ),
                 parameter.getToken()
             );
         } else {
-            parameters.put(param_name, parameter);
+            parameters.put(parameter.getName(), parameter);
             parameter_list.add(parameter);
         }
     }

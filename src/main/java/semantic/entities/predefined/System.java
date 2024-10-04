@@ -57,7 +57,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("s", new Parameter(
+        method.addParameter(new Parameter(
             "s",
             new Token(
                 TokenType.idMetVar,
@@ -92,7 +92,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("i", new Parameter(
+        method.addParameter(new Parameter(
             "i",
             new Token(
                 TokenType.idMetVar,
@@ -127,7 +127,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("c", new Parameter(
+        method.addParameter(new Parameter(
             "c",
             new Token(
                 TokenType.idMetVar,
@@ -162,7 +162,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("b", new Parameter(
+        method.addParameter(new Parameter(
             "b",
             new Token(
                 TokenType.idMetVar,
@@ -217,7 +217,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("s", new Parameter(
+        method.addParameter(new Parameter(
             "s",
             new Token(
                 TokenType.idMetVar,
@@ -252,7 +252,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("i", new Parameter(
+        method.addParameter(new Parameter(
             "i",
             new Token(
                 TokenType.idMetVar,
@@ -287,7 +287,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("c", new Parameter(
+        method.addParameter(new Parameter(
             "c",
             new Token(
                 TokenType.idMetVar,
@@ -322,7 +322,7 @@ public class System {
             0,
             0
         )));
-        method.addParameter("b", new Parameter(
+        method.addParameter(new Parameter(
             "b",
             new Token(
                 TokenType.idMetVar,
