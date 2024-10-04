@@ -1137,14 +1137,13 @@ public class ParserImpl implements Parser {
 
     private void createClass() {
         if (panic_mode) return;
-        SymbolTable.addClass(
-            new Class(
-                entity_name_token.getLexeme(),
-                entity_name_token,
-                getGenericTypes()
-            )
+        Class newClass = new Class(
+            entity_name_token.getLexeme(),
+            entity_name_token,
+            getGenericTypes()
         );
-        SymbolTable.actualClass = SymbolTable.getClass(entity_name_token.getLexeme());
+        SymbolTable.addClass(newClass);
+        SymbolTable.actualClass = newClass;
     }
 
     private void setName(Token name) {
