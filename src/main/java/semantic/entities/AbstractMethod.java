@@ -2,10 +2,11 @@ package main.java.semantic.entities;
 
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.model.Unit;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
-public class AbstractMethod extends Method {
+public class AbstractMethod extends Unit {
     public AbstractMethod(String method_name, Token method_token) {
         super(method_name, method_token);
     }
