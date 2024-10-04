@@ -72,7 +72,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printSln@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintIln() {
@@ -107,7 +107,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printIln@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintCln() {
@@ -142,7 +142,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printCln@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintBln() {
@@ -177,7 +177,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printBln@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintln() {
@@ -197,7 +197,7 @@ public class System {
             0,
             0
         )));
-        system.addMethod("println", read);
+        system.addMethod(read);
     }
 
     private static void addMethodPrintS() {
@@ -232,7 +232,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printS@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintI() {
@@ -267,7 +267,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printI@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintC() {
@@ -302,7 +302,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printC@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodPrintB() {
@@ -337,7 +337,7 @@ public class System {
                 0
             ))
         ));
-        system.addMethod("printB@X", method);
+        system.addMethod(method);
     }
 
     private static void addMethodRead() {
@@ -357,6 +357,6 @@ public class System {
             0,
             0
         )));
-        system.addMethod("read", method);
+        system.addMethod(method);
     }
 }

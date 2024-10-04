@@ -70,6 +70,6 @@ public class Object {
             ))
         ));
 
-        object.addMethod("debugPrint@X", method);
+        object.addMethod(method);
     }
 }

@@ -160,11 +160,12 @@ public class Class extends Entity {
         return dynamic_methods_list;
     }
 
-    public void addMethod(String method_name, Method method) {
-        if (methodNameAlreadyDefined(method_name)) {
+    public void addMethod(Method method) {
+        if (method == null) return;
+        if (methodNameAlreadyDefined(method.getName())) {
             SymbolTable.saveError(SemanticErrorMessages.METHOD_DUPLICATE, method.getToken());
         } else {
-            methods.put(method_name, method);
+            methods.put(method.getName(), method);
             if (method.isStatic()) static_methods_list.add(method);
             else dynamic_methods_list.addFirst(method);
         }

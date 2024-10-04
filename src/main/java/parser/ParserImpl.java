@@ -1241,7 +1241,7 @@ public class ParserImpl implements Parser {
             actualUnit.setName(removeLastChar(actualUnit.getName()));
 
         if (actualMethod != null) {
-            SymbolTable.actualClass.addMethod(actualMethod.getName(), actualMethod);
+            SymbolTable.actualClass.addMethod(actualMethod);
         } else if (actualConstructor != null) {
             SymbolTable.actualClass.addConstructor(actualConstructor.getName(), actualConstructor);
         } else if (actualAbstractMethod != null) {
