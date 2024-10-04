@@ -62,7 +62,7 @@ public class Class extends Entity {
         if (constructors.isEmpty()) {
             Constructor constructor = SymbolTable.getNewDefaultConstructor();
             constructor.validate();
-            addConstructor(constructor.getName(), constructor);
+            addConstructor(constructor);
         }
 
         consolidate();
@@ -173,10 +173,11 @@ public class Class extends Entity {
 
 // ------------------------------------- Constructors  ----------------------------------------------------------------
 
-    public void addConstructor(String constructor_name, Constructor constructor) {
-        if (constructors.containsKey(constructor_name))
+    public void addConstructor(Constructor constructor) {
+        if (constructor == null) return;
+        if (constructors.containsKey(constructor.getName()))
             SymbolTable.saveError(SemanticErrorMessages.CONSTRUCTOR_DUPLICATE, constructor.getToken());
-        else constructors.put(constructor_name, constructor);
+        else constructors.put(constructor.getName(), constructor);
     }
 
 // -------------------------------------- Abstract Methods  -----------------------------------------------------------
