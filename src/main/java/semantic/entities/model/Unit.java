@@ -15,7 +15,7 @@ import java.util.Objects;
 public abstract class Unit extends Entity {
     protected Type return_type;
     protected final Map<String, Parameter> parameters;
-    protected final List<Parameter> parameter_list = new ArrayList<>();
+    protected final List<Parameter> parameter_list;
 
     protected boolean is_private = false;
     protected boolean is_static = false;
@@ -23,6 +23,7 @@ public abstract class Unit extends Entity {
     public Unit(String unit_name, Token unit_token) {
         super(unit_name, unit_token);
         this.parameters = new HashMap<>();
+        this.parameter_list = new ArrayList<>();
     }
 
     public boolean isStatic() {
@@ -75,7 +76,7 @@ public abstract class Unit extends Entity {
 
     public boolean isCompatible(Unit unit) {
         return Objects.equals(name, unit.name) &&
-               Objects.equals(return_type.getName(), unit.return_type.getName()) &&
+               Objects.equals(return_type, unit.return_type) &&
                is_static == unit.is_static &&
                is_private == unit.is_private &&
                parametersMatch(unit);
@@ -85,8 +86,8 @@ public abstract class Unit extends Entity {
         boolean match = parameter_list.size() == unit.parameter_list.size();
         for (int i = 0; i < parameter_list.size() && match; ++i)
             match = Objects.equals(
-                parameter_list.get(i).getType().getName(),
-                unit.parameter_list.get(i).getType().getName()
+                parameter_list.get(i).getType(),
+                unit.parameter_list.get(i).getType()
             );
         return match;
     }

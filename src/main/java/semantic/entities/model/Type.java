@@ -9,6 +9,7 @@ import main.java.semantic.entities.model.type.TypeVar;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class Type extends Entity {
     protected final List<TypeVar> type_params = new ArrayList<>();
@@ -28,6 +29,19 @@ public abstract class Type extends Entity {
 
     public int getTypeParamsCount() {
         return type_params.size();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Type type = (Type) object;
+        return Objects.equals(this.getName(), type.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, token, type_params);
     }
 
     public static Type createType(Token type_token, List<TypeVar> type_params_tokens) {
