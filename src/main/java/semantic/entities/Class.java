@@ -186,10 +186,11 @@ public class Class extends Entity {
         return abstractMethods.values();
     }
 
-    public void addAbstractMethod(String method_name, AbstractMethod method) {
-        if (methodNameAlreadyDefined(method_name))
+    public void addAbstractMethod(AbstractMethod method) {
+        if (method == null) return;
+        if (methodNameAlreadyDefined(method.getName()))
             SymbolTable.saveError(SemanticErrorMessages.ABSTRACT_METHOD_DUPLICATE, method.getToken());
-        else abstractMethods.put(method_name, method);
+        else abstractMethods.put(method.getName(), method);
     }
 
     // ------------------------------------- Attributes  --------------------------------------------------------------

@@ -1245,7 +1245,7 @@ public class ParserImpl implements Parser {
         } else if (actualConstructor != null) {
             SymbolTable.actualClass.addConstructor(actualConstructor);
         } else if (actualAbstractMethod != null) {
-            SymbolTable.actualClass.addAbstractMethod(actualAbstractMethod.getName(), actualAbstractMethod);
+            SymbolTable.actualClass.addAbstractMethod(actualAbstractMethod);
         }
     }
 
