@@ -199,17 +199,18 @@ public class Class extends Entity {
         return attributes;
     }
 
-    public void addAttribute(String attr_name, Attribute attribute) {
-        if (attributes.containsKey(attr_name))
+    public void addAttribute(Attribute attribute) {
+        if (attribute == null) return;
+        if (attributes.containsKey(attribute.getName()))
             SymbolTable.saveError(
                 String.format(
                     SemanticErrorMessages.ATTRIBUTE_DUPLICATE,
-                    attr_name
+                    attribute.getName()
                 ),
                 attribute.getToken()
             );
         else {
-            attributes.put(attr_name, new ArrayList<>(List.of(attribute)));
+            attributes.put(attribute.getName(), new ArrayList<>(List.of(attribute)));
             if (attribute.isStatic()) class_attributes.addLast(attribute);
             else instance_attributes.addLast(attribute);
         }

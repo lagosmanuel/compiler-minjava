@@ -1178,7 +1178,6 @@ public class ParserImpl implements Parser {
         if (SymbolTable.actualClass == null || panic_mode) return;
 
         SymbolTable.actualClass.addAttribute(
-            entity_name_token.getLexeme(),
             new Attribute(
                 entity_name_token.getLexeme(),
                 entity_name_token,
