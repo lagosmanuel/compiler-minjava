@@ -52,15 +52,16 @@ public class SymbolTable {
         return classes.get(class_name);
     }
 
-    public static void addClass(String class_name, Class newClass) {
-        if (classes.containsKey(class_name)) saveError(
+    public static void addClass(Class newClass) {
+        if (newClass == null) return;
+        if (classes.containsKey(newClass.getName())) saveError(
             String.format(
                 SemanticErrorMessages.CLASS_DUPLICATE,
-                class_name
+                newClass.getName()
             ),
             newClass.getToken()
         );
-        else classes.put(class_name, newClass);
+        else classes.put(newClass.getName(), newClass);
     }
 
     public static void resetActualClass() {
@@ -92,18 +93,9 @@ public class SymbolTable {
 // --------------------------------------------------------------------------------------------------------------------
 
     private static void addPrimitiveClasses() {
-        classes.put(
-            main.java.semantic.entities.predefined.Object.name,
-            main.java.semantic.entities.predefined.Object.Class()
-        );
-        classes.put(
-            main.java.semantic.entities.predefined.String.name,
-            main.java.semantic.entities.predefined.String.Class()
-        );
-        classes.put(
-            main.java.semantic.entities.predefined.System.name,
-            main.java.semantic.entities.predefined.System.Class()
-        );
+        addClass(main.java.semantic.entities.predefined.Object.Class());
+        addClass(main.java.semantic.entities.predefined.String.Class());
+        addClass(main.java.semantic.entities.predefined.System.Class());
     }
 
     public static void saveError(String message, Token token) {
