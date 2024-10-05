@@ -4,9 +4,9 @@ public class SemanticErrorMessages {
     public static final String CLASS_DUPLICATE = "Class %s is already declared";
     public static final String CLASS_NOT_DECLARED = "Class %s is not declared";
     public static final String PARAMETER_DUPLICATE = "Parameter %s is already declared";
-    public static final String METHOD_DUPLICATE = "Method is already defined";
+    public static final String METHOD_DUPLICATE = "Method %s is already defined";
     public static final String CONSTRUCTOR_DUPLICATE = "Constructor is already defined";
-    public static final String ABSTRACT_METHOD_DUPLICATE = "Abstract method is already defined";
+    public static final String ABSTRACT_METHOD_DUPLICATE = "Abstract method %s is already defined";
     public static final String ATTRIBUTE_DUPLICATE = "Attribute %s is already defined";
     public static final String GENERIC_TYPE_DUPLICATE = "Type Parameter %s is already defined";
     public static final String SUPERCLASS_GENERIC_TYPE = "Superclass type cannot be a type variable";

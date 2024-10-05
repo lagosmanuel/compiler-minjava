@@ -1,12 +1,17 @@
 package main.java.semantic;
 
-import main.java.config.SemanticConfig;
-import main.java.model.*;
 import main.java.model.Error;
+import main.java.model.ErrorType;
+import main.java.model.Pair;
+import main.java.model.Token;
+import main.java.model.TokenType;
+
 import main.java.semantic.entities.Class;
 import main.java.semantic.entities.Method;
 import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.AbstractMethod;
+
+import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
 
@@ -36,8 +41,18 @@ public class SymbolTable {
     }
 
     public static void validate() throws SemanticException {
-        for (Class myClass:classes.values()) { actualClass = myClass; myClass.validate(); }
+        for (Class myClass:classes.values()) {
+            actualClass = myClass;
+            myClass.validate();
+        }
         if (!hasMain) throwException(SemanticErrorMessages.MAIN_NOT_FOUND, EOF);
+    }
+
+    public static void consolidate() {
+        if (errors.isEmpty()) for (Class myClass:classes.values()) {
+            actualClass = myClass;
+            myClass.consolidate();
+        }
     }
 
     public static void foundMain() {

@@ -96,6 +96,7 @@ public class Main {
             SymbolTable.init(errors);
             parser.parse();
             SymbolTable.validate();
+            SymbolTable.consolidate();
         } catch (SyntacticException | SemanticException error) {
             System.out.println(error.getMessage());
         } finally {

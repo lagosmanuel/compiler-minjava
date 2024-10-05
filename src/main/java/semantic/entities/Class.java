@@ -10,13 +10,12 @@ import main.java.semantic.entities.predefined.Object;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
 
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
@@ -52,7 +51,7 @@ public class Class extends Entity {
         super.validate();
 
         super_type.validate();
-        cyclicInheritance(Stream.of(getName()).collect(Collectors.toSet()));
+        cyclicInheritance(new HashSet<>(Set.of(getName())));
 
         for (Constructor constructor:constructors.values()) constructor.validate();
         for (Method method:methods.values()) method.validate();
@@ -64,14 +63,10 @@ public class Class extends Entity {
             constructor.validate();
             addConstructor(constructor);
         }
-
-        consolidate();
     }
 
-    public void consolidate() throws SemanticException {
-        if (Objects.equals(name, Object.name)) return;
-        if (!isValidated()) validate();
-        if (is_consolidated) return;
+    public void consolidate() {
+        if (Objects.equals(name, Object.name) || is_consolidated) return;
 
         Class superClass = SymbolTable.getClass(super_type.getName());
         superClass = superClass == null? Object.Class():superClass;
@@ -167,11 +162,14 @@ public class Class extends Entity {
     public void addMethod(Method method) {
         if (method == null) return;
         if (methodNameAlreadyDefined(method.getName())) {
-            SymbolTable.saveError(SemanticErrorMessages.METHOD_DUPLICATE, method.getToken());
+            SymbolTable.saveError(
+                String.format(SemanticErrorMessages.METHOD_DUPLICATE, method.getToken().getLexeme()),
+                method.getToken()
+            );
         } else {
             methods.put(method.getName(), method);
-            if (method.isStatic()) static_methods_list.add(method);
-            else dynamic_methods_list.addFirst(method);
+            if (method.isStatic()) static_methods_list.addLast(method);
+            else dynamic_methods_list.addLast(method);
         }
     }
 
@@ -193,7 +191,10 @@ public class Class extends Entity {
     public void addAbstractMethod(AbstractMethod method) {
         if (method == null) return;
         if (methodNameAlreadyDefined(method.getName()))
-            SymbolTable.saveError(SemanticErrorMessages.ABSTRACT_METHOD_DUPLICATE, method.getToken());
+            SymbolTable.saveError(
+                String.format(SemanticErrorMessages.ABSTRACT_METHOD_DUPLICATE, method.getToken().getLexeme()),
+                method.getToken()
+            );
         else abstractMethods.put(method.getName(), method);
     }
 
@@ -220,10 +221,10 @@ public class Class extends Entity {
         }
     }
 
-    public void addAttributes(String attr_name, List<Attribute> attr_list) {
+    private void addAttributes(String attr_name, List<Attribute> attr_list) {
         if (attr_list == null || attr_list.isEmpty()) return;
         if (attributes.containsKey(attr_name)) attributes.get(attr_name).addAll(attr_list);
-        else attributes.put(attr_name, attr_list);
+        else attributes.put(attr_name, new ArrayList<>(attr_list));
     }
 
     public List<Attribute> getInstanceAttributes() {
@@ -264,12 +265,12 @@ public class Class extends Entity {
     }
 
 // -------------------------------------- Errors ---------------------------------------------------------------------
-    private boolean methodNameAlreadyDefined(String unitName) {
-        return (methods.containsKey(unitName) || abstractMethods.containsKey(unitName));
+    private boolean methodNameAlreadyDefined(String methodName) {
+        return (methods.containsKey(methodName) || abstractMethods.containsKey(methodName));
     }
 
     private void cyclicInheritance(Set<String> visited) throws SemanticException {
-        if (Objects.equals(super_type.getName(), Object.name)) return;
+        if (Objects.equals(super_type.getName(), Object.type.getName())) return;
 
         if (visited.contains(super_type.getName())) {
             SymbolTable.throwException(SemanticErrorMessages.CYCLIC_INHERITANCE, super_type.getToken());
