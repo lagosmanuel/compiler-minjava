@@ -3,6 +3,7 @@ package main.java.semantic.entities.model;
 import main.java.model.Token;
 import main.java.model.TokenType;
 
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.type.TypeVar;
@@ -23,6 +24,11 @@ public abstract class Type extends Entity {
         super(type_name, type_token);
     }
 
+    public TypeVar getTypeParam(int position) {
+        if (position < 0 || position >= type_params.size()) return null;
+        return type_params.get(position);
+    }
+
     public List<TypeVar> getTypeParams() {
         return type_params;
     }
@@ -31,23 +37,61 @@ public abstract class Type extends Entity {
         return type_params.size();
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Type type = (Type) object;
-        return Objects.equals(this.getName(), type.getName());
+    public boolean compare(Type type) {
+        if (type == this) return true;
+        if (type == null) return false;
+
+        if (type instanceof TypeVar typeVar) {
+            if (typeVar.getInstaceType() == null) {
+                return Objects.equals(
+                    SymbolTable.actualClass.getSuperType().getTypeParam(typeVar.getPosition()).getName(),
+                    getName()
+                );
+            } else {
+                return this.compare(typeVar.getInstaceType());
+            }
+        }
+
+        if (this instanceof TypeVar thisTypeVar) {
+            if (thisTypeVar.getInstaceType() == null) {
+                return false;
+            } else {
+                return Objects.equals(thisTypeVar.getInstaceType().getName(), type.getName());
+            }
+        }
+
+        if (type.getClass() != this.getClass()) return false;
+        return Objects.equals(this.getName(), type.getName()) &&
+               typeParamsMatch(type);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, token, type_params);
+    private boolean typeParamsMatch(Type type) {
+        boolean match = getTypeParamsCount() == type.getTypeParamsCount();
+        for (int i = 0; i < getTypeParamsCount() && match; ++i)
+            match = getTypeParam(i).compare(type.getTypeParam(i));
+        return match;
     }
 
     public static Type createType(Token type_token, List<TypeVar> type_params_tokens) {
         if (type_token == null) return null;
-        return type_token.getType() != TokenType.idClass?
-            new PrimitiveType(type_token.getLexeme(), type_token):
-            new ClassType(type_token.getLexeme(), type_token, type_params_tokens);
+        if (type_token.getType() != TokenType.idClass) {
+            return new PrimitiveType(
+                type_token.getLexeme(),
+                type_token
+            );
+        } else if (SymbolTable.actualClass != null && SymbolTable.actualClass.hasTypeParameter(type_token.getLexeme())) {
+            return new TypeVar(
+                type_token.getLexeme(),
+                type_token,
+                type_params_tokens,
+                SymbolTable.actualClass.getTypeParameter(type_token.getLexeme()).getPosition()
+            );
+        } else {
+            return new ClassType(
+                type_token.getLexeme(),
+                type_token,
+                type_params_tokens
+            );
+        }
     }
 }

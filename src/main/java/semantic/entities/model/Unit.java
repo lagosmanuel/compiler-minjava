@@ -77,19 +77,21 @@ public abstract class Unit extends Entity {
 
     public boolean isCompatible(Unit unit) {
         return Objects.equals(name, unit.name) &&
-               Objects.equals(return_type, unit.return_type) &&
+               returnMatch(unit) &&
                is_static == unit.is_static &&
                is_private == unit.is_private &&
                parametersMatch(unit);
     }
 
-    public boolean parametersMatch(Unit unit) {
+    private boolean returnMatch(Unit unit) {
+        if (return_type == null) return unit.return_type == null;
+        return return_type.compare(unit.return_type);
+    }
+
+    private boolean parametersMatch(Unit unit) {
         boolean match = parameter_list.size() == unit.parameter_list.size();
         for (int i = 0; i < parameter_list.size() && match; ++i)
-            match = Objects.equals(
-                parameter_list.get(i).getType(),
-                unit.parameter_list.get(i).getType()
-            );
+            match = parameter_list.get(i).getType().compare(unit.parameter_list.get(i).getType());
         return match;
     }
 }

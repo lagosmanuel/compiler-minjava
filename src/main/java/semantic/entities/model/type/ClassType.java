@@ -30,8 +30,10 @@ public class ClassType extends Type {
                 ),
                 getToken()
             );
-        if (SymbolTable.actualClass.hasTypeParameter(getName()) && getTypeParamsCount() > 0) {
-            SymbolTable.throwException(SemanticErrorMessages.TYPE_PARAMETER_RECURSIVE, getToken());
+
+        if (SymbolTable.actualClass.hasTypeParameter(getName())) {
+            if (getTypeParamsCount() > 0)
+                SymbolTable.throwException(SemanticErrorMessages.TYPE_PARAMETER_RECURSIVE, getToken());
         } else if (SymbolTable.hasClass(getName())) {
             if (SymbolTable.getClass(getName()).getTypeParametersCount() != getTypeParamsCount())
                 SymbolTable.throwException(SemanticErrorMessages.INVALID_TYPE_PARAMETERS_COUNT, getToken());

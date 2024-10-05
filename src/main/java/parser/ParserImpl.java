@@ -106,6 +106,7 @@ public class ParserImpl implements Parser {
     }
 
     private void Class() throws SyntacticException {
+        SymbolTable.actualClass = null;
         reset_entity();
         match(TokenType.kwClass);
         setName(ClassType());
@@ -117,6 +118,7 @@ public class ParserImpl implements Parser {
     }
 
     private void AbstractClass() throws SyntacticException {
+        SymbolTable.actualClass = null;
         reset_entity();
         match(TokenType.kwAbstract);
         match(TokenType.kwClass);
@@ -1257,14 +1259,22 @@ public class ParserImpl implements Parser {
 
     public List<TypeVar> getGenericTypes() {
         List<TypeVar> type_vars = new ArrayList<>();
-        entity_generic_types.forEach(token -> type_vars.add(
+        int i = 0;
+        for (Token token:entity_generic_types) type_vars.add(
             new TypeVar(
                 token.getLexeme(),
-                token
+                token,
+                null,
+                getGenericTypePositionOrDefault(token.getLexeme(), i++)
             )
-        ));
+        );
         entity_generic_types.clear();
         return type_vars;
+    }
+
+    private int getGenericTypePositionOrDefault(String type_name, int actual_position) {
+        return SymbolTable.actualClass != null && SymbolTable.actualClass.hasTypeParameter(type_name)?
+            SymbolTable.actualClass.getTypeParameter(type_name).getPosition():actual_position;
     }
 
     private void reset_entity() {

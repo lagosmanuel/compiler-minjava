@@ -124,7 +124,7 @@ public class Class extends Entity {
         } else {
             Method redefined = methods.get(method.getName());
 
-            if (!method.isCompatible(redefined))
+            if (!redefined.isCompatible(method))
                 SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
 
             if (!method.isPrivate()) {
@@ -134,6 +134,10 @@ public class Class extends Entity {
                 methods_list.addFirst(method);
             }
         }
+    }
+
+    public Type getSuperType() {
+        return super_type;
     }
 
     public void setSuperType(Type super_type) {
@@ -241,6 +245,10 @@ public class Class extends Entity {
 
     public int getTypeParametersCount() {
         return type_parameters.size();
+    }
+
+    public TypeVar getTypeParameter(String type_param_name) {
+        return type_parameters.get(type_param_name);
     }
 
     public void addTypeParameter(TypeVar type_var) {
