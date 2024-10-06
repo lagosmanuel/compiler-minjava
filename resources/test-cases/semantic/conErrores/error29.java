@@ -4,7 +4,7 @@ abstract class B {
 }
 
 abstract class A extends B {
-    abstract void m1(char c);
+    abstract int m1(int n);
 }
 
 class Init{
