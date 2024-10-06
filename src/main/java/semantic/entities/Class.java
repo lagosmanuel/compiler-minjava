@@ -98,7 +98,7 @@ public class Class extends Entity {
         superClass.getAbstractMethods().forEach(method -> {
             if (abstractMethods.containsKey(method.getName())) {
                 SymbolTable.saveError(
-                    SemanticErrorMessages.ABSTRACT_METHOD_REDEFINED,
+                    String.format(SemanticErrorMessages.ABSTRACT_METHOD_REDEFINED, method.getToken().getLexeme()),
                     abstractMethods.get(method.getName()).getToken()
                 );
             } else if (methods.containsKey(method.getName())) {
@@ -119,7 +119,7 @@ public class Class extends Entity {
         } else {
             Method redefined = methods.get(method.getName());
 
-            if (!redefined.isCompatible(method))
+            if (!redefined.isCompatible(method) && !method.isPrivate())
                 SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
 
             if (!method.isPrivate()) {

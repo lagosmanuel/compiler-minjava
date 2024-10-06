@@ -106,7 +106,7 @@ public class ParserImpl implements Parser {
     }
 
     private void Class() throws SyntacticException {
-        SymbolTable.actualClass = null;
+        reset_actual_class();
         reset_entity();
         match(TokenType.kwClass);
         setName(ClassType());
@@ -118,7 +118,7 @@ public class ParserImpl implements Parser {
     }
 
     private void AbstractClass() throws SyntacticException {
-        SymbolTable.actualClass = null;
+        reset_actual_class();
         reset_entity();
         match(TokenType.kwAbstract);
         match(TokenType.kwClass);
@@ -1287,5 +1287,9 @@ public class ParserImpl implements Parser {
         actualAbstractMethod = null;
         actualUnit = null;
         entity_generic_types.clear();
+    }
+
+    private void reset_actual_class() {
+        SymbolTable.actualClass = null;
     }
 }
