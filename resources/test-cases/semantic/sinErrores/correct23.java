@@ -1,4 +1,4 @@
-///[Error:m1|11]
+///[SinErrores]
 class K {
 
 }
