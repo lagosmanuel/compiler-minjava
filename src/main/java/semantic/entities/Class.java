@@ -97,10 +97,11 @@ public class Class extends Entity {
     private void inheritAbstractMethods(Class superClass) {
         superClass.getAbstractMethods().forEach(method -> {
             if (abstractMethods.containsKey(method.getName())) {
-                SymbolTable.saveError(
-                    String.format(SemanticErrorMessages.ABSTRACT_METHOD_REDEFINED, method.getToken().getLexeme()),
-                    abstractMethods.get(method.getName()).getToken()
-                );
+                if (!abstractMethods.get(method.getName()).isCompatible(method))
+                    SymbolTable.saveError(
+                        String.format(SemanticErrorMessages.ABSTRACT_METHOD_BAD_REDEFINED, method.getToken().getLexeme()),
+                        abstractMethods.get(method.getName()).getToken()
+                    );
             } else if (methods.containsKey(method.getName())) {
                 if (!methods.get(method.getName()).isCompatible(method)) SymbolTable.saveError(
                     SemanticErrorMessages.ABSTRACT_METHOD_BAD_IMPLEMENTED,

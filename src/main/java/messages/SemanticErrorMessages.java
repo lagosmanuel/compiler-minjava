@@ -21,8 +21,8 @@ public class SemanticErrorMessages {
     public static final String METHOD_BAD_REDEFINED = "Method redefinition is not compatible";
     public static final String INVALID_TYPE_PARAMETERS_COUNT = "Wrong number of type arguments; required %d";
     public static final String TYPE_PARAMETER_RECURSIVE = "Type parameter cannot have type parameters";
-    public static final String ABSTRACT_METHOD_REDEFINED = "Abstract method %s is already declared in the super class";
-    public static final String ABSTRACT_METHOD_BAD_IMPLEMENTED = "Abstract method implementation is not compatible";
+    public static final String ABSTRACT_METHOD_BAD_REDEFINED = "Abstract method %s is not compatible with the super class declaration";
+    public static final String ABSTRACT_METHOD_BAD_IMPLEMENTED = "Abstract method implementation is not compatible with the super class declaration";
     public static final String ABSTRACT_METHOD_NOT_IMPLEMENTED = "Class %s is not abstract and does not implement abstract method %s";
     public static final String ABSTRACT_METHOD_BAD_OVERRIDE = "Abstract method %s is not compatible with the super class implementation";
 }
