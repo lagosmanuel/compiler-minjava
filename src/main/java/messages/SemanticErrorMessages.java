@@ -7,8 +7,8 @@ public class SemanticErrorMessages {
     public static final String METHOD_DUPLICATE = "Method %s is already defined";
     public static final String CONSTRUCTOR_DUPLICATE = "Constructor is already defined";
     public static final String ABSTRACT_METHOD_DUPLICATE = "Abstract method %s is already defined";
-    public static final String ATTRIBUTE_DUPLICATE = "Attribute %s is already defined";
-    public static final String GENERIC_TYPE_DUPLICATE = "Type Parameter %s is already defined";
+    public static final String ATTRIBUTE_DUPLICATE = "Attribute %s is already declared";
+    public static final String GENERIC_TYPE_DUPLICATE = "Type Parameter %s is already declared";
     public static final String SUPERCLASS_GENERIC_TYPE = "A class cannot extend a generic type";
     public static final String CYCLIC_INHERITANCE = "Cyclic inheritance detected";
     public static final String ATTRIBUTE_VOID = "Attribute cannot be of type void";
