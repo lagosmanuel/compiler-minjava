@@ -24,4 +24,5 @@ public class SemanticErrorMessages {
     public static final String ABSTRACT_METHOD_REDEFINED = "Abstract method %s is already declared in the super class";
     public static final String ABSTRACT_METHOD_BAD_IMPLEMENTED = "Abstract method implementation not compatible";
     public static final String ABSTRACT_METHOD_NOT_IMPLEMENTED = "Class %s is not abstract and does not implement abstract method %s";
+    public static final String ABSTRACT_METHOD_BAD_OVERRIDE = "Abstract method %s is not compatible with the super class implementation";
 }

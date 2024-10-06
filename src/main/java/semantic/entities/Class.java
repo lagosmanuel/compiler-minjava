@@ -113,16 +113,24 @@ public class Class extends Entity {
     private void inheritMethod(Method method) {
         List<Method> methods_list = method.isStatic()? static_methods_list:dynamic_methods_list;
 
-        if (!methods.containsKey(method.getName())) {
+        if (!methods.containsKey(method.getName()) && !abstractMethods.containsKey(method.getName())) {
             if (!method.isPrivate()) methods.put(method.getName(), method);
             methods_list.addFirst(method);
+        } else if (abstractMethods.containsKey(method.getName())) {
+            if (!abstractMethods.get(method.getName()).isCompatible(method) && !method.isPrivate()) {
+                SymbolTable.saveError(
+                    String.format(SemanticErrorMessages.ABSTRACT_METHOD_BAD_OVERRIDE, method.getToken().getLexeme()),
+                    abstractMethods.get(method.getName()).getToken()
+                );
+            }
+            // TODO: methods_list.addFirst(method);
         } else {
             Method redefined = methods.get(method.getName());
 
             if (!redefined.isCompatible(method) && !method.isPrivate())
                 SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
 
-            if (!method.isPrivate()) {
+            if (!method.isPrivate()) { // TODO: && !method.isStatic()
                 methods_list.remove(redefined);
                 methods_list.addFirst(redefined);
             } else {
