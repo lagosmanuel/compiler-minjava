@@ -295,7 +295,7 @@ public class Class extends Entity {
             String.format(
                 SemanticErrorMessages.ABSTRACT_METHOD_NOT_IMPLEMENTED,
                 this.getName(),
-                method.getName()
+                method.getToken().getLexeme()
             ),
             this.getToken()
         ));
