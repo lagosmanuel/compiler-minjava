@@ -131,7 +131,7 @@ public class Class extends Entity {
             if (!redefined.isCompatible(method) && !method.isPrivate())
                 SymbolTable.saveError(SemanticErrorMessages.METHOD_BAD_REDEFINED, redefined.getToken());
 
-            if (!method.isPrivate()) { // TODO: && !method.isStatic()
+            if (!method.isPrivate() && !method.isStatic()) {
                 methods_list.remove(redefined);
                 methods_list.addFirst(redefined);
             } else {
