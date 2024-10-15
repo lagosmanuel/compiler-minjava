@@ -22,6 +22,12 @@ import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.AbstractMethod;
 import main.java.semantic.entities.model.type.TypeVar;
 
+import main.java.semantic.entities.model.Statement;
+import main.java.semantic.entities.model.statement.*;
+import main.java.semantic.entities.model.statement.chained.*;
+import main.java.semantic.entities.model.statement.expression.*;
+import main.java.semantic.entities.model.statement.primary.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +52,8 @@ public class ParserImpl implements Parser {
     private Constructor actualConstructor;
     private AbstractMethod actualAbstractMethod;
     private Unit actualUnit;
+
+    private Block actualBlock;
 
     public ParserImpl(Lexer lexer, Map<Integer, Pair<List<Error>, String>> errors) {
         this.lexer = lexer;
@@ -183,7 +191,7 @@ public class ParserImpl implements Parser {
     private void recover_member_list(boolean is_abstract) throws SyntacticException {
         while (panic_mode && token.getType() != TokenType.EOF) {
             while (Lookup.Statement.contains(token.getType())) {
-                if (token.getType() == TokenType.leftBrace) Block();
+                if (token.getType() == TokenType.leftBrace) actualUnit.setBody(Block());
                 else {StatementList(); match(TokenType.rightBrace);}
             }
             if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) {
@@ -250,7 +258,7 @@ public class ParserImpl implements Parser {
             case leftParenthesis -> {
                 createConstructor();
                 FormalArgs();
-                Block();
+                actualUnit.setBody(Block());
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
@@ -276,7 +284,7 @@ public class ParserImpl implements Parser {
             case leftParenthesis -> {
                 createMethod();
                 FormalArgs();
-                Block();
+                actualUnit.setBody(Block());
             }
             default -> throwException(List.of(
                 TokenType.opAssign.toString(),
@@ -429,15 +437,20 @@ public class ParserImpl implements Parser {
 
 //------------------------------------------------------------------------------
 
-    private void Block() throws SyntacticException {
-        match(TokenType.leftBrace);
+    private Block Block() throws SyntacticException {
+        Block block = new Block(match(TokenType.leftBrace));
+        block.setParent(actualBlock);
+        actualBlock = block;
         StatementList();
         match(TokenType.rightBrace);
+        actualBlock = actualBlock.getParent();
+        return block;
     }
 
     private void StatementList() throws SyntacticException {
         if (Lookup.Statement.contains(token.getType())) {
-            Statement();
+            Statement statement = Statement();
+            if (actualBlock != null) actualBlock.addStatement(statement);
             StatementList();
         } else if (token.getType() == TokenType.rightBrace) {
             return;
@@ -450,7 +463,8 @@ public class ParserImpl implements Parser {
 
     private void StatementOptional() throws SyntacticException {
         if (Lookup.Statement.contains(token.getType())) {
-            Statement();
+            Statement statement = Statement();
+            if (actualBlock != null) actualBlock.addStatement(statement);
         } else if (token.getType() == TokenType.rightBrace ||
                    token.getType() == TokenType.kwCase ||
                    token.getType() == TokenType.kwDefault) {
@@ -463,25 +477,29 @@ public class ParserImpl implements Parser {
         ));
     }
 
-    private void Statement() throws SyntacticException {
-        switch (token.getType()) {
+    private Statement Statement() throws SyntacticException {
+        return switch (token.getType()) {
             case idClass -> { // Local Var of a Class Type or a Static Method Call
-                match(TokenType.idClass);
-                StatementRest();
+                Token identifier = match(TokenType.idClass);
+                Statement statement = StatementRest(identifier);
                 match(TokenType.semicolon);
+                yield statement;
             }
-            case semicolon -> match(TokenType.semicolon);
+            case semicolon -> new NOOP(match(TokenType.semicolon));
             case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> {
-                LocalVarPrimitiveType();
+                Statement statement = LocalVarPrimitiveType();
                 match(TokenType.semicolon);
+                yield statement;
             }
             case kwReturn -> {
-                Return();
+                Statement statement = Return();
                 match(TokenType.semicolon);
+                yield statement;
             }
             case kwBreak -> {
-                Break();
+                Statement statement = Break();
                 match(TokenType.semicolon);
+                yield statement;
             }
             case kwIf -> If();
             case kwFor -> For();
@@ -490,14 +508,17 @@ public class ParserImpl implements Parser {
             case leftBrace -> Block();
             default -> {
                 if (Lookup.Expression.contains(token.getType())) {
-                    Expression();
+                    Statement statement = Expression();
                     match(TokenType.semicolon);
+                    yield statement;
+                } else {
+                    throwException(List.of(
+                        "a statement"
+                    ));
+                    yield null;
                 }
-                else throwException(List.of(
-                    "a statement"
-                ));
             }
-        }
+        };
     }
 
    /*
@@ -507,58 +528,71 @@ public class ParserImpl implements Parser {
     * LocalVar of a ClassType [Start of LocalVar]
     * <StatementRest> ::= <GenericTypeOptional> <IdMetVarList> <AssignmentOp> <CompositeExpression> ;
     */
-    private void StatementRest() throws SyntacticException {
-        switch (token.getType()) {
+    private Statement StatementRest(Token identifier) throws SyntacticException {
+        return switch (token.getType()) {
             case dot -> {
                 match(TokenType.dot);
-                match(TokenType.idMetVar);
-                ActualArgs();
-                ChainedOptional();
-                CompositeExpressionRest();
-                ExpressionRest();
+                StaticMethodAccess access = new StaticMethodAccess(
+                    identifier,
+                    match(TokenType.idMetVar),
+                    ActualArgs()
+                );
+                access.setChained(ChainedOptional());
+                yield ExpressionRest(CompositeExpressionRest(access));
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
-                IdMetVarList();
-                AssignmentOptional();
+                yield new LocalVar(
+                    Type.createType(identifier, getGenericTypes()),
+                    IdMetVarList(new ArrayList<>()),
+                    AssignmentOptional()
+                );
             }
-            default -> throwException(List.of(
-                "a static method call",
-                "an assignment statement"
-            ));
-        }
+            default -> {
+                throwException(List.of(
+                    "a static method call",
+                    "an assignment statement"
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void LocalVarPrimitiveType() throws SyntacticException {
-        switch (token.getType()) {
+    private Statement LocalVarPrimitiveType() throws SyntacticException {
+        return switch (token.getType()) {
             case kwVar -> {
-                match(TokenType.kwVar);
-                match(TokenType.idMetVar);
+                Type type = Type.createType(match(TokenType.kwVar), null);
+                Token identifier = match(TokenType.idMetVar);
                 match(TokenType.opAssign);
-                CompositeExpression();
+                Expression expression = CompositeExpression();
+                yield new LocalVar(type, List.of(identifier), expression);
             }
-            case kwBoolean, kwChar, kwInt, kwFloat -> {
-                PrimitiveType();
-                IdMetVarList();
-                AssignmentOptional();
+            case kwBoolean, kwChar, kwInt, kwFloat -> new LocalVar(
+                Type.createType(PrimitiveType(), null),
+                IdMetVarList(new ArrayList<>()),
+                AssignmentOptional()
+            );
+            default -> {
+                throwException(List.of(
+                    TokenType.kwVar.toString(),
+                    "a type"
+                ));
+                yield null;
             }
-            default -> throwException(List.of(
-                TokenType.kwVar.toString(),
-                "a type"
-            ));
-        }
+        };
     }
 
-    private void IdMetVarList() throws SyntacticException {
-        match(TokenType.idMetVar);
-        IdMetVarListRest();
+    private List<Token> IdMetVarList(List<Token> identifiers) throws SyntacticException {
+        identifiers.add(match(TokenType.idMetVar));
+        IdMetVarListRest(identifiers);
+        return identifiers;
     }
 
-    private void IdMetVarListRest() throws SyntacticException {
+    private void IdMetVarListRest(List<Token> identifiers) throws SyntacticException {
         switch (token.getType()) {
             case comma -> {
                 match(TokenType.comma);
-                IdMetVarList();
+                IdMetVarList(identifiers);
             }
             case opAssign, semicolon -> {
                 return;
@@ -571,138 +605,162 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void AssignmentOptional() throws SyntacticException {
-        switch (token.getType()) {
+    private Expression AssignmentOptional() throws SyntacticException {
+        return switch (token.getType()) {
             case opAssign -> {
                 match(TokenType.opAssign);
-                CompositeExpression();
+                yield CompositeExpression();
             }
             case semicolon -> {
-                return;
+                yield null;
             }
-            default -> throwException(List.of(
-                TokenType.opAssign.toString(),
-                TokenType.semicolon.toString()
-            ));
-        }
+            default -> {
+                throwException(List.of(
+                    TokenType.opAssign.toString(),
+                    TokenType.semicolon.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void Return() throws SyntacticException {
-        match(TokenType.kwReturn);
-        ExpressionOptional();
+    private Statement Return() throws SyntacticException {
+        return new Return(match(TokenType.kwReturn), ExpressionOptional());
     }
 
-    private void Break() throws SyntacticException {
-        match(TokenType.kwBreak);
+    private Statement Break() throws SyntacticException {
+        return new Break(match(TokenType.kwBreak));
     }
 
-    private void If() throws SyntacticException {
-        match(TokenType.kwIf);
+    private Statement If() throws SyntacticException {
+        Token identifier = match(TokenType.kwIf);
         match(TokenType.leftParenthesis);
-        Expression();
+        Expression condition = Expression();
         match(TokenType.rightParenthesis);
-        Statement();
-        IfRest();
+        Statement then = Statement();
+        return IfRest(identifier, condition, then);
     }
 
-    private void IfRest() throws SyntacticException {
+    private Statement IfRest(Token identifier, Expression condition, Statement then) throws SyntacticException {
         if (token.getType() == TokenType.kwElse) {
             match(TokenType.kwElse);
-            Statement();
+            return new IfElse(
+                identifier,
+                condition,
+                then,
+                Statement()
+            );
         } else if (Follow.Statement.contains(token.getType())) {
-            return;
+            return new If(
+                identifier,
+                condition,
+                then
+            );
         } else throwException(List.of(
             "an else statement",
             "another statement",
             TokenType.rightBrace.toString()
         ));
+        return null;
     }
 
-    private void For() throws SyntacticException {
-        match(TokenType.kwFor);
+    private Statement For() throws SyntacticException {
+        Token identifier = match(TokenType.kwFor);
         match(TokenType.leftParenthesis);
-        ForRest();
+        return ForRest(identifier);
     }
 
-    private void ForRest() throws SyntacticException {
-        switch (token.getType()) {
+    private Statement ForRest(Token identifier) throws SyntacticException {
+        return switch (token.getType()) {
             case kwVar, idMetVar -> {
-                VarOptional();
-                match(TokenType.idMetVar);
-                ForWithAssignment();
+                Type type = Type.createType(VarOptional(), null);
+                Token it = match(TokenType.idMetVar);
+                yield ForWithAssignment(identifier, type, it);
             }
             case kwBoolean, kwChar, kwInt, kwFloat -> {
-                PrimitiveType();
-                match(TokenType.idMetVar);
-                ForWithAssignment();
+                Type type = Type.createType(PrimitiveType(), null);
+                Token it = match(TokenType.idMetVar);
+                yield ForWithAssignment(identifier, type, it);
             }
             case idClass -> {
-                ClassType();
-                match(TokenType.idMetVar);
-                ForClass();
+                Type type = Type.createType(ClassType(), getGenericTypes());
+                Token it = match(TokenType.idMetVar);
+                yield ForClass(identifier, type, it);
             }
-            default -> throwException(List.of(
-                TokenType.kwVar.toString(),
-                "a type",
-                TokenType.idMetVar.toString()
-            ));
-        }
+            default -> {
+                throwException(List.of(
+                    TokenType.kwVar.toString(),
+                    "a type",
+                    TokenType.idMetVar.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void ForClass() throws SyntacticException {
-        switch (token.getType()) {
+    private Statement ForClass(Token identifier, Type type, Token it) throws SyntacticException {
+        return switch (token.getType()) {
             case colon -> {
                 match(TokenType.colon);
-                CompositeExpression();
+                CompositeExpression iterable = CompositeExpression();
                 match(TokenType.rightParenthesis);
-                Statement();
+                Statement statement = Statement();
+                yield new ForEach(identifier, new LocalVar(type, List.of(it)), iterable, statement);
             }
-            case opAssign -> ForWithAssignment();
-            default -> throwException(List.of(
-                TokenType.colon.toString(),
-                TokenType.opAssign.toString()
-            ));
-        }
+            case opAssign -> ForWithAssignment(identifier, type, it);
+            default -> {
+                throwException(List.of(
+                    TokenType.colon.toString(),
+                    TokenType.opAssign.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void ForWithAssignment() throws SyntacticException {
-        match(TokenType.opAssign);
-        CompositeExpression();
+    private Statement ForWithAssignment(Token identifier, Type type, Token it) throws SyntacticException {
+        Token operator = match(TokenType.opAssign);
+        CompositeExpression declaration = CompositeExpression();
         match(TokenType.semicolon);
-        CompositeExpression();
+        CompositeExpression condition = CompositeExpression();
         match(TokenType.semicolon);
-        Expression();
+        Expression assignment = Expression();
         match(TokenType.rightParenthesis);
-        Statement();
+        Statement statement = Statement();
+        return type == null?
+            new For(identifier, new Assignment(new VarAccess(it), declaration, operator), condition, assignment, statement):
+            new For(identifier, new LocalVar(type, List.of(it), declaration), condition, assignment, statement);
     }
 
-    private void VarOptional() throws SyntacticException {
-        switch (token.getType()) {
+    private Token VarOptional() throws SyntacticException {
+        return switch (token.getType()) {
             case kwVar -> match(TokenType.kwVar);
-            case idMetVar -> {return;}
+            case idMetVar -> {yield null;}
             default -> throwException(List.of(
                 TokenType.kwVar.toString(),
                 TokenType.idMetVar.toString()
             ));
-        }
+        };
     }
 
-    private void While() throws SyntacticException {
-        match(TokenType.kwWhile);
+    private Statement While() throws SyntacticException {
+        Token identifier = match(TokenType.kwWhile);
         match(TokenType.leftParenthesis);
-        Expression();
+        Expression condition = Expression();
         match(TokenType.rightParenthesis);
-        Statement();
+        Statement statement = Statement();
+        return new While(identifier, condition, statement);
     }
 
-    private void Switch() throws SyntacticException {
-        match(TokenType.kwSwitch);
+    private Statement Switch() throws SyntacticException {
+        Token identifier = match(TokenType.kwSwitch);
         match(TokenType.leftParenthesis);
-        Expression();
+        Expression expression = Expression();
         match(TokenType.rightParenthesis);
         match(TokenType.leftBrace);
         SwitchStatementList();
         match(TokenType.rightBrace);
+        return new Switch(identifier, expression);
     }
 
     private void SwitchStatementList() throws SyntacticException {
@@ -744,42 +802,50 @@ public class ParserImpl implements Parser {
 
 //------------------------------------------------------------------------------
 
-    private void ExpressionOptional() throws SyntacticException {
+    private Expression ExpressionOptional() throws SyntacticException {
         if (Lookup.Expression.contains(token.getType())) {
-            Expression();
+            return Expression();
         } else if (token.getType() == TokenType.semicolon) {
-            return;
-        } else throwException(List.of(
-            "an expression",
-            TokenType.semicolon.toString()
-        ));
+            return null;
+        } else {
+            throwException(List.of(
+                    "an expression",
+                    TokenType.semicolon.toString()
+            ));
+            return null;
+        }
     }
 
-    private void Expression() throws SyntacticException {
-        CompositeExpression();
-        ExpressionRest();
+    private Expression Expression() throws SyntacticException {
+        CompositeExpression expression = CompositeExpression();
+        return ExpressionRest(expression);
     }
 
-    private void ExpressionRest() throws SyntacticException {
+    private Expression ExpressionRest(CompositeExpression expression) throws SyntacticException {
         switch (token.getType()) {
             case opAssign, opPlusAssign, opMinusAssign -> {
-                AssignmentOp();
-                CompositeExpression();
+                Token operator = AssignmentOp();
+                CompositeExpression right = CompositeExpression();
+                return new Assignment(expression, right, operator);
             }
             default -> {
-                if (Follow.Expression.contains(token.getType())) return;
-                else throwException(List.of(
-                    "an assignment operator",
-                    TokenType.comma.toString(),
-                    TokenType.rightParenthesis.toString(),
-                    TokenType.semicolon.toString()
-                ));
+                if (Follow.Expression.contains(token.getType())) {
+                    return expression;
+                } else {
+                    throwException(List.of(
+                        "an assignment operator",
+                        TokenType.comma.toString(),
+                        TokenType.rightParenthesis.toString(),
+                        TokenType.semicolon.toString()
+                    ));
+                    return null;
+                }
             }
         }
     }
 
-    private void AssignmentOp() throws SyntacticException {
-        switch (token.getType()) {
+    private Token AssignmentOp() throws SyntacticException {
+        return switch (token.getType()) {
             case opAssign -> match(TokenType.opAssign);
             case opPlusAssign -> match(TokenType.opPlusAssign);
             case opMinusAssign -> match(TokenType.opMinusAssign);
@@ -788,32 +854,35 @@ public class ParserImpl implements Parser {
                 TokenType.opPlusAssign.toString(),
                 TokenType.opMinusAssign.toString())
             );
+        };
+    }
+
+    private CompositeExpression CompositeExpression() throws SyntacticException {
+        BasicExpression expression = BasicExpression();
+        return CompositeExpressionRest(expression);
+    }
+
+    private CompositeExpression CompositeExpressionRest(CompositeExpression expression) throws SyntacticException {
+        if (Lookup.BinaryOp.contains(token.getType())) {
+            Token operator = BinaryOp();
+            BasicExpression right = BasicExpression();
+            return CompositeExpressionRest(new BinaryExpression(expression, right, operator));
+        } else if (Follow.CompositeExpression.contains(token.getType())) {
+            return expression;
+        } else {
+            throwException(List.of(
+                "a binary operator",
+                "an assignment operator",
+                TokenType.semicolon.toString(),
+                TokenType.rightParenthesis.toString(),
+                TokenType.comma.toString()
+            ));
+            return null;
         }
     }
 
-    private void CompositeExpression() throws SyntacticException {
-        BasicExpression();
-        CompositeExpressionRest();
-    }
-
-    private void CompositeExpressionRest() throws SyntacticException {
-        if (Lookup.BinaryOp.contains(token.getType())) {
-            BinaryOp();
-            BasicExpression();
-            CompositeExpressionRest();
-        } else if (Follow.CompositeExpression.contains(token.getType())) {
-            return;
-        } else throwException(List.of(
-            "a binary operator",
-            "an assignment operator",
-            TokenType.semicolon.toString(),
-            TokenType.rightParenthesis.toString(),
-            TokenType.comma.toString()
-        ));
-    }
-
-    private void BinaryOp() throws SyntacticException {
-        switch (token.getType()) {
+    private Token BinaryOp() throws SyntacticException {
+        return switch (token.getType()) {
             case opOr -> match(TokenType.opOr);
             case opAnd -> match(TokenType.opAnd);
             case opEqual -> match(TokenType.opEqual);
@@ -828,28 +897,32 @@ public class ParserImpl implements Parser {
             case opDiv -> match(TokenType.opDiv);
             case opMod -> match(TokenType.opMod);
             default -> throwException(List.of(
-            "a binary operator"
+                "a binary operator"
             ));
-        }
+        };
     }
 
-    private void BasicExpression() throws SyntacticException {
+    private BasicExpression BasicExpression() throws SyntacticException {
         if (token.getType() == TokenType.opPlus ||
             token.getType() == TokenType.opMinus ||
             token.getType() == TokenType.opNot) {
 
-            UnaryOp();
-            Operand();
+            Token operator = UnaryOp();
+            Operand operand = Operand();
+            return new UnaryExpression(operand, operator);
         } else if (Lookup.Operand.contains(token.getType())) {
-            Operand();
-        } else throwException(List.of(
-            "a unary operator",
-            "an operand"
-        ));
+            return Operand();
+        } else {
+            throwException(List.of(
+                "a unary operator",
+                "an operand"
+            ));
+            return null;
+        }
     }
 
-    private void UnaryOp() throws SyntacticException {
-        switch (token.getType()) {
+    private Token UnaryOp() throws SyntacticException {
+        return switch (token.getType()) {
             case opPlus -> match(TokenType.opPlus);
             case opMinus -> match(TokenType.opMinus);
             case opNot -> match(TokenType.opNot);
@@ -858,120 +931,144 @@ public class ParserImpl implements Parser {
                 TokenType.opMinus.toString(),
                 TokenType.opNot.toString()
             ));
-        }
+        };
     }
 
-    private void Operand() throws SyntacticException {
+    private Operand Operand() throws SyntacticException {
         if (Lookup.Literal.contains(token.getType())) {
-            Literal();
+            return Literal();
         } else if (Lookup.Access.contains(token.getType())) {
-            Access();
-        } else throwException(List.of(
-            "a literal",
-            "an access to an object"
-        ));
+            return Access();
+        } else {
+            throwException(List.of(
+                "a literal",
+                "an access to an object"
+            ));
+            return null;
+        }
     }
 
-    private void Literal() throws SyntacticException {
+    private Literal Literal() throws SyntacticException {
         if (Lookup.PrimitiveLiteral.contains(token.getType())) {
-            PrimitiveLiteral();
+            return PrimitiveLiteral();
         } else if (Lookup.ObjectLiteral.contains(token.getType())) {
-            ObjectLiteral();
-        } else throwException(List.of(
-            "a primitive literal",
-            "an object literal"
-        ));
-    }
-
-    private void PrimitiveLiteral() throws SyntacticException {
-        switch (token.getType()) {
-            case trueLiteral -> match(TokenType.trueLiteral);
-            case falseLiteral -> match(TokenType.falseLiteral);
-            case intLiteral -> match(TokenType.intLiteral);
-            case floatLiteral -> match(TokenType.floatLiteral);
-            case charLiteral -> match(TokenType.charLiteral);
-            default -> throwException(List.of(
-                TokenType.trueLiteral.toString(),
-                TokenType.falseLiteral.toString(),
-                TokenType.intLiteral.toString(),
-                TokenType.floatLiteral.toString(),
-                TokenType.charLiteral.toString()
+            return ObjectLiteral();
+        } else {
+            throwException(List.of(
+                "a primitive literal",
+                "an object literal"
             ));
+            return null;
         }
     }
 
-    private void ObjectLiteral() throws SyntacticException {
-        switch (token.getType()) {
-            case nullLiteral -> match(TokenType.nullLiteral);
-            case stringLiteral -> match(TokenType.stringLiteral);
-            default -> throwException(List.of(
-                TokenType.nullLiteral.toString(),
-                TokenType.stringLiteral.toString()
-            ));
-        }
+    private Literal PrimitiveLiteral() throws SyntacticException {
+        return switch (token.getType()) {
+            case trueLiteral -> new Literal(match(TokenType.trueLiteral));
+            case falseLiteral -> new Literal(match(TokenType.falseLiteral));
+            case intLiteral -> new Literal(match(TokenType.intLiteral));
+            case floatLiteral -> new Literal(match(TokenType.floatLiteral));
+            case charLiteral -> new Literal(match(TokenType.charLiteral));
+            default -> {
+                throwException(List.of(
+                    TokenType.trueLiteral.toString(),
+                    TokenType.falseLiteral.toString(),
+                    TokenType.intLiteral.toString(),
+                    TokenType.floatLiteral.toString(),
+                    TokenType.charLiteral.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void Access() throws SyntacticException {
-        Primary();
-        ChainedOptional();
+    private Literal ObjectLiteral() throws SyntacticException {
+        return switch (token.getType()) {
+            case nullLiteral -> new Literal(match(TokenType.nullLiteral));
+            case stringLiteral -> new Literal(match(TokenType.stringLiteral));
+            default -> {
+                throwException(List.of(
+                    TokenType.nullLiteral.toString(),
+                    TokenType.stringLiteral.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
-    private void Primary() throws SyntacticException {
-        switch (token.getType()) {
+    private Access Access() throws SyntacticException {
+        Access access = Primary();
+        Chained chained = ChainedOptional();
+        if (access != null) access.setChained(chained);
+        return access;
+    }
+
+    private Access Primary() throws SyntacticException {
+        return switch (token.getType()) {
             case kwThis -> ThisAccess();
             case idMetVar -> IdMetVarAccess();
             case kwNew -> ConstructorAccess();
             case idClass -> StaticMethodAccess();
             case leftParenthesis -> ParenthesizedExpression();
-            default -> throwException(List.of(
-            "a reference to an object"
+            default -> {
+                throwException(List.of(
+                    "a reference to an object"
+                ));
+                yield null;
+            }
+        };
+    }
+
+    private ThisAccess ThisAccess() throws SyntacticException {
+        return new ThisAccess(match(TokenType.kwThis));
+    }
+
+    private Access IdMetVarAccess() throws SyntacticException {
+        Token identifier = match(TokenType.idMetVar);
+        return IdMetVarAccessRest(identifier);
+    }
+
+    private Access IdMetVarAccessRest(Token identifier) throws SyntacticException {
+        if (token.getType() == TokenType.leftParenthesis) {
+            List<Expression> actualArgs = ActualArgs();
+            return new MethodAccess(identifier, actualArgs);
+        } else if (Follow.Primary.contains(token.getType())) {
+            return new VarAccess(identifier);
+        } else {
+            throwException(List.of(
+                TokenType.leftParenthesis.toString(),
+                TokenType.dot.toString(),
+                "an assignment operator",
+                TokenType.semicolon.toString(),
+                TokenType.rightParenthesis.toString(),
+                TokenType.comma.toString(),
+                "a binary operator"
             ));
+            return null;
         }
     }
 
-    private void ThisAccess() throws SyntacticException {
-        match(TokenType.kwThis);
-    }
-
-    private void IdMetVarAccess() throws SyntacticException {
-        match(TokenType.idMetVar);
-        IdMetVarAccessRest();
-    }
-
-    private void IdMetVarAccessRest() throws SyntacticException {
-        if (token.getType() == TokenType.leftParenthesis) {
-            ActualArgs();
-        } else if (Follow.Primary.contains(token.getType())) {
-            return;
-        } else throwException(List.of(
-            TokenType.leftParenthesis.toString(),
-            TokenType.dot.toString(),
-            "an assignment operator",
-            TokenType.semicolon.toString(),
-            TokenType.rightParenthesis.toString(),
-            TokenType.comma.toString(),
-            "a binary operator"
-        ));
-    }
-
-    private void ConstructorAccess() throws SyntacticException {
+    private ConstuctorAccess ConstructorAccess() throws SyntacticException {
         match(TokenType.kwNew);
-        match(TokenType.idClass);
+        Token identifier = match(TokenType.idClass);
         GenericTypeOptionalEmpty();
-        ActualArgs();
+        List<Expression> actualArgs = ActualArgs();
+        return new ConstuctorAccess(identifier, actualArgs);
     }
 
-    private void StaticMethodAccess() throws SyntacticException {
-        match(TokenType.idClass);
+    private StaticMethodAccess StaticMethodAccess() throws SyntacticException {
+        Token classId = match(TokenType.idClass);
         match(TokenType.dot);
-        match(TokenType.idMetVar);
-        ActualArgs();
+        Token methodId = match(TokenType.idMetVar);
+        List<Expression> actualArgs = ActualArgs();
+        return new StaticMethodAccess(classId, methodId, actualArgs);
     }
 
-    private void ParenthesizedExpression() throws SyntacticException {
-        match(TokenType.leftParenthesis);
-        Expression();
+    private ParenthesizedExpression ParenthesizedExpression() throws SyntacticException {
+        Token identifier = match(TokenType.leftParenthesis);
+        Expression expression = Expression();
         match(TokenType.rightParenthesis);
+        return new ParenthesizedExpression(identifier, expression);
     }
 
     private void GenericTypeOptionalEmpty() throws SyntacticException {
@@ -1004,15 +1101,17 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void ActualArgs() throws SyntacticException {
+    private List<Expression> ActualArgs() throws SyntacticException {
+        List<Expression> actualArgs = new ArrayList<>();
         match(TokenType.leftParenthesis);
-        ExpressionListOptional();
+        ExpressionListOptional(actualArgs);
         match(TokenType.rightParenthesis);
+        return actualArgs;
     }
 
-    private void ExpressionListOptional() throws SyntacticException {
+    private void ExpressionListOptional(List<Expression> actualArgs) throws SyntacticException {
         if (Lookup.Expression.contains(token.getType())) {
-            ExpressionList();
+            ExpressionList(actualArgs);
         } else if (token.getType() == TokenType.rightParenthesis) {
             return;
         } else throwException(List.of(
@@ -1021,16 +1120,16 @@ public class ParserImpl implements Parser {
         ));
     }
 
-    private void ExpressionList() throws SyntacticException {
-        Expression();
-        ExpressionListRest();
+    private void ExpressionList(List<Expression> actualArgs) throws SyntacticException {
+        actualArgs.add(Expression());
+        ExpressionListRest(actualArgs);
     }
 
-    private void ExpressionListRest() throws SyntacticException {
+    private void ExpressionListRest(List<Expression> actualArgs) throws SyntacticException {
         switch (token.getType()) {
             case comma -> {
                 match(TokenType.comma);
-                ExpressionList();
+                ExpressionList(actualArgs);
             }
             case rightParenthesis -> {
                 return;
@@ -1042,47 +1141,55 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void ChainedOptional() throws SyntacticException {
+    private Chained ChainedOptional() throws SyntacticException {
         if (token.getType() == TokenType.dot) {
-            ChainedIdMetVar();
+            return ChainedIdMetVar();
         } else if (Follow.BasicExpression.contains(token.getType())) {
-            return;
-        } else throwException(List.of(
-            TokenType.dot.toString(),
-            "an assignment operator",
-            TokenType.semicolon.toString(),
-            TokenType.rightParenthesis.toString(),
-            TokenType.comma.toString(),
-            "a binary operator"
-        ));
+            return null;
+        } else {
+            throwException(List.of(
+                TokenType.dot.toString(),
+                "an assignment operator",
+                TokenType.semicolon.toString(),
+                TokenType.rightParenthesis.toString(),
+                TokenType.comma.toString(),
+                "a binary operator"
+            ));
+            return null;
+        }
     }
 
-    private void ChainedIdMetVar() throws SyntacticException {
+    private Chained ChainedIdMetVar() throws SyntacticException {
         match(TokenType.dot);
-        match(TokenType.idMetVar);
-        ChainedIdMetVarRest();
+        Token identifier = match(TokenType.idMetVar);
+        return ChainedIdMetVarRest(identifier);
     }
 
-    private void ChainedIdMetVarRest() throws SyntacticException {
-        switch (token.getType()) {
-            case dot -> ChainedOptional();
+    private Chained ChainedIdMetVarRest(Token identifier) throws SyntacticException {
+        return switch (token.getType()) {
+            case dot -> new ChainedVar(identifier, ChainedOptional());
             case leftParenthesis -> {
-                ActualArgs();
-                ChainedOptional();
+                List<Expression> actualArgs = ActualArgs();
+                Chained chained = ChainedOptional();
+                yield new ChainedMethod(identifier, actualArgs, chained);
             }
             default -> {
-                if (Follow.BasicExpression.contains(token.getType())) return;
-                else throwException(List.of(
-                    TokenType.dot.toString(),
-                    TokenType.leftParenthesis.toString(),
-                    "an assignment operator",
-                    TokenType.semicolon.toString(),
-                    TokenType.rightParenthesis.toString(),
-                    TokenType.comma.toString(),
-                    "a binary operator"
-                ));
+                if (Follow.BasicExpression.contains(token.getType())) {
+                    yield new ChainedVar(identifier, null);
+                } else {
+                    throwException(List.of(
+                        TokenType.dot.toString(),
+                        TokenType.leftParenthesis.toString(),
+                        "an assignment operator",
+                        TokenType.semicolon.toString(),
+                        TokenType.rightParenthesis.toString(),
+                        TokenType.comma.toString(),
+                        "a binary operator"
+                    ));
+                    yield null;
+                }
             }
-        }
+        };
     }
 
 //------------------------------------------------------------------------------

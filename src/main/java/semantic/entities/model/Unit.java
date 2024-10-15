@@ -5,6 +5,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.Parameter;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.model.statement.Block;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public abstract class Unit extends Entity {
     protected Type return_type;
     protected final Map<String, Parameter> parameters;
     protected final List<Parameter> parameter_list;
+    protected Block body;
 
     protected boolean is_private = false;
     protected boolean is_static = false;
@@ -64,6 +66,10 @@ public abstract class Unit extends Entity {
             parameters.put(parameter.getName(), parameter);
             parameter_list.add(parameter);
         }
+    }
+
+    public void setBody(Block body) {
+        this.body = body;
     }
 
     @Override
