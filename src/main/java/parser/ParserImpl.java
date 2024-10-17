@@ -721,7 +721,7 @@ public class ParserImpl implements Parser {
 
     private Statement ForWithAssignment(Token identifier, Type type, Token it) throws SyntacticException {
         Token operator = match(TokenType.opAssign);
-        CompositeExpression declaration = CompositeExpression();
+        CompositeExpression value = CompositeExpression();
         match(TokenType.semicolon);
         CompositeExpression condition = CompositeExpression();
         match(TokenType.semicolon);
@@ -731,8 +731,8 @@ public class ParserImpl implements Parser {
         return new For(
             identifier,
             type == null?
-                new Assignment(new VarAccess(it), declaration, operator):
-                new LocalVar(type, List.of(it), declaration),
+                new Assignment(new VarAccess(it), value, operator):
+                new LocalVar(type, List.of(it), value),
             condition,
             assignment,
             statement
@@ -760,12 +760,12 @@ public class ParserImpl implements Parser {
     }
 
     private Statement Switch() throws SyntacticException {
+        List<SwitchStatement> statements = new ArrayList<>();
         Token identifier = match(TokenType.kwSwitch);
         match(TokenType.leftParenthesis);
         Expression expression = Expression();
         match(TokenType.rightParenthesis);
         match(TokenType.leftBrace);
-        List<SwitchStatement> statements = new ArrayList<>();
         SwitchStatementList(statements);
         match(TokenType.rightBrace);
         return new Switch(identifier, expression, statements);

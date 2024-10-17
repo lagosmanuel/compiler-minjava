@@ -97,7 +97,7 @@ e           is the empty string
 
 <Switch> ::= switch ( <Expression> ) { <SwitchStatementList> }
 <SwitchStatementList> ::= <SwitchStatement> <SwitchStatementList> | e
-<SwitchStatement> ::= case <PrimitiveLiteral> : <StatementOptional>
+<SwitchStatement> ::= case <Literal> : <StatementOptional>
 <SwitchStatement> ::= default : <Statement>
 
 --------------------------------------------------------------------------------
