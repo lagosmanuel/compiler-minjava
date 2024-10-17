@@ -27,6 +27,7 @@ import main.java.semantic.entities.model.statement.*;
 import main.java.semantic.entities.model.statement.chained.*;
 import main.java.semantic.entities.model.statement.expression.*;
 import main.java.semantic.entities.model.statement.primary.*;
+import main.java.semantic.entities.model.statement.switchs.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -461,20 +462,20 @@ public class ParserImpl implements Parser {
         if (panic_mode && Lookup.Statement.contains(token.getType())) StatementList();
     }
 
-    private void StatementOptional() throws SyntacticException {
+    private Statement StatementOptional() throws SyntacticException {
         if (Lookup.Statement.contains(token.getType())) {
-            Statement statement = Statement();
-            if (actualBlock != null) actualBlock.addStatement(statement);
+            return Statement();
         } else if (token.getType() == TokenType.rightBrace ||
                    token.getType() == TokenType.kwCase ||
                    token.getType() == TokenType.kwDefault) {
-            return;
+            return null;
         } else throwException(List.of(
             "a statement",
             TokenType.rightBrace.toString(),
             TokenType.kwCase.toString(),
             TokenType.kwDefault.toString()
         ));
+        return null;
     }
 
     private Statement Statement() throws SyntacticException {
@@ -727,9 +728,15 @@ public class ParserImpl implements Parser {
         Expression assignment = Expression();
         match(TokenType.rightParenthesis);
         Statement statement = Statement();
-        return type == null?
-            new For(identifier, new Assignment(new VarAccess(it), declaration, operator), condition, assignment, statement):
-            new For(identifier, new LocalVar(type, List.of(it), declaration), condition, assignment, statement);
+        return new For(
+            identifier,
+            type == null?
+                new Assignment(new VarAccess(it), declaration, operator):
+                new LocalVar(type, List.of(it), declaration),
+            condition,
+            assignment,
+            statement
+        );
     }
 
     private Token VarOptional() throws SyntacticException {
@@ -758,16 +765,17 @@ public class ParserImpl implements Parser {
         Expression expression = Expression();
         match(TokenType.rightParenthesis);
         match(TokenType.leftBrace);
-        SwitchStatementList();
+        List<SwitchStatement> statements = new ArrayList<>();
+        SwitchStatementList(statements);
         match(TokenType.rightBrace);
-        return new Switch(identifier, expression);
+        return new Switch(identifier, expression, statements);
     }
 
-    private void SwitchStatementList() throws SyntacticException {
+    private void SwitchStatementList(List<SwitchStatement> statements) throws SyntacticException {
         switch (token.getType()) {
             case kwCase, kwDefault -> {
-                SwitchStatement();
-                SwitchStatementList();
+                statements.add(SwitchStatement());
+                SwitchStatementList(statements);
             }
             case rightBrace -> {
                 return;
@@ -780,24 +788,29 @@ public class ParserImpl implements Parser {
         }
     }
 
-    private void SwitchStatement() throws SyntacticException {
-        switch (token.getType()) {
+    private SwitchStatement SwitchStatement() throws SyntacticException {
+        return switch (token.getType()) {
             case kwCase -> {
-                match(TokenType.kwCase);
-                PrimitiveLiteral();
+                Token identifier = match(TokenType.kwCase);
+                Literal literal = Literal();
                 match(TokenType.colon);
-                StatementOptional();
+                Statement statement = StatementOptional();
+                yield new Case(identifier, literal, statement);
             }
             case kwDefault -> {
-                match(TokenType.kwDefault);
+                Token identifier = match(TokenType.kwDefault);
                 match(TokenType.colon);
-                Statement();
+                Statement statement = Statement();
+                yield new Default(identifier, statement);
             }
-            default -> throwException(List.of(
-                TokenType.kwCase.toString(),
-                TokenType.kwDefault.toString()
-            ));
-        }
+            default -> {
+                throwException(List.of(
+                    TokenType.kwCase.toString(),
+                    TokenType.kwDefault.toString()
+                ));
+                yield null;
+            }
+        };
     }
 
 //------------------------------------------------------------------------------

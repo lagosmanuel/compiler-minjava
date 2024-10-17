@@ -7,6 +7,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.type.TypeVar;
+import main.java.semantic.entities.model.type.VarType;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -74,8 +75,14 @@ public abstract class Type extends Entity {
 
     public static Type createType(Token type_token, List<TypeVar> type_params_tokens) {
         if (type_token == null) return null;
+
         if (type_token.getType() != TokenType.idClass) {
-            return new PrimitiveType(
+            if (type_token.getType() == TokenType.kwVar) {
+                return new VarType(
+                    type_token.getLexeme(),
+                    type_token
+                );
+            } else return new PrimitiveType(
                 type_token.getLexeme(),
                 type_token
             );
