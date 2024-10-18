@@ -31,6 +31,7 @@ public class Keywords {
         Map.entry("return", TokenType.kwReturn),
         Map.entry("true", TokenType.trueLiteral),
         Map.entry("false", TokenType.falseLiteral),
-        Map.entry("null", TokenType.nullLiteral)
+        Map.entry("null", TokenType.nullLiteral),
+        Map.entry("super", TokenType.kwSuper)
     );
 }

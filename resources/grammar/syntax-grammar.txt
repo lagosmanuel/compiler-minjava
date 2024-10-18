@@ -130,12 +130,14 @@ e           is the empty string
 <Access> ::= <Primary> <ChainedOptional>
 
 <Primary> ::= <ThisAccess>
+<Primary> ::= <SuperAccess>
 <Primary> ::= <IdMetVarAccess> /* VarAccess and MethodAccess */
 <Primary> ::= <ConstructorAccess>
 <Primary> ::= <StaticMethodAccess>
 <Primary> ::= <ParenthesizedExpression>
 
 <ThisAccess> ::= this
+<SuperAccess> ::= super <ActualArgsOptional>
 <IdMetVarAccess> ::= idMetVar <IdMetVarAccessRest>
 <IdMetVarAccessRest> ::= <ActualArgs> | e
 <ConstructorAccess> ::= new idClass <GenericTypeOptionalEmpty> <ActualArgs>
@@ -145,6 +147,7 @@ e           is the empty string
 <GenericTypeOptionalEmpty> ::= < <GenericListOptional> > | e
 <GenericListOptional> ::= <GenericTypeList> | e
 
+<ActualArgsOptional> ::= <ActualArgs> | e
 <ActualArgs> ::= ( <ExpressionListOptional> )
 
 <ExpressionListOptional> ::= <ExpressionList> | e

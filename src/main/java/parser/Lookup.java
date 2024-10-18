@@ -42,6 +42,7 @@ public class Lookup {
 
     public static final Collection<TokenType> Access = Set.of(
         TokenType.kwThis,
+        TokenType.kwSuper,
         TokenType.idMetVar,
         TokenType.kwNew,
         TokenType.idClass,

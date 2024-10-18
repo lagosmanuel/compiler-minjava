@@ -233,7 +233,7 @@ public class ParserImpl implements Parser {
                 MemberRest();
             }
             default -> throwException(List.of(
-            "a member"
+                "a member"
             ));
         }
     }
@@ -1007,6 +1007,7 @@ public class ParserImpl implements Parser {
     private Access Primary() throws SyntacticException {
         return switch (token.getType()) {
             case kwThis -> ThisAccess();
+            case kwSuper -> SuperAccess();
             case idMetVar -> IdMetVarAccess();
             case kwNew -> ConstructorAccess();
             case idClass -> StaticMethodAccess();
@@ -1022,6 +1023,14 @@ public class ParserImpl implements Parser {
 
     private ThisAccess ThisAccess() throws SyntacticException {
         return new ThisAccess(match(TokenType.kwThis));
+    }
+
+    private SuperAccess SuperAccess() throws SyntacticException {
+        return new SuperAccess(
+            match(TokenType.kwSuper),
+            SymbolTable.actualClass != null? SymbolTable.actualClass.getToken():null,
+            ActualArgsOptional()
+        );
     }
 
     private Access IdMetVarAccess() throws SyntacticException {
@@ -1096,6 +1105,23 @@ public class ParserImpl implements Parser {
                 TokenType.opGreater.toString()
             ));
         }
+    }
+
+    private List<Expression> ActualArgsOptional() throws SyntacticException {
+        if (token.getType() == TokenType.leftParenthesis) {
+            return ActualArgs();
+        } else if (Follow.Primary.contains(token.getType())) {
+            return null;
+        } else throwException(List.of(
+            TokenType.leftParenthesis.toString(),
+            TokenType.dot.toString(),
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString(),
+            "a binary operator"
+        ));
+        return null;
     }
 
     private List<Expression> ActualArgs() throws SyntacticException {
