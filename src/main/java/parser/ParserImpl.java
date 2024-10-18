@@ -820,18 +820,15 @@ public class ParserImpl implements Parser {
             return Expression();
         } else if (token.getType() == TokenType.semicolon) {
             return null;
-        } else {
-            throwException(List.of(
-                    "an expression",
-                    TokenType.semicolon.toString()
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            "an expression",
+            TokenType.semicolon.toString()
+        ));
+        return null;
     }
 
     private Expression Expression() throws SyntacticException {
-        CompositeExpression expression = CompositeExpression();
-        return ExpressionRest(expression);
+        return ExpressionRest(CompositeExpression());
     }
 
     private Expression ExpressionRest(CompositeExpression expression) throws SyntacticException {
@@ -871,8 +868,7 @@ public class ParserImpl implements Parser {
     }
 
     private CompositeExpression CompositeExpression() throws SyntacticException {
-        BasicExpression expression = BasicExpression();
-        return CompositeExpressionRest(expression);
+        return CompositeExpressionRest(BasicExpression());
     }
 
     private CompositeExpression CompositeExpressionRest(CompositeExpression expression) throws SyntacticException {
@@ -882,16 +878,14 @@ public class ParserImpl implements Parser {
             return CompositeExpressionRest(new BinaryExpression(expression, right, operator));
         } else if (Follow.CompositeExpression.contains(token.getType())) {
             return expression;
-        } else {
-            throwException(List.of(
-                "a binary operator",
-                "an assignment operator",
-                TokenType.semicolon.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.comma.toString()
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            "a binary operator",
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString()
+        ));
+        return null;
     }
 
     private Token BinaryOp() throws SyntacticException {
@@ -925,13 +919,11 @@ public class ParserImpl implements Parser {
             return new UnaryExpression(operand, operator);
         } else if (Lookup.Operand.contains(token.getType())) {
             return Operand();
-        } else {
-            throwException(List.of(
-                "a unary operator",
-                "an operand"
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            "a unary operator",
+            "an operand"
+        ));
+        return null;
     }
 
     private Token UnaryOp() throws SyntacticException {
@@ -952,13 +944,11 @@ public class ParserImpl implements Parser {
             return Literal();
         } else if (Lookup.Access.contains(token.getType())) {
             return Access();
-        } else {
-            throwException(List.of(
-                "a literal",
-                "an access to an object"
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            "a literal",
+            "an access to an object"
+        ));
+        return null;
     }
 
     private Literal Literal() throws SyntacticException {
@@ -966,13 +956,11 @@ public class ParserImpl implements Parser {
             return PrimitiveLiteral();
         } else if (Lookup.ObjectLiteral.contains(token.getType())) {
             return ObjectLiteral();
-        } else {
-            throwException(List.of(
-                "a primitive literal",
-                "an object literal"
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            "a primitive literal",
+            "an object literal"
+        ));
+        return null;
     }
 
     private Literal PrimitiveLiteral() throws SyntacticException {
@@ -1037,28 +1025,24 @@ public class ParserImpl implements Parser {
     }
 
     private Access IdMetVarAccess() throws SyntacticException {
-        Token identifier = match(TokenType.idMetVar);
-        return IdMetVarAccessRest(identifier);
+        return IdMetVarAccessRest(match(TokenType.idMetVar));
     }
 
     private Access IdMetVarAccessRest(Token identifier) throws SyntacticException {
         if (token.getType() == TokenType.leftParenthesis) {
-            List<Expression> actualArgs = ActualArgs();
-            return new MethodAccess(identifier, actualArgs);
+            return new MethodAccess(identifier, ActualArgs());
         } else if (Follow.Primary.contains(token.getType())) {
             return new VarAccess(identifier);
-        } else {
-            throwException(List.of(
-                TokenType.leftParenthesis.toString(),
-                TokenType.dot.toString(),
-                "an assignment operator",
-                TokenType.semicolon.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.comma.toString(),
-                "a binary operator"
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            TokenType.leftParenthesis.toString(),
+            TokenType.dot.toString(),
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString(),
+            "a binary operator"
+        ));
+        return null;
     }
 
     private ConstuctorAccess ConstructorAccess() throws SyntacticException {
@@ -1159,23 +1143,20 @@ public class ParserImpl implements Parser {
             return ChainedIdMetVar();
         } else if (Follow.BasicExpression.contains(token.getType())) {
             return null;
-        } else {
-            throwException(List.of(
-                TokenType.dot.toString(),
-                "an assignment operator",
-                TokenType.semicolon.toString(),
-                TokenType.rightParenthesis.toString(),
-                TokenType.comma.toString(),
-                "a binary operator"
-            ));
-            return null;
-        }
+        } else throwException(List.of(
+            TokenType.dot.toString(),
+            "an assignment operator",
+            TokenType.semicolon.toString(),
+            TokenType.rightParenthesis.toString(),
+            TokenType.comma.toString(),
+            "a binary operator"
+        ));
+        return null;
     }
 
     private Chained ChainedIdMetVar() throws SyntacticException {
         match(TokenType.dot);
-        Token identifier = match(TokenType.idMetVar);
-        return ChainedIdMetVarRest(identifier);
+        return ChainedIdMetVarRest(match(TokenType.idMetVar));
     }
 
     private Chained ChainedIdMetVarRest(Token identifier) throws SyntacticException {
