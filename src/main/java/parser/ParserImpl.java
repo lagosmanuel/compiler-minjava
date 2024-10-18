@@ -509,7 +509,7 @@ public class ParserImpl implements Parser {
             case leftBrace -> Block();
             default -> {
                 if (Lookup.Expression.contains(token.getType())) {
-                    Statement statement = Expression();
+                    Statement statement = new ExpressionStatement(Expression());
                     match(TokenType.semicolon);
                     yield statement;
                 } else {
@@ -539,7 +539,7 @@ public class ParserImpl implements Parser {
                     ActualArgs()
                 );
                 access.setChained(ChainedOptional());
-                yield ExpressionRest(CompositeExpressionRest(access));
+                yield new ExpressionStatement(ExpressionRest(CompositeExpressionRest(access)));
             }
             case opLess, idMetVar -> {
                 GenericTypeOptional();
@@ -731,7 +731,7 @@ public class ParserImpl implements Parser {
         return new For(
             identifier,
             type == null?
-                new Assignment(new VarAccess(it), value, operator):
+                new ExpressionStatement(new Assignment(new VarAccess(it), value, operator)):
                 new LocalVar(type, List.of(it), value),
             condition,
             assignment,

@@ -1,18 +1,19 @@
 package main.java.semantic.entities.model.statement.expression;
 
-import main.java.exeptions.SemanticException;
 import main.java.model.Token;
-import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.Type;
+import main.java.exeptions.SemanticException;
 
-abstract public class Expression extends Statement {
+abstract public class Expression {
+    private final Token identifier;
+
     public Expression(Token identifier) {
-        super(identifier);
+        this.identifier = identifier;
+    }
+
+    public Token getIdentifier() {
+        return identifier;
     }
 
     public abstract Type checkType() throws SemanticException;
-
-    public void check() throws SemanticException {
-        checkType();
-    }
 }
