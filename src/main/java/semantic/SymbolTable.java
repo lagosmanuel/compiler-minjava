@@ -5,12 +5,9 @@ import main.java.model.ErrorType;
 import main.java.model.Pair;
 import main.java.model.Token;
 import main.java.model.TokenType;
-
 import main.java.semantic.entities.Class;
-import main.java.semantic.entities.Method;
+import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.Constructor;
-import main.java.semantic.entities.AbstractMethod;
-
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
@@ -22,9 +19,7 @@ import java.util.HashMap;
 
 public class SymbolTable {
     public static Class actualClass;
-    public static Method actualMethod;
-    public static Constructor actualConstructor;
-    public static AbstractMethod actualAbstractMethod;
+    public static Unit actualUnit;
     public static Map<Integer, Pair<List<Error>, String>> errors;
     private final static Map<String, Class> classes = new HashMap<>();
     private static boolean hasMain = false;
@@ -34,7 +29,7 @@ public class SymbolTable {
         errors = errors_map;
         classes.clear();
         resetActualClass();
-        resetActualUnits();
+        resetActualUnit();
         addPrimitiveClasses();
         hasMain = false;
         EOF = null;
@@ -52,6 +47,13 @@ public class SymbolTable {
         if (errors.isEmpty()) for (Class myClass:classes.values()) {
             actualClass = myClass;
             myClass.consolidate();
+        }
+    }
+
+    public static void check() throws SemanticException {
+        if (errors.isEmpty()) for (Class myClass:classes.values()) {
+            actualClass = myClass;
+            myClass.check();
         }
     }
 
@@ -83,10 +85,8 @@ public class SymbolTable {
         actualClass = null;
     }
 
-    public static void resetActualUnits() {
-        actualMethod = null;
-        actualConstructor = null;
-        actualAbstractMethod = null;
+    public static void resetActualUnit() {
+        actualUnit = null;
     }
 
     public static void saveEOF(Token EOF) {

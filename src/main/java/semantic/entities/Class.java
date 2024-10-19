@@ -83,6 +83,11 @@ public class Class extends Entity {
         is_consolidated = true;
     }
 
+    public void check() throws SemanticException {
+        for (Constructor constructor:constructors.values()) constructor.check();
+        for (Method method:methods.values()) method.check();
+    }
+
     private void inheritAttributes(Class superClass) {
         superClass.getAttributes().forEach(this::addPublicAttributes);
         superClass.getInstanceAttributes().reversed().forEach(instance_attributes::addFirst);
@@ -168,6 +173,14 @@ public class Class extends Entity {
         return dynamic_methods_list;
     }
 
+    public boolean hasMethod(String method_name) {
+        return methods.containsKey(method_name);
+    }
+
+    public Method getMethod(String method_name) {
+        return methods.get(method_name);
+    }
+
     public void addMethod(Method method) {
         if (method == null) return;
         if (methodNameAlreadyDefined(method.getName())) {
@@ -184,6 +197,14 @@ public class Class extends Entity {
 
 // ------------------------------------- Constructors  ----------------------------------------------------------------
 
+    public boolean hasConstructor(String constructor_name) {
+        return constructors.containsKey(constructor_name);
+    }
+
+    public Constructor getConstructor(String constructor_name) {
+        return constructors.get(constructor_name);
+    }
+
     public void addConstructor(Constructor constructor) {
         if (constructor == null) return;
         if (constructors.containsKey(constructor.getName()))
@@ -195,6 +216,14 @@ public class Class extends Entity {
 
     public Collection<AbstractMethod> getAbstractMethods() {
         return abstractMethods.values();
+    }
+
+    public boolean hasAbstractMethod(String method_name) {
+        return abstractMethods.containsKey(method_name);
+    }
+
+    public AbstractMethod getAbstractMethod(String method_name) {
+        return abstractMethods.get(method_name);
     }
 
     public void addAbstractMethod(AbstractMethod method) {
@@ -212,6 +241,15 @@ public class Class extends Entity {
     public Map<String, List<Attribute>> getAttributes() {
         return attributes;
     }
+
+    public boolean hasAttribute(String attr_name) {
+        return attributes.containsKey(attr_name);
+    }
+
+    public Attribute getAttribute(String attr_name) {
+        return attributes.containsKey(attr_name)? attributes.get(attr_name).getFirst():null;
+    }
+
 
     public void addAttribute(Attribute attribute) {
         if (attribute == null) return;
@@ -248,6 +286,11 @@ public class Class extends Entity {
         addAttributes(attr_name, attr_list.stream().filter(attr -> !attr.isPrivate()).toList());
     }
 // ------------------------------------- Generics --------------------------------------------------------------------
+
+    public List<TypeVar> getTypeParameters() {
+        return new ArrayList<>(type_parameters.values());
+    }
+
 
     public boolean hasTypeParameter(String type_param_name) {
         return type_parameters.containsKey(type_param_name);

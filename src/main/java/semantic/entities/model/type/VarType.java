@@ -1,6 +1,5 @@
 package main.java.semantic.entities.model.type;
 
-import main.java.exeptions.SemanticException;
 import main.java.model.Token;
 import main.java.semantic.entities.model.Type;
 
@@ -10,8 +9,7 @@ public class VarType extends Type {
     }
 
     @Override
-    public void validate() throws SemanticException {
-        if (isValidated()) return;
-        super.validate();
+    public boolean compatible(Type type) {
+        return type != null;
     }
 }

@@ -1057,9 +1057,10 @@ public class ParserImpl implements Parser {
     private ConstuctorAccess ConstructorAccess() throws SyntacticException {
         match(TokenType.kwNew);
         Token identifier = match(TokenType.idClass);
-        GenericTypeOptionalEmpty();
+        Token genericId = GenericTypeOptionalEmpty();
+        List<TypeVar> genericTypes = getGenericTypes();
         List<Expression> actualArgs = ActualArgs();
-        return new ConstuctorAccess(identifier, actualArgs);
+        return new ConstuctorAccess(identifier, genericId, genericTypes, actualArgs);
     }
 
     private StaticMethodAccess StaticMethodAccess() throws SyntacticException {
@@ -1077,21 +1078,22 @@ public class ParserImpl implements Parser {
         return new ParenthesizedExpression(identifier, expression);
     }
 
-    private void GenericTypeOptionalEmpty() throws SyntacticException {
-        switch (token.getType()) {
+    private Token GenericTypeOptionalEmpty() throws SyntacticException {
+        return switch (token.getType()) {
             case opLess -> {
-                match(TokenType.opLess);
+                Token identifier = match(TokenType.opLess);
                 GenericListOptional();
                 match(TokenType.opGreater);
+                yield identifier;
             }
             case leftParenthesis -> {
-                return;
+                yield null;
             }
             default -> throwException(List.of(
                 TokenType.leftParenthesis.toString(),
                 "a parameterized type instantiation"
             ));
-        }
+        };
     }
 
     private void GenericListOptional() throws SyntacticException {
@@ -1325,7 +1327,7 @@ public class ParserImpl implements Parser {
         actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
-        SymbolTable.actualMethod = actualMethod;
+        SymbolTable.actualUnit = actualMethod;
     }
 
     private void createConstructor() {
@@ -1336,7 +1338,7 @@ public class ParserImpl implements Parser {
         );
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
-        SymbolTable.actualConstructor = actualConstructor;
+        SymbolTable.actualUnit = actualConstructor;
     }
 
     private void createAbstractMethod() {
@@ -1348,7 +1350,7 @@ public class ParserImpl implements Parser {
         actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
-        SymbolTable.actualAbstractMethod = actualAbstractMethod;
+        SymbolTable.actualUnit = actualAbstractMethod;
     }
 
     private void addParameter(Token param_type_token, Token param_name_token) {

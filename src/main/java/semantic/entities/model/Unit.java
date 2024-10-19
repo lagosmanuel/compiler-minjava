@@ -52,6 +52,22 @@ public abstract class Unit extends Entity {
         this.return_type = return_type;
     }
 
+    public boolean hasParameter(String param_name) {
+        return parameters.containsKey(param_name);
+    }
+
+    public Parameter getParameter(String param_name) {
+        return parameters.get(param_name);
+    }
+
+    public Parameter getParameter(int index) {
+        return parameters.values().stream().toList().get(index);
+    }
+
+    public int getParameterCount() {
+        return parameters.size();
+    }
+
     public void addParameter(Parameter parameter) {
         if (parameter == null) return;
         if (parameters.containsKey(parameter.getName())) {
@@ -68,6 +84,10 @@ public abstract class Unit extends Entity {
         }
     }
 
+    public Block getBody() {
+        return body;
+    }
+
     public void setBody(Block body) {
         this.body = body;
     }
@@ -79,6 +99,11 @@ public abstract class Unit extends Entity {
         for (Parameter parameter:parameters.values())
             parameter.validate();
         if (return_type != null) return_type.validate();
+    }
+
+    public void check() throws SemanticException {
+        SymbolTable.actualUnit = this;
+        if (body != null && !body.checked()) body.check();
     }
 
     public boolean isCompatible(Unit unit) {

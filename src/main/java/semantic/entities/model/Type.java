@@ -25,6 +25,32 @@ public abstract class Type extends Entity {
         super(type_name, type_token);
     }
 
+    public abstract boolean compatible(Type type);
+
+    public boolean isBoolean() {
+        return Objects.equals(getName(), PrimitiveType.BOOLEAN) ||
+               Objects.equals(getName(), ClassType.BOOLEAN_WRAPPER);
+    }
+
+    public boolean isInt() {
+        return Objects.equals(getName(), PrimitiveType.INT) ||
+               Objects.equals(getName(), ClassType.INT_WRAPPER);
+    }
+
+    public boolean isFloat() {
+        return Objects.equals(getName(), PrimitiveType.FLOAT) ||
+               Objects.equals(getName(), ClassType.FLOAT_WRAPPER);
+    }
+
+    public boolean isChar() {
+        return Objects.equals(getName(), PrimitiveType.CHAR) ||
+               Objects.equals(getName(), ClassType.CHAR_WRAPPER);
+    }
+
+    public boolean isNumeric() {
+        return isInt() || isFloat();
+    }
+
     public TypeVar getTypeParam(int position) {
         if (position < 0 || position >= type_params.size()) return null;
         return type_params.get(position);
@@ -100,5 +126,21 @@ public abstract class Type extends Entity {
                 type_params_tokens
             );
         }
+    }
+
+    public static Type createType(TokenType type_token) {
+        return switch (type_token) {
+            case intLiteral -> PrimitiveType.INT_TYPE;
+            case floatLiteral -> PrimitiveType.FLOAT_TYPE;
+            case charLiteral -> PrimitiveType.CHAR_TYPE;
+            case falseLiteral, trueLiteral -> PrimitiveType.BOOLEAN_TYPE;
+            case nullLiteral -> ClassType.NULL_TYPE;
+            case stringLiteral -> ClassType.STRING_TYPE;
+            default -> null;
+        };
+    }
+
+    public Type convertNumeric() {
+        return isChar()? PrimitiveType.INT_TYPE:this;
     }
 }
