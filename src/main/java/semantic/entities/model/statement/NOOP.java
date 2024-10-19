@@ -1,5 +1,6 @@
 package main.java.semantic.entities.model.statement;
 
+import main.java.exeptions.SemanticException;
 import main.java.model.Token;
 import main.java.semantic.entities.model.Statement;
 
@@ -9,7 +10,8 @@ public class NOOP extends Statement {
     }
 
     @Override
-    public void check() {
-
+    public void check() throws SemanticException {
+        if (checked()) return;
+        super.check();
     }
 }

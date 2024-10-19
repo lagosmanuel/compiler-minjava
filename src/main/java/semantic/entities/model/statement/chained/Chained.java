@@ -13,5 +13,13 @@ abstract public class Chained {
         this.chained = chained;
     }
 
-    public abstract Type checkType() throws SemanticException;
+    public Token getIdentifier() {
+        return identifier;
+    }
+
+    public Chained getChained() {
+        return chained;
+    }
+
+    public abstract Type checkType(Type type) throws SemanticException;
 }

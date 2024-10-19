@@ -6,6 +6,7 @@ import main.java.exeptions.SemanticException;
 
 abstract public class Expression {
     private final Token identifier;
+    private Type type = null;
 
     public Expression(Token identifier) {
         this.identifier = identifier;
@@ -13,6 +14,14 @@ abstract public class Expression {
 
     public Token getIdentifier() {
         return identifier;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public abstract Type checkType() throws SemanticException;

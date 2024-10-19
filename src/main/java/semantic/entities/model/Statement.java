@@ -7,6 +7,8 @@ import main.java.semantic.entities.model.statement.Block;
 public abstract class Statement {
     private Block parent;
     private final Token identifier;
+    private boolean checked = false;
+    private boolean breakable = false;
 
     public Statement(Token identifier) {
         this.identifier = identifier;
@@ -20,5 +22,23 @@ public abstract class Statement {
         this.parent = parent;
     }
 
-    public abstract void check() throws SemanticException;
+    public Token getIdentifier() {
+        return identifier;
+    }
+
+    public boolean checked() {
+        return checked;
+    }
+
+    public void check() throws SemanticException {
+       this.checked = true;
+    }
+
+    public void setBreakable() {
+        this.breakable = true;
+    }
+
+    public boolean isBreakable() {
+        return breakable;
+    }
 }

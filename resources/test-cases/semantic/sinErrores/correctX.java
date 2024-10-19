@@ -1,12 +1,24 @@
-class X {
+class HelloWorld {
+
     public static void main() {
-        v.m1(9, 4*a).w+5;
-        return 1;
-        break;
-        if (1 > 2) {
-            for (int i = 0; i < 10; i+=1) {
-                int x = 10;
-            }
-        }
+        A.m1(1);
+    }
+}
+
+class A {
+    static B m1() {
+
+    }
+
+    public static void m1(int x) {
+        m1().a;
+    }
+}
+
+class B {
+    private int a;
+
+    private void m2() {
+
     }
 }

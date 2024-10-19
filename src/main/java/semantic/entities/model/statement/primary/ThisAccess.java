@@ -2,6 +2,7 @@ package main.java.semantic.entities.model.statement.primary;
 
 import main.java.exeptions.SemanticException;
 import main.java.model.Token;
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.statement.Access;
 
@@ -15,6 +16,7 @@ public class ThisAccess extends Access {
 
     @Override
     public Type checkType() throws SemanticException {
-        return null;
+        Type type = Type.createType(SymbolTable.actualClass.getToken(), SymbolTable.actualClass.getTypeParameters());
+        return getChained() == null? type:getChained().checkType(type);
     }
 }

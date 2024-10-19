@@ -16,6 +16,9 @@ public class ParenthesizedExpression extends Access {
 
     @Override
     public Type checkType() throws SemanticException {
-        return null;
+        if (expression == null) return null;
+        return getChained() != null?
+            getChained().checkType(expression.checkType()):
+            expression.checkType();
     }
 }

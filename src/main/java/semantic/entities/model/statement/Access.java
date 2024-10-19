@@ -11,6 +11,10 @@ public abstract class Access extends Operand {
         super(identifier);
     }
 
+    public Chained getChained() {
+        return chained;
+    }
+
     public void setChained(Chained chained) {
         this.chained = chained;
     }

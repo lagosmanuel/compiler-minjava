@@ -14,6 +14,6 @@ public class ExpressionStatement extends Statement {
 
     @Override
     public void check() throws SemanticException {
-
+        if (expression != null) expression.checkType();
     }
 }
