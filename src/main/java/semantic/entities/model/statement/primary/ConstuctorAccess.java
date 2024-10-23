@@ -1,66 +1,111 @@
 package main.java.semantic.entities.model.statement.primary;
 
-import main.java.config.SemanticConfig;
-import main.java.exeptions.SemanticException;
-import main.java.messages.SemanticErrorMessages;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.Class;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.Access;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.type.TypeVar;
+import main.java.messages.SemanticErrorMessages;
+import main.java.exeptions.SemanticException;
 
 import java.util.List;
 
 public class ConstuctorAccess extends Access {
     private final Token className;
-    private final Token genericId;
     private final List<TypeVar> typeVars;
     private final List<Expression> arguments;
 
-
-    public ConstuctorAccess(Token identifier, Token genericId, List<TypeVar> typeVars, List<Expression> arguments) {
+    public ConstuctorAccess(Token identifier, List<TypeVar> typeVars, List<Expression> arguments) {
         super(identifier);
         this.className = identifier;
-        this.genericId = genericId;
         this.typeVars = typeVars;
         this.arguments = arguments;
     }
 
     @Override
+    public boolean isAssignable() {
+        return getChained() != null && getChained().isAssignable();
+    }
+
+    @Override
+    public boolean isStatement() {
+        return getChained() == null || getChained().isStatement();
+    }
+
+    @Override
     public Type checkType() throws SemanticException {
-        String separator = arguments.isEmpty()? "":SemanticConfig.PARAMETER_TYPE_SEPARATOR;
-        String counter = "X".repeat(arguments.size());
-        String mangledName = className.getLexeme() + separator + counter;
-        if (!SymbolTable.hasClass(className.getLexeme()))
+        if (className == null || arguments == null) return null;
+
+        String mangledName = Unit.getMangledName(className.getLexeme(), arguments.size());
+        Class myclass = SymbolTable.getClass(className.getLexeme());
+
+        if (myclass == null) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.CLASS_NOT_DECLARED,
                     className.getLexeme()
                 ),
-                className
+                getIdentifier()
             );
-        else if (typeVars != null && SymbolTable.getClass(className.getLexeme()).getTypeParameters().size() != typeVars.size())
+        }
+        else if (myclass.isAbstract()) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CLASS_ABSTRACT_NEW,
+                    className.getLexeme()
+                ),
+                getIdentifier()
+            );
+        } else if (typeVars != null && myclass.getTypeParametersCount() == 0) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CLASS_NOT_GENERIC,
+                    className.getLexeme()
+                ),
+                getIdentifier()
+            );
+        } else if (typeVars != null && !typeVars.isEmpty() && myclass.getTypeParametersCount() != typeVars.size()) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.CONSTRUCTOR_WRONG_NUMBER_OF_TYPE_VARS,
-                    SymbolTable.getClass(className.getLexeme()).getTypeParameters().size(),
+                    myclass.getTypeParameters().size(),
                     typeVars.size()
                 ),
-                className
+                getIdentifier()
             );
-        else if (!SymbolTable.getClass(className.getLexeme()).hasConstructor(mangledName))
+        } else if (typeVars == null && myclass.getTypeParametersCount() > 0) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CONSTUCTOR_CLASS_GENERIC,
+                    className.getLexeme(),
+                    myclass.getTypeParametersCount()
+                ),
+                getIdentifier()
+            );
+        } else if (!myclass.hasConstructor(mangledName)) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.CONSTRUCTOR_NOT_DECLARED,
                     arguments.size()
                 ),
-                className
+                getIdentifier()
             );
-        else {
+        } else if (SymbolTable.actualClass != myclass && myclass.getConstructor(mangledName).isPrivate()) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CONSTRUCTOR_PRIVATE,
+                    arguments.size(),
+                    myclass.getName()
+                ),
+                getIdentifier()
+            );
+        } else if (myclass.getConstructor(mangledName).argumentsMatch(arguments, getIdentifier())) {
             Type type = Type.createType(
-                SymbolTable.getClass(className.getLexeme()).getToken(),
-                SymbolTable.getClass(className.getLexeme()).getTypeParameters()
+                myclass.getToken(),
+                typeVars
             );
             return getChained() == null? type:getChained().checkType(type);
         }

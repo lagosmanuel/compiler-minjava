@@ -1,8 +1,8 @@
 package main.java.semantic.entities.model.type;
 
 import main.java.model.Token;
-import main.java.semantic.entities.model.Type;
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.model.Type;
 import main.java.exeptions.SemanticException;
 
 import java.util.List;

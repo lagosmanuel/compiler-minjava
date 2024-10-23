@@ -24,5 +24,13 @@ abstract public class Expression {
         this.type = type;
     }
 
+    public boolean isAssignable() {
+        return false;
+    }
+
+    public boolean isStatement() {
+        return false;
+    }
+
     public abstract Type checkType() throws SemanticException;
 }

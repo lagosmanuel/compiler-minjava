@@ -18,38 +18,35 @@ public class UnaryExpression extends BasicExpression {
 
     @Override
     public Type checkType() throws SemanticException {
+        if (operand == null || operator == null) return null;
         Type operandType = operand.checkType();
 
         return switch (operator.getType()) {
             case opPlus, opMinus -> {
-                if (operandType != null && operandType.isNumeric()) {
-                    yield operandType;
-                } else {
+                if (operandType != null && !operandType.isNumeric()) {
                     SymbolTable.throwException(
                         String.format(
                             SemanticErrorMessages.PLUS_MINUS_OPERAND_NOT_NUMERIC,
                             operator.getLexeme(),
-                            operandType != null? operandType.getName():"null"
+                            operandType.getName()
                         ),
                         getIdentifier()
                     );
                     yield null;
-                }
+                } else yield operandType;
             }
             case opNot -> {
-                if (operandType != null && operandType.isBoolean()) {
-                    yield operandType;
-                } else {
+                if (operandType != null && !operandType.isBoolean()) {
                     SymbolTable.throwException(
                         String.format(
                             SemanticErrorMessages.NOT_CONDITION_NOT_BOOLEAN,
                             operator.getLexeme(),
-                            operandType != null? operandType.getName():"null"
+                            operandType.getName()
                         ),
                         getIdentifier()
                     );
                     yield null;
-                }
+                } else yield operandType;
             }
             default -> {
                 SymbolTable.throwException(

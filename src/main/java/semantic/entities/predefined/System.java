@@ -51,7 +51,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -86,7 +86,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -121,7 +121,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -156,7 +156,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -191,7 +191,7 @@ public class System {
             )
         );
         read.setStatic();
-        read.setReturn(new PrimitiveType("void", new Token(
+        read.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -211,7 +211,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -246,7 +246,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -281,7 +281,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -316,7 +316,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
@@ -351,7 +351,7 @@ public class System {
             )
         );
         method.setStatic();
-        method.setReturn(new PrimitiveType("int", new Token(
+        method.setReturnType(new PrimitiveType("int", new Token(
             TokenType.idMetVar,
             "int",
             0,

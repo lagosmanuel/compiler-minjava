@@ -9,6 +9,7 @@ public abstract class Statement {
     private final Token identifier;
     private boolean checked = false;
     private boolean breakable = false;
+    private boolean returnable = false;
 
     public Statement(Token identifier) {
         this.identifier = identifier;
@@ -39,6 +40,18 @@ public abstract class Statement {
     }
 
     public boolean isBreakable() {
-        return breakable;
+        return breakable || (parent != null && parent.isBreakable());
+    }
+
+    public boolean hasReturn() {
+        return returnable;
+    }
+
+    public void setReturnable() {
+        returnable = true;
+    }
+
+    public void unsetReturnable() {
+        returnable = false;
     }
 }

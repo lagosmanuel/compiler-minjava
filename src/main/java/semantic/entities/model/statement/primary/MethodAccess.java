@@ -7,7 +7,6 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.Access;
 import main.java.semantic.entities.model.statement.expression.Expression;
-import main.java.config.SemanticConfig;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -24,12 +23,22 @@ public class MethodAccess extends Access {
     }
 
     @Override
+    public boolean isAssignable() {
+        return getChained() != null && getChained().isAssignable();
+    }
+
+    @Override
+    public boolean isStatement() {
+        return getChained() == null || getChained().isStatement();
+    }
+
+    @Override
     public Type checkType() throws SemanticException {
         return checkMethodInClass(SymbolTable.actualClass);
     }
 
     protected Type checkMethodInClass(Class className) throws SemanticException {
-        String name = getMangledName();
+        String name = Unit.getMangledName(idMethod.getLexeme(), arguments.size());
         Unit method = className.hasMethod(name)?
             className.getMethod(name):
             className.getAbstractMethod(name);
@@ -42,68 +51,32 @@ public class MethodAccess extends Access {
                     arguments.size(),
                     className.getName()
                 ),
-                idMethod
+                getIdentifier()
             );
         } else if (className != SymbolTable.actualClass && method.isPrivate()) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.METHOD_PRIVATE,
                     idMethod.getLexeme(),
+                    method.getParameterCount(),
                     className.getName()
                 ),
-                idMethod
-            );
-        } else if (method.getParameterCount() != arguments.size()) {
-            SymbolTable.throwException(
-                String.format(
-                    SemanticErrorMessages.METHOD_WRONG_NUMBER_OF_ARGUMENTS,
-                    idMethod.getLexeme(),
-                    className.getName(),
-                    method.getParameterCount(),
-                    arguments.size()
-                ),
-                    idMethod
+                getIdentifier()
             );
         } else if (!method.isStatic() && SymbolTable.actualUnit.isStatic()) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.METHOD_NON_STATIC,
-                    idMethod.getLexeme()
+                    idMethod.getLexeme(),
+                    method.getParameterCount()
                 ),
-                    idMethod
+                getIdentifier()
             );
-        } else if (areArgumentsCompatible(method)) {
+        } else if (method.argumentsMatch(arguments, getIdentifier())) {
             return getChained() != null?
-                getChained().checkType(method.getReturn()):
-                method.getReturn();
+                getChained().checkType(method.getReturnType()):
+                method.getReturnType();
         }
         return null;
-    }
-
-    private String getMangledName() {
-        String separator = !arguments.isEmpty()? SemanticConfig.PARAMETER_TYPE_SEPARATOR:"";
-        String counter = "X".repeat(arguments.size());
-        return idMethod.getLexeme() + separator + counter;
-    }
-
-    private boolean areArgumentsCompatible(Unit method) throws SemanticException {
-        if (method == null) return false;
-        boolean compatible = true;
-        for (int i = 0; i < arguments.size(); ++i) {
-            Type argumentType = arguments.get(i).checkType();
-            Type paramType = method.getParameter(i).getType();
-            if (!paramType.compatible(argumentType)) {
-                compatible = false;
-                SymbolTable.throwException(
-                    String.format(
-                        SemanticErrorMessages.TYPE_NOT_COMPATIBLE,
-                        paramType.getName(),
-                        argumentType != null? argumentType.getName():"null"
-                    ),
-                        idMethod
-                );
-            }
-        }
-        return compatible;
     }
 }

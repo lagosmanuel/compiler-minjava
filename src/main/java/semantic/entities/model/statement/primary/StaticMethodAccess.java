@@ -20,7 +20,18 @@ public class StaticMethodAccess extends MethodAccess {
     }
 
     @Override
+    public boolean isAssignable() {
+        return getChained() != null && getChained().isAssignable();
+    }
+
+    @Override
+    public boolean isStatement() {
+        return getChained() == null || getChained().isStatement();
+    }
+
+    @Override
     public Type checkType() throws SemanticException {
+        if (idClass == null) return null;
         Class myclass = SymbolTable.getClass(idClass.getLexeme());
         if (myclass == null || SymbolTable.actualClass.hasTypeParameter(idClass.getLexeme())) {
             SymbolTable.throwException(
@@ -28,7 +39,7 @@ public class StaticMethodAccess extends MethodAccess {
                     SemanticErrorMessages.CLASS_NOT_DECLARED,
                     idClass.getLexeme()
                 ),
-                idClass
+                getIdentifier()
             );
             return null;
         } else return checkMethodInClass(myclass);

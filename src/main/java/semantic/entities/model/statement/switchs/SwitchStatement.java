@@ -1,29 +1,35 @@
 package main.java.semantic.entities.model.statement.switchs;
 
-import main.java.exeptions.SemanticException;
 import main.java.model.Token;
-import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.Statement;
+import main.java.exeptions.SemanticException;
 
 abstract public class SwitchStatement {
+    private final Token identifier;
     private final Statement statement;
     private boolean checked = false;
 
     public SwitchStatement(Token identifier, Statement statement) {
-        if (statement != null) statement.setBreakable();
+        this.identifier = identifier;
         this.statement = statement;
+        if (statement != null) statement.setBreakable();
+    }
+
+    public Token getIdentifier() {
+        return identifier;
     }
 
     public boolean checked() {
         return checked;
     }
 
-    public Token getIdentifier() {
-        return statement != null? statement.getIdentifier():null;
+    public boolean hasReturn() {
+        return statement != null && statement.hasReturn();
     }
 
     public void check(Type expressionType) throws SemanticException {
         checked = true;
-        statement.check();
+        if (statement != null) statement.check();
     }
 }

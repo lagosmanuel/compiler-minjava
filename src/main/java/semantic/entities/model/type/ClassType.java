@@ -19,16 +19,6 @@ public class ClassType extends Type {
     public static final String STRING = "String";
     public static final String NULL = "null";
 
-    public static final Type STRING_TYPE = new ClassType(
-        ClassType.STRING,
-        new Token(TokenType.idClass, ClassType.STRING, 0, 0)
-    );
-
-    public static final Type NULL_TYPE = new ClassType(
-        ClassType.NULL,
-        new Token(TokenType.nullLiteral, ClassType.NULL, 0, 0)
-    );
-
     public ClassType(String class_name, Token class_token, List<TypeVar> type_params) {
         super(class_name, class_token, type_params);
     }
@@ -80,11 +70,16 @@ public class ClassType extends Type {
             this.compatible(classType.getSuperType()))
         ) return true;
 
-        if (Objects.equals(this.getName(), INT_WRAPPER)) return Objects.equals(type.getName(), PrimitiveType.INT) || type.isChar();
-        if (Objects.equals(this.getName(), FLOAT_WRAPPER)) return Objects.equals(type.getName(), PrimitiveType.FLOAT) || type.isInt();
-        if (Objects.equals(this.getName(), CHAR_WRAPPER)) return Objects.equals(type.getName(), PrimitiveType.CHAR);
-        if (Objects.equals(this.getName(), BOOLEAN_WRAPPER)) return Objects.equals(type.getName(), PrimitiveType.BOOLEAN);
-        if (Objects.equals(this.getName(), STRING)) return type.isChar() || type.isInt();
+        if (Objects.equals(this.getName(), INT_WRAPPER))
+            return Objects.equals(type.getName(), PrimitiveType.INT) || type.isChar();
+        if (Objects.equals(this.getName(), FLOAT_WRAPPER))
+            return Objects.equals(type.getName(), PrimitiveType.FLOAT) || type.isInt();
+        if (Objects.equals(this.getName(), CHAR_WRAPPER))
+            return Objects.equals(type.getName(), PrimitiveType.CHAR);
+        if (Objects.equals(this.getName(), BOOLEAN_WRAPPER))
+            return Objects.equals(type.getName(), PrimitiveType.BOOLEAN);
+        if (Objects.equals(this.getName(), STRING))
+            return type.isChar() || type.isInt();
 
         return false;
     }
@@ -93,4 +88,14 @@ public class ClassType extends Type {
         return SymbolTable.hasClass(getName())?
             SymbolTable.getClass(getName()).getSuperType():null;
     }
+
+    public static final Type STRING_TYPE = new ClassType(
+        ClassType.STRING,
+        new Token(TokenType.idClass, ClassType.STRING, 0, 0)
+    );
+
+    public static final Type NULL_TYPE = new ClassType(
+        ClassType.NULL,
+        new Token(TokenType.nullLiteral, ClassType.NULL, 0, 0)
+    );
 }

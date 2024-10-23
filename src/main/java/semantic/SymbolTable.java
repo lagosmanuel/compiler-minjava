@@ -11,6 +11,7 @@ import main.java.semantic.entities.Constructor;
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
+import main.java.semantic.entities.model.statement.Block;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 public class SymbolTable {
     public static Class actualClass;
     public static Unit actualUnit;
+    public static Block actualBlock;
     public static Map<Integer, Pair<List<Error>, String>> errors;
     private final static Map<String, Class> classes = new HashMap<>();
     private static boolean hasMain = false;
@@ -28,8 +30,9 @@ public class SymbolTable {
     public static void init(Map<Integer, Pair<List<Error>, String>> errors_map) {
         errors = errors_map;
         classes.clear();
-        resetActualClass();
-        resetActualUnit();
+        actualClass = null;
+        actualUnit = null;
+        actualBlock = null;
         addPrimitiveClasses();
         hasMain = false;
         EOF = null;
@@ -79,14 +82,6 @@ public class SymbolTable {
             newClass.getToken()
         );
         else classes.put(newClass.getName(), newClass);
-    }
-
-    public static void resetActualClass() {
-        actualClass = null;
-    }
-
-    public static void resetActualUnit() {
-        actualUnit = null;
     }
 
     public static void saveEOF(Token EOF) {

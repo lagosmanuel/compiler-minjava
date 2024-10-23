@@ -1060,7 +1060,7 @@ public class ParserImpl implements Parser {
         Token genericId = GenericTypeOptionalEmpty();
         List<TypeVar> genericTypes = getGenericTypes();
         List<Expression> actualArgs = ActualArgs();
-        return new ConstuctorAccess(identifier, genericId, genericTypes, actualArgs);
+        return new ConstuctorAccess(identifier, genericId != null? genericTypes:null, actualArgs);
     }
 
     private StaticMethodAccess StaticMethodAccess() throws SyntacticException {
@@ -1324,7 +1324,7 @@ public class ParserImpl implements Parser {
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
         );
-        actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
+        actualUnit.setReturnType(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
         SymbolTable.actualUnit = actualMethod;
@@ -1347,7 +1347,7 @@ public class ParserImpl implements Parser {
             withParameterSeparator(entity_name_token.getLexeme()),
             entity_name_token
         );
-        actualUnit.setReturn(Type.createType(entity_type_token, getGenericTypes()));
+        actualUnit.setReturnType(Type.createType(entity_type_token, getGenericTypes()));
         if (entity_is_private) actualUnit.setPrivate();
         if (entity_is_static) actualUnit.setStatic();
         SymbolTable.actualUnit = actualAbstractMethod;

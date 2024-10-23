@@ -47,6 +47,10 @@ public abstract class Type extends Entity {
                Objects.equals(getName(), ClassType.CHAR_WRAPPER);
     }
 
+    public boolean isNull() {
+        return Objects.equals(getName(), ClassType.NULL);
+    }
+
     public boolean isNumeric() {
         return isInt() || isFloat();
     }
@@ -126,18 +130,6 @@ public abstract class Type extends Entity {
                 type_params_tokens
             );
         }
-    }
-
-    public static Type createType(TokenType type_token) {
-        return switch (type_token) {
-            case intLiteral -> PrimitiveType.INT_TYPE;
-            case floatLiteral -> PrimitiveType.FLOAT_TYPE;
-            case charLiteral -> PrimitiveType.CHAR_TYPE;
-            case falseLiteral, trueLiteral -> PrimitiveType.BOOLEAN_TYPE;
-            case nullLiteral -> ClassType.NULL_TYPE;
-            case stringLiteral -> ClassType.STRING_TYPE;
-            default -> null;
-        };
     }
 
     public Type convertNumeric() {

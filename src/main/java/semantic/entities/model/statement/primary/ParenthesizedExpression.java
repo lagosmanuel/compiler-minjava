@@ -15,6 +15,13 @@ public class ParenthesizedExpression extends Access {
     }
 
     @Override
+    public boolean isAssignable() {
+        return expression != null &&
+            ((expression.isAssignable() && getChained() == null) ||
+            (getChained() != null && getChained().isAssignable()));
+    }
+
+    @Override
     public Type checkType() throws SemanticException {
         if (expression == null) return null;
         return getChained() != null?

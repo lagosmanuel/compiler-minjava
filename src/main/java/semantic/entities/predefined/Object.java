@@ -47,7 +47,7 @@ public class Object {
 
         method.setStatic();
 
-        method.setReturn(new PrimitiveType("void", new Token(
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
