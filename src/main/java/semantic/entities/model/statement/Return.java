@@ -48,7 +48,8 @@ public class Return extends Statement {
                 ),
                 getIdentifier()
             );
-        } else if (returnType == null && !Objects.equals(PrimitiveType.VOID, SymbolTable.actualUnit.getReturnType().getName())) {
+        } else if (returnType == null && SymbolTable.actualUnit.getReturnType() != null &&
+                  !Objects.equals(PrimitiveType.VOID, SymbolTable.actualUnit.getReturnType().getName())) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.RETURN_NULL,
