@@ -76,4 +76,9 @@ public class PrimitiveType extends Type {
         PrimitiveType.CHAR,
         new Token(TokenType.kwChar, PrimitiveType.CHAR, 0, 0)
     );
+
+    public static final Type VOID_TYPE = new PrimitiveType(
+        PrimitiveType.VOID,
+        new Token(TokenType.kwVoid, PrimitiveType.VOID, 0, 0)
+    );
 }

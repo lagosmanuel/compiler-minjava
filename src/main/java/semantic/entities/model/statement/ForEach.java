@@ -5,6 +5,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.CompositeExpression;
+import main.java.semantic.entities.predefined.MiniIterable;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -31,14 +32,22 @@ public class ForEach extends Statement {
             declaration.check();
         }
         Type iterableType = iterable != null? iterable.checkType():null;
+        Type elementType = iterableType != null? iterableType.getTypeParams().getFirst():null;
 
-        if (declaration != null && iterable != null && iterableType != null
-            && !declaration.getType().compatible(iterableType)) {
+        if (iterableType != null && !MiniIterable.type.compatible(iterableType)) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.FOREACH_NOT_ITERABLE,
+                    iterableType.getName()
+                ),
+                getIdentifier()
+            );
+        } else if (declaration != null && elementType != null && !declaration.getType().compatible(elementType)) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.FOREACH_TYPE_NOT_COMPATIBLE,
                     declaration.getType().getName(),
-                    iterableType.getName()
+                    elementType.getName()
                 ),
                 getIdentifier()
             );

@@ -73,4 +73,5 @@ public class SemanticErrorMessages {
     public static final String SUPER_ACCESS_CHAINED = "Super access cannot be chained";
     public static final String CLASS_NOT_GENERIC = "Class %s is not generic";
     public static final String CONSTUCTOR_CLASS_GENERIC = "Class %s is generic and requires %d type arguments";
+    public static final String FOREACH_NOT_ITERABLE = "Foreach expression is not iterable; found %s";
 }
