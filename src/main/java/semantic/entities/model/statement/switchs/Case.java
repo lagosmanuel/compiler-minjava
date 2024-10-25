@@ -29,7 +29,7 @@ public class Case extends SwitchStatement {
                     expressionType.getName(),
                     literalType.getName()
                 ),
-                getIdentifier()
+                literal.getIdentifier()
             );
         }
     }
