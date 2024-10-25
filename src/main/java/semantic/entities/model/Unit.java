@@ -101,9 +101,9 @@ public abstract class Unit extends Entity {
     }
 
     public void check() throws SemanticException {
-        if (body == null) return;
+        if (body == null || body.checked()) return;
         SymbolTable.actualUnit = this;
-        if (!body.checked()) body.check();
+        body.check();
         if (!body.hasReturn() && getReturnType() != null && !Objects.equals(getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.throwException(
                 String.format(
