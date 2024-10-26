@@ -48,7 +48,7 @@ public class SemanticErrorMessages {
     public static final String BINARYOP_INVALID = "Invalid binary operator %s";
     public static final String ATTR_NON_STATIC_ACCESS = "Non-static variable %s cannot be accessed from a static context";
     public static final String IDENTIFIER_NOT_FOUND = "Identifier %s not found";
-    public static final String CONSTRUCTOR_NOT_DECLARED = "Constructor with %d arguments not declared";
+    public static final String CONSTRUCTOR_NOT_DECLARED = "Constructor with %d arguments not declared in class %s";
     public static final String CONSTRUCTOR_WRONG_NUMBER_OF_TYPE_VARS = "Wrong number of type arguments; required %d, found %d";
     public static final String METHOD_NOT_FOUND = "Method %s with %d parameters not found in class %s";
     public static final String METHOD_NOT_FOUND_CLASS = "Cannot access method %s with %d parameters because %s is not a class type";

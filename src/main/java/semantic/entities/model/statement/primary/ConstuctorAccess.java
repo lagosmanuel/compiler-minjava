@@ -89,7 +89,8 @@ public class ConstuctorAccess extends Access {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.CONSTRUCTOR_NOT_DECLARED,
-                    arguments.size()
+                    arguments.size(),
+                    myclass.getName()
                 ),
                 getIdentifier()
             );
