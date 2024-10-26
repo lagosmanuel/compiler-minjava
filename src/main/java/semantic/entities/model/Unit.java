@@ -64,7 +64,7 @@ public abstract class Unit extends Entity {
     }
 
     public Parameter getParameter(int index) {
-        return parameters.values().stream().toList().get(index);
+        return parameter_list.get(index);
     }
 
     public int getParameterCount() {
