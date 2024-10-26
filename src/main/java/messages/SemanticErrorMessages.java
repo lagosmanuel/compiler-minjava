@@ -74,6 +74,7 @@ public class SemanticErrorMessages {
     public static final String CLASS_NOT_GENERIC = "Class %s is not generic";
     public static final String CONSTUCTOR_CLASS_GENERIC = "Class %s is generic and requires %d type arguments";
     public static final String FOREACH_NOT_ITERABLE = "Foreach expression is not iterable; found %s";
-    public static final String SUPER_NOT_FIRST_STATEMENT = "Constructor call must be the first statement in a unit";
+    public static final String SUPER_NOT_FIRST_STATEMENT = "Constructor call must be the first statement in a constructor";
+    public static final String SUPER_OUTSIDE_CONSTRUCTOR = "Super can only be used inside a constructor";
     public static final String TYPE_VAR_NOT_INSTANTIATED = "Type parameter %s is not instantiated";
 }

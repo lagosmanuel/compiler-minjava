@@ -2,6 +2,7 @@ package main.java.semantic.entities.model.statement;
 
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.primary.SuperAccess;
 import main.java.messages.SemanticErrorMessages;
@@ -72,15 +73,21 @@ public class Block extends Statement {
     }
 
     private void checkSuper(Statement statement) throws SemanticException{
-        if ((statement != statements.getFirst() || getParent() != null) &&
-            statement instanceof ExpressionStatement expressionStatement &&
+        if (statement instanceof ExpressionStatement expressionStatement &&
             expressionStatement.getExpression() instanceof SuperAccess superAccess &&
             superAccess.isConstructorCall())
         {
-            SymbolTable.throwException(
-                SemanticErrorMessages.SUPER_NOT_FIRST_STATEMENT,
-                superAccess.getIdentifier()
-            );
+            if (!(SymbolTable.actualUnit instanceof Constructor)) {
+                SymbolTable.throwException(
+                    SemanticErrorMessages.SUPER_OUTSIDE_CONSTRUCTOR,
+                    superAccess.getIdentifier()
+                );
+            } else if (statements.getFirst() != statement || getParent() != null) {
+                SymbolTable.throwException(
+                    SemanticErrorMessages.SUPER_NOT_FIRST_STATEMENT,
+                    superAccess.getIdentifier()
+                );
+            }
         }
     }
 }
