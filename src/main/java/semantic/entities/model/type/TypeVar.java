@@ -3,6 +3,7 @@ package main.java.semantic.entities.model.type;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
+import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
 import java.util.List;
@@ -29,6 +30,19 @@ public class TypeVar extends ClassType {
         if (isValidated()) return;
         super.validate();
         updateInstanceType();
+    }
+
+    public void check() throws SemanticException {
+        if (!isValidated()) validate();
+        if (instanceType == null) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.TYPE_VAR_NOT_INSTANTIATED,
+                    getName()
+                ),
+                getToken()
+            );
+        }
     }
 
     private void updateInstanceType() {

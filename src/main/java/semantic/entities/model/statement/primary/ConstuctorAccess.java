@@ -108,6 +108,7 @@ public class ConstuctorAccess extends Access {
                 myclass.getToken(),
                 typeVars
             );
+            for (TypeVar typeVar:type.getTypeParams()) typeVar.check();
             return getChained() == null? type:getChained().checkType(type);
         }
         return null;

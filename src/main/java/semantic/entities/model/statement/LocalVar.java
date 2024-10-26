@@ -7,6 +7,7 @@ import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.expression.Expression;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class LocalVar extends Statement {
 
         type.validate();
         Type valueType = value != null? value.checkType():null;
+        for (TypeVar typeVar:type.getTypeParams()) typeVar.check();
 
         if (valueType != null && !type.compatible(valueType)) {
             SymbolTable.throwException(
