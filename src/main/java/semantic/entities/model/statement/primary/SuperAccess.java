@@ -45,7 +45,7 @@ public class SuperAccess extends Access {
         if (SymbolTable.actualUnit.isStatic()) {
             SymbolTable.throwException(
                 SemanticErrorMessages.SUPER_ACCESS_STATIC,
-                className
+                getIdentifier()
             );
             return null;
         }
