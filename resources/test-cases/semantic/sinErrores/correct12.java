@@ -8,7 +8,7 @@ class B extends A {
 }
 
 class C extends B {
-    int m1(int n) {}
+    int m1(int n) { return 0; }
 }
 
 class Init{

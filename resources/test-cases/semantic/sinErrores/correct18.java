@@ -1,10 +1,10 @@
 ///[SinErrores]
 class A {
-    public D m1() {}
+    public D m1() { return null; }
 }
 
 class B extends A {
-    public D m1(E e) {}
+    public D m1(E e) { return null; }
 }
 
 class D {

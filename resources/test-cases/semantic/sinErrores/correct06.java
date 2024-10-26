@@ -1,7 +1,7 @@
 ///[SinErrores]
 
 class A extends System {
-    static int read() {}
+    static int read() {return 0;}
     static void printB(boolean b) {}
     static void printC(char c) {}
     static void printI(int i) {}

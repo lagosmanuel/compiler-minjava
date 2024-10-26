@@ -14,7 +14,7 @@ class A {
 
 class B extends A {
     public A m1() {
-
+        return null;
     }
     public void m1(int n)  {
 

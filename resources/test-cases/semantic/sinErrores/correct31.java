@@ -4,7 +4,7 @@ class C {
 }
 
 class D extends C {
-    static int m1() {}
+    static int m1() { return 0; }
 }
 
 class Init{
