@@ -16,6 +16,7 @@ import java.util.List;
 public class SuperAccess extends Access {
     private final Token className;
     private final List<Expression> arguments;
+    private boolean isConstructorCall = false;
 
     @Override
     public boolean isAssignable() {
@@ -53,6 +54,7 @@ public class SuperAccess extends Access {
 
         if (arguments != null) {
             Constructor constructor = superclass.getConstructor(Unit.getMangledName(superclass.getName(), arguments.size()));
+            isConstructorCall = true;
             if (constructor == null) {
                 SymbolTable.throwException(
                     String.format(
@@ -80,5 +82,9 @@ public class SuperAccess extends Access {
         } else return getChained() != null? getChained().checkType(supertype):supertype;
 
         return null;
+    }
+
+    public boolean isConstructorCall() {
+        return isConstructorCall;
     }
 }

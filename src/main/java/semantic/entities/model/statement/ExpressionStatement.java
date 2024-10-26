@@ -25,4 +25,8 @@ public class ExpressionStatement extends Statement {
             );
         }
     }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }
