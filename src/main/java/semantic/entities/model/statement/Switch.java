@@ -26,9 +26,13 @@ public class Switch extends Statement {
     public void check() throws SemanticException {
         Type expressionType = expression != null? expression.checkType():null;
         if (expressionType == null) return;
-        if (expressionType.isNull()) {
+        if (!expressionType.isInt() && !expressionType.isFloat() && !expressionType.isChar() &&
+            !expressionType.isBoolean() && !expressionType.isString()) {
             SymbolTable.throwException(
-                SemanticErrorMessages.SWITCH_EXPRESSION_TYPE_NULL,
+                String.format(
+                    SemanticErrorMessages.SWITCH_EXPRESSION_TYPE_INVALID,
+                    expressionType.getName()
+                ),
                 getIdentifier()
             );
         } else for (SwitchStatement statement:statements) {

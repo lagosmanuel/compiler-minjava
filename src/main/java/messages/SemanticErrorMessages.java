@@ -64,7 +64,7 @@ public class SemanticErrorMessages {
     public static final String THIS_STATIC = "Cannot use this in a static method %s with %d parameters";
     public static final String VARIABLE_ALREADY_DECLARED = "Variable %s is already declared";
     public static final String VARIABLE_ALREADY_DECLARED_PARAMETER = "Variable %s is already declared as a parameter";
-    public static final String SWITCH_EXPRESSION_TYPE_NULL = "Switch expression cannot be of type null";
+    public static final String SWITCH_EXPRESSION_TYPE_INVALID = "Switch expression must be of type int, float, char, boolean or string; found %s";
     public static final String UNIT_NO_RETURN = "Unit does not return a value in all cases; expected %s";
     public static final String UNREACHABLE_CODE = "Unreachable code";
     public static final String SUPER_ACCESS_STATIC = "Cannot access super in a static context";

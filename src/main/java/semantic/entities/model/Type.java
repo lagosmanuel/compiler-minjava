@@ -47,6 +47,10 @@ public abstract class Type extends Entity {
                Objects.equals(getName(), ClassType.CHAR_WRAPPER);
     }
 
+    public boolean isString() {
+        return Objects.equals(getName(), ClassType.STRING);
+    }
+
     public boolean isNull() {
         return Objects.equals(getName(), ClassType.NULL);
     }
