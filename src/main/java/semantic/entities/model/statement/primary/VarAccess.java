@@ -23,6 +23,11 @@ public class VarAccess extends Access {
     }
 
     @Override
+    public boolean isStatement() {
+        return getChained() != null && getChained().isStatement();
+    }
+
+    @Override
     public Type checkType() throws SemanticException {
         Class myclass = SymbolTable.actualClass;
         Unit unit = SymbolTable.actualUnit;
