@@ -1,13 +1,7 @@
-///[Error:m1|4]
+///[Error:=|5]
 class Init{
-    public Init() {
-        super();
-        int x = 10;
-    }
-    void m1() {
-        int x = 10;
-    }
     static void main() {
-
+        int i = 0;
+        i = 1 + 0.5;
     }
 }
