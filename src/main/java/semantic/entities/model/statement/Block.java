@@ -53,6 +53,8 @@ public class Block extends Statement {
 
     @Override
     public void check() throws SemanticException {
+        if (checked()) return;
+        super.check();
         SymbolTable.actualBlock = this;
         if (getParent() != null) getParent().getLocalVars().forEach(this::addLocalVar);
         for (Statement statement:statements) {
