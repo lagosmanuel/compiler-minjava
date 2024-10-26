@@ -19,19 +19,7 @@ public class BinaryExpression extends CompositeExpression {
         this.right = right;
         this.operator = operator;
     }
-
-    public CompositeExpression getLeft() {
-        return left;
-    }
-
-    public BasicExpression getRight() {
-        return right;
-    }
-
-    public Token getOperator() {
-        return operator;
-    }
-
+    
     @Override
     public Type checkType() throws SemanticException {
         Type leftType = left.checkType();
@@ -74,7 +62,7 @@ public class BinaryExpression extends CompositeExpression {
                 }
             }
             case opEqual, opNotEqual -> {
-                if (leftType != null && rightType != null && leftType.compatible(rightType)) {
+                if (leftType != null && rightType != null && (leftType.compatible(rightType) || rightType.compatible(leftType))) {
                     yield Type.createType(
                         new Token(TokenType.kwBoolean, PrimitiveType.BOOLEAN, 0, 0),
                         null
