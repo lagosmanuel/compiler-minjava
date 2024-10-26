@@ -107,6 +107,10 @@ public class SymbolTable {
         addClass(main.java.semantic.entities.predefined.String.Class());
         addClass(main.java.semantic.entities.predefined.System.Class());
         addClass(main.java.semantic.entities.predefined.MiniIterable.Class());
+        addClass(main.java.semantic.entities.predefined.Boolean.Class());
+        addClass(main.java.semantic.entities.predefined.Character.Class());
+        addClass(main.java.semantic.entities.predefined.Integer.Class());
+        addClass(main.java.semantic.entities.predefined.Float.Class());
     }
 
     public static void saveError(String message, Token token) {
