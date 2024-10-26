@@ -1,6 +1,7 @@
 package main.java.semantic.entities.model.type;
 
 import main.java.model.Token;
+import main.java.model.TokenType;
 import main.java.semantic.entities.model.Type;
 
 public class VarType extends Type {
@@ -10,6 +11,6 @@ public class VarType extends Type {
 
     @Override
     public boolean compatible(Type type) {
-        return type != null;
+        return type != null && type.getToken().getType() != TokenType.nullLiteral;
     }
 }
