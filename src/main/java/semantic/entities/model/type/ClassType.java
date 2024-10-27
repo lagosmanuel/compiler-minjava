@@ -76,7 +76,7 @@ public class ClassType extends Type {
         if (Objects.equals(this.getName(), INT_WRAPPER))
             return Objects.equals(type.getName(), PrimitiveType.INT) || type.isChar();
         if (Objects.equals(this.getName(), FLOAT_WRAPPER))
-            return Objects.equals(type.getName(), PrimitiveType.FLOAT) || type.isInt();
+            return Objects.equals(type.getName(), PrimitiveType.FLOAT) || type.isInt() || type.isChar();
         if (Objects.equals(this.getName(), CHAR_WRAPPER))
             return Objects.equals(type.getName(), PrimitiveType.CHAR);
         if (Objects.equals(this.getName(), BOOLEAN_WRAPPER))
