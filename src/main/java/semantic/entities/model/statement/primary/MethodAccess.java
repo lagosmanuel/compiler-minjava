@@ -34,10 +34,10 @@ public class MethodAccess extends Access {
 
     @Override
     public Type checkType() throws SemanticException {
-        return checkMethodInClass(SymbolTable.actualClass);
+        return checkMethodInClass(SymbolTable.actualClass, SymbolTable.actualUnit.isStatic());
     }
 
-    protected Type checkMethodInClass(Class className) throws SemanticException {
+    protected Type checkMethodInClass(Class className, boolean static_only) throws SemanticException {
         String name = Unit.getMangledName(idMethod.getLexeme(), arguments.size());
         Unit method = className.hasMethod(name)?
             className.getMethod(name):
@@ -63,7 +63,7 @@ public class MethodAccess extends Access {
                 ),
                 getIdentifier()
             );
-        } else if (!method.isStatic() && SymbolTable.actualUnit.isStatic()) {
+        } else if (!method.isStatic() && static_only) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.METHOD_NON_STATIC,

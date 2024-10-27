@@ -8,7 +8,6 @@ class Init{
         m2();
         new A();
         new A();
-        A.m1();
         A.m2();
 
         A a = new A();

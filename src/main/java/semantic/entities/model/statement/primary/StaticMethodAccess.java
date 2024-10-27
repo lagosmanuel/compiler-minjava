@@ -14,7 +14,7 @@ public class StaticMethodAccess extends MethodAccess {
     private final Token idClass;
 
     public StaticMethodAccess(Token idClass, Token idMethod, List<Expression> arguments) {
-        super(idClass, arguments);
+        super(idMethod, arguments);
         this.idClass = idClass;
         this.idMethod = idMethod;
     }
@@ -42,6 +42,6 @@ public class StaticMethodAccess extends MethodAccess {
                 getIdentifier()
             );
             return null;
-        } else return checkMethodInClass(myclass);
+        } else return checkMethodInClass(myclass, true);
     }
 }
