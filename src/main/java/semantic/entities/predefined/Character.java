@@ -47,7 +47,7 @@ public class Character {
     }
 
     private static void addConstructor() {
-        Constructor constructor = new Constructor(name, token);
+        Constructor constructor = new Constructor(name + "@X", token);
         constructor.addParameter(new Parameter(
             "init",
             new Token(TokenType.idMetVar, "init", 0, 0),
