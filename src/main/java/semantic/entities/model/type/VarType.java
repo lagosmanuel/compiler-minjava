@@ -11,6 +11,8 @@ public class VarType extends Type {
 
     @Override
     public boolean compatible(Type type) {
-        return type != null && type.getToken().getType() != TokenType.nullLiteral;
+        return type != null &&
+               type.getToken().getType() != TokenType.nullLiteral &&
+               type.getToken().getType() != TokenType.kwVoid;
     }
 }
