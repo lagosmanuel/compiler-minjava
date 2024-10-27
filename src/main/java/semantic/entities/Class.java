@@ -25,7 +25,7 @@ public class Class extends Entity {
     protected final Map<String, Constructor> constructors = new HashMap<>();
     protected final Map<String, AbstractMethod> abstractMethods = new HashMap<>();
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
-    protected final Map<String, TypeVar> type_parameters = new HashMap<>();
+    protected final List<TypeVar> type_parameters = new ArrayList<>();
 
     protected final List<Attribute> instance_attributes = new ArrayList<>();
     protected final List<Attribute> class_attributes = new ArrayList<>();
@@ -288,12 +288,12 @@ public class Class extends Entity {
 // ------------------------------------- Generics --------------------------------------------------------------------
 
     public List<TypeVar> getTypeParameters() {
-        return new ArrayList<>(type_parameters.values());
+       return type_parameters;
     }
 
 
     public boolean hasTypeParameter(String type_param_name) {
-        return type_parameters.containsKey(type_param_name);
+        return type_parameters.stream().anyMatch(type_var -> Objects.equals(type_var.getName(), type_param_name));
     }
 
     public int getTypeParametersCount() {
@@ -301,11 +301,17 @@ public class Class extends Entity {
     }
 
     public TypeVar getTypeParameter(String type_param_name) {
-        return type_parameters.get(type_param_name);
+        return type_parameters.stream().filter(type_var -> Objects.equals(type_var.getName(), type_param_name))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public TypeVar getTypeParameter(int i) {
+        return i >= 0 && i < type_parameters.size()? type_parameters.get(i):null;
     }
 
     public void addTypeParameter(TypeVar type_var) {
-        if (type_parameters.containsKey(type_var.getName()))
+        if (hasTypeParameter(type_var.getName()))
             SymbolTable.saveError(
                 String.format(
                     SemanticErrorMessages.GENERIC_TYPE_DUPLICATE,
@@ -313,7 +319,7 @@ public class Class extends Entity {
                 ),
                 type_var.getToken()
             );
-        else type_parameters.put(type_var.getName(), type_var);
+        else type_parameters.add(type_var);
     }
 
 // -------------------------------------- Errors ---------------------------------------------------------------------

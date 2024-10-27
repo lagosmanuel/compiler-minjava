@@ -3,11 +3,14 @@ package main.java.semantic.entities.model.type;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
+import main.java.semantic.entities.Class;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.predefined.Object;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,10 +67,10 @@ public class ClassType extends Type {
         if (Objects.equals(this.getName(), Object.name)) return true;
         if (Objects.equals(type.getName(), NULL)) return true;
 
-        if (Objects.equals(this.getName(), type.getName()) ||
+        if (match(type) ||
             (type instanceof ClassType classType &&
             !Objects.equals(classType.getName(), Object.name) &&
-            this.compatible(classType.getSuperType()))
+            this.compatible(ClassType.getSuperType(type)))
         ) return true;
 
         if (Objects.equals(this.getName(), INT_WRAPPER))
@@ -84,9 +87,50 @@ public class ClassType extends Type {
         return false;
     }
 
-    public Type getSuperType() {
-        return SymbolTable.hasClass(getName())?
-            SymbolTable.getClass(getName()).getSuperType():null;
+    private static Type getSuperType(Type type) {
+        if (type == null) return null;
+        Class myclass = SymbolTable.getClass(type.getName());
+        if (myclass == null) return null;
+
+        Map<String, TypeVar> map = new HashMap<>();
+        for (int i = 0; i < myclass.getTypeParametersCount(); ++i) {
+            if (type.getTypeParam(i) != null)
+                map.put(myclass.getTypeParameter(i).getName(), type.getTypeParam(i));
+        }
+
+        Type superType = myclass.getSuperType();
+        superType.getTypeParams().forEach(typeVar -> {
+            if (map.containsKey(typeVar.getName()) && typeVar.getInstaceType() == null) {
+                typeVar.setInstanceType(map.get(typeVar.getName()).getInstaceType() != null?
+                    map.get(typeVar.getName()).getInstaceType():
+                    map.get(typeVar.getName())
+                );
+            }
+        });
+        return superType;
+    }
+
+    public Type getAncestor(String name) {
+        if (Objects.equals(getName(), name)) return this;
+        if (Objects.equals(getName(), Object.name)) return null;
+        return ClassType.getSuperType(this) instanceof ClassType classType? classType.getAncestor(name):null;
+    }
+
+    private boolean match(Type type) {
+        if (type == null) return false;
+        boolean match = Objects.equals(this.getName(), type.getName()) &&
+                        this.getTypeParamsCount() == type.getTypeParamsCount();
+
+        if (type instanceof ClassType classType) {
+            for (int i = 0; i < this.getTypeParamsCount() && match; ++i) {
+                String thisType = getTypeParam(i).getInstaceType() != null? getTypeParam(i).getInstaceType().getName():getTypeParam(i).getName();
+                String thatType = classType.getTypeParam(i).getInstaceType() != null? classType.getTypeParam(i).getInstaceType().getName():classType.getTypeParam(i).getName();
+                match = Objects.equals(thisType, thatType) || getTypeParam(i).getInstaceType() == null;
+            }
+            if (Objects.equals(this.getName(), classType.getName()) && classType.getTypeParamsCount() == 0) match = true;
+        } else match = false;
+
+        return match;
     }
 
     public static final Type STRING_TYPE = new ClassType(

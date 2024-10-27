@@ -3,6 +3,7 @@ package main.java.semantic.entities.model.statement;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.CompositeExpression;
 import main.java.semantic.entities.predefined.MiniIterable;
@@ -32,7 +33,15 @@ public class ForEach extends Statement {
             declaration.check();
         }
         Type iterableType = iterable != null? iterable.checkType():null;
-        Type elementType = iterableType != null? iterableType.getTypeParams().getFirst():null;
+        Type elementType = null;
+
+        if (iterableType instanceof ClassType classType) {
+            Type ancestor = classType.getAncestor(MiniIterable.name);
+            if (ancestor != null && ancestor.getTypeParam(0) != null)
+                elementType = ancestor.getTypeParam(0).getInstaceType() != null?
+                    ancestor.getTypeParam(0).getInstaceType():
+                    ancestor.getTypeParam(0);
+        }
 
         if (iterableType != null && !MiniIterable.type.compatible(iterableType)) {
             SymbolTable.throwException(
