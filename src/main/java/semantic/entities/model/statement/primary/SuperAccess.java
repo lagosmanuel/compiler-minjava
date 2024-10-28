@@ -76,7 +76,7 @@ public class SuperAccess extends Access {
             } else if (getChained() != null) {
                 SymbolTable.throwException(
                     SemanticErrorMessages.SUPER_ACCESS_CHAINED,
-                    getIdentifier()
+                    getChained().getIdentifier()
                 );
             } else constructor.argumentsMatch(arguments, getIdentifier());
         } else return getChained() != null? getChained().checkType(supertype):supertype;
