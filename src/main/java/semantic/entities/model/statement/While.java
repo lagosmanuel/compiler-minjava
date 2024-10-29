@@ -30,9 +30,6 @@ public class While extends Statement {
                 getIdentifier()
             );
         }
-        if (statement != null) {
-            statement.check();
-            if (statement.hasReturn()) setReturnable();
-        }
+        if (statement != null) statement.check();
     }
 }

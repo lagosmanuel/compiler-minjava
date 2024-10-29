@@ -6,7 +6,7 @@ import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.exeptions.SemanticException;
 
 public class IfElse extends If {
-    private final Statement elses;
+    protected final Statement elses;
 
     public IfElse(Token identifier, Expression condition, Statement then, Statement elses) {
         super(identifier, condition, then);
@@ -19,7 +19,7 @@ public class IfElse extends If {
         super.check();
         if (elses != null) {
             elses.check();
-            if (!elses.hasReturn()) unsetReturnable();
+            if (then.hasReturn() && elses.hasReturn()) setReturnable();
         }
     }
 }

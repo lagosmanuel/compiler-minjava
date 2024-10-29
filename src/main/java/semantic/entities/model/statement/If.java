@@ -9,8 +9,8 @@ import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
 public class If extends Statement {
-    private final Expression condition;
-    private final Statement then;
+    protected final Expression condition;
+    protected final Statement then;
 
     public If(Token identifier, Expression condition, Statement then) {
         super(identifier);
@@ -32,9 +32,6 @@ public class If extends Statement {
                 getIdentifier()
             );
         }
-        if (then != null) {
-            then.check();
-            if (then.hasReturn()) setReturnable();
-        }
+        if (then != null) then.check();
     }
 }

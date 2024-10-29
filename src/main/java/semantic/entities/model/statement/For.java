@@ -64,7 +64,6 @@ public class For extends Statement {
         if (statement != null) {
             statement.setParent(body);
             statement.check();
-            if (statement.hasReturn()) setReturnable();
         }
 
         this.setParent(body.getParent());

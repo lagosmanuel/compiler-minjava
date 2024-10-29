@@ -62,11 +62,7 @@ public class ForEach extends Statement {
             );
         }
 
-        if (statement != null) {
-            statement.check();
-            if (statement.hasReturn()) setReturnable();
-        }
-
+        if (statement != null) statement.check();
         if (getParent() != null && declaration != null)
             declaration.getLocalVars().forEach(getParent()::removeLocalVar);
     }
