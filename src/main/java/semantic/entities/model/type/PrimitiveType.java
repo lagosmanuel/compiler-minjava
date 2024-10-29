@@ -50,7 +50,7 @@ public class PrimitiveType extends Type {
         if (Objects.equals(this.getName(), FLOAT))
             return Objects.equals(type.getName(), ClassType.FLOAT_WRAPPER) || type.isInt() || type.isChar();
         if (Objects.equals(this.getName(), CHAR))
-            return Objects.equals(type.getName(), ClassType.CHAR_WRAPPER);
+            return Objects.equals(type.getName(), ClassType.CHAR_WRAPPER) || type.isInt();
         if (Objects.equals(this.getName(), BOOLEAN))
             return Objects.equals(type.getName(), ClassType.BOOLEAN_WRAPPER);
 
