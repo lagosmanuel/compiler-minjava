@@ -4,6 +4,7 @@ import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Statement;
+import main.java.semantic.entities.model.statement.Switch;
 import main.java.semantic.entities.model.statement.expression.Literal;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
@@ -17,20 +18,28 @@ public class Case extends SwitchStatement {
     }
 
     @Override
-    public void check(Type expressionType) throws SemanticException {
-        if (checked()) return;
-        super.check(expressionType);
-        if (expressionType == null) return;
+    public void check(Switch myswitch) throws SemanticException {
+        if (checked() || myswitch == null || myswitch.getExpressionType() == null) return;
+        super.check(myswitch);
         Type literalType = literal != null? literal.checkType():null;
-        if (literalType != null && !expressionType.compatible(literalType)) {
+        if (literalType == null) return;
+        if (!myswitch.getExpressionType().compatible(literalType)) {
             SymbolTable.throwException(
                 String.format(
                     SemanticErrorMessages.CASE_EXPRESSION_TYPE_NOT_COMPATIBLE,
-                    expressionType.getName(),
+                    myswitch.getExpressionType().getName(),
                     literalType.getName()
                 ),
                 literal.getIdentifier()
             );
-        }
+        } else if (myswitch.hasCase(literal)) {
+            SymbolTable.throwException(
+                String.format(
+                    SemanticErrorMessages.CASE_ALREADY_DEFINED,
+                    literal.getIdentifier().getLexeme()
+                ),
+                literal.getIdentifier()
+            );
+        } else myswitch.addCase(literal);
     }
 }

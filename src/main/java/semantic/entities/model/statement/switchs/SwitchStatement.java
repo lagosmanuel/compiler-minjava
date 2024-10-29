@@ -1,7 +1,7 @@
 package main.java.semantic.entities.model.statement.switchs;
 
 import main.java.model.Token;
-import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.statement.Switch;
 import main.java.semantic.entities.model.Statement;
 import main.java.exeptions.SemanticException;
 
@@ -24,11 +24,15 @@ abstract public class SwitchStatement {
         return checked;
     }
 
-    public boolean hasReturn() {
-        return statement != null && statement.hasReturn();
+    public Statement getStatement() {
+        return statement;
     }
 
-    public void check(Type expressionType) throws SemanticException {
+    public boolean hasReturn() {
+        return statement == null || statement.hasReturn();
+    }
+
+    public void check(Switch myswitch) throws SemanticException {
         checked = true;
         if (statement != null) statement.check();
     }

@@ -77,4 +77,6 @@ public class SemanticErrorMessages {
     public static final String SUPER_NOT_FIRST_STATEMENT = "Constructor call must be the first statement in a constructor";
     public static final String SUPER_OUTSIDE_CONSTRUCTOR = "Super can only be used inside a constructor";
     public static final String TYPE_VAR_NOT_INSTANTIATED = "Type parameter %s is not instantiated";
+    public static final String SWITCH_DEFAULT_ALREADY_DEFINED = "Switch default case is already defined";
+    public static final String CASE_ALREADY_DEFINED = "Case with literal %s is already defined";
 }
