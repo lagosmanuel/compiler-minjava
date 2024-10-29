@@ -192,7 +192,7 @@ public class ParserImpl implements Parser {
     private void recover_member_list(boolean is_abstract) throws SyntacticException {
         while (panic_mode && token.getType() != TokenType.EOF) {
             while (Lookup.Statement.contains(token.getType())) {
-                if (token.getType() == TokenType.leftBrace) actualUnit.setBody(Block());
+                if (token.getType() == TokenType.leftBrace) {Block body = Block(); if (actualUnit != null) actualUnit.setBody(body);}
                 else {StatementList(); match(TokenType.rightBrace);}
             }
             if (Lookup.Member.contains(token.getType()) || token.getType() == TokenType.kwAbstract) {
