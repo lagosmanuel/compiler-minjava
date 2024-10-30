@@ -23,6 +23,7 @@ public class UnaryExpression extends BasicExpression {
 
         return switch (operator.getType()) {
             case opPlus, opMinus -> {
+                operandType = operandType != null? operandType.convertNumeric():null;
                 if (operandType != null && !operandType.isNumeric()) {
                     SymbolTable.throwException(
                         String.format(
