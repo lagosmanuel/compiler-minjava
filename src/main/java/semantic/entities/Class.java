@@ -91,7 +91,7 @@ public class Class extends Entity {
     private void inheritAttributes(Class superClass) {
         superClass.getAttributes().forEach(this::addPublicAttributes);
         superClass.getInstanceAttributes().reversed().forEach(instance_attributes::addFirst);
-        superClass.getClassAttributes().reversed().forEach(class_attributes::addFirst);
+        // superClass.getClassAttributes().reversed().forEach(class_attributes::addFirst); TODO: check
     }
 
     private void inheritMethods(Class superClass) {
@@ -121,7 +121,7 @@ public class Class extends Entity {
 
         if (!methods.containsKey(method.getName()) && !abstractMethods.containsKey(method.getName())) {
             if (!method.isPrivate()) methods.put(method.getName(), method);
-            methods_list.addFirst(method);
+            if (!method.isStatic()) methods_list.addFirst(method); // TODO: check
         } else if (abstractMethods.containsKey(method.getName())) {
             if (!abstractMethods.get(method.getName()).isCompatible(method) && !method.isPrivate()) {
                 SymbolTable.saveError(
@@ -139,7 +139,7 @@ public class Class extends Entity {
             if (!method.isPrivate() && !method.isStatic()) {
                 methods_list.remove(redefined);
                 methods_list.addFirst(redefined);
-            } else {
+            } else if (!method.isStatic()) { // TODO: check
                 methods_list.addFirst(method);
             }
         }
@@ -218,10 +218,6 @@ public class Class extends Entity {
         return abstractMethods.values();
     }
 
-    public boolean hasAbstractMethod(String method_name) {
-        return abstractMethods.containsKey(method_name);
-    }
-
     public AbstractMethod getAbstractMethod(String method_name) {
         return abstractMethods.get(method_name);
     }
@@ -278,11 +274,8 @@ public class Class extends Entity {
         return instance_attributes;
     }
 
-    public List<Attribute> getClassAttributes() {
-        return class_attributes;
-    }
-
     private void addPublicAttributes(String attr_name, List<Attribute> attr_list) {
+        if (attr_list.getFirst().isPrivate()) return; // TODO: check
         addAttributes(attr_name, attr_list.stream().filter(attr -> !attr.isPrivate()).toList());
     }
 // ------------------------------------- Generics --------------------------------------------------------------------
