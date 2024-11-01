@@ -278,8 +278,9 @@ public class ParserImpl implements Parser {
     private void MemberRest() throws SyntacticException {
         switch (token.getType()) {
             case opAssign, semicolon -> {
-                createAttribute();
-                AssignmentOptional();
+                Attribute attr = createAttribute();
+                Expression expression = AssignmentOptional();
+                if (attr != null) attr.setExpression(expression);
                 match(TokenType.semicolon);
             }
             case leftParenthesis -> {
@@ -1303,19 +1304,20 @@ public class ParserImpl implements Parser {
         SymbolTable.actualClass.setAbstract();
     }
 
-    private void createAttribute() {
+    private Attribute createAttribute() {
         if (SymbolTable.actualClass == null || entity_name_token == null || entity_type_token == null || panic_mode)
-            return;
+            return null;
 
-        SymbolTable.actualClass.addAttribute(
-            new Attribute(
-                entity_name_token.getLexeme(),
-                entity_name_token,
-                Type.createType(entity_type_token, getGenericTypes()),
-                entity_is_static,
-                entity_is_private
-            )
+        Attribute attr = new Attribute(
+            entity_name_token.getLexeme(),
+            entity_name_token,
+            Type.createType(entity_type_token, getGenericTypes()),
+            entity_is_static,
+            entity_is_private
         );
+
+        SymbolTable.actualClass.addAttribute(attr);
+        return attr;
     }
 
     private void createMethod() {
