@@ -39,6 +39,10 @@ public abstract class Unit extends Entity {
         this.is_static = true;
     }
 
+    public void unsetStatic() {
+        this.is_static = false;
+    }
+
     public boolean isPrivate() {
         return is_private;
     }

@@ -2,10 +2,12 @@ package main.java.semantic.entities;
 
 import main.java.model.Token;
 
+import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Entity;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.TypeVar;
+import main.java.semantic.entities.model.statement.Block;
 import main.java.semantic.entities.predefined.Object;
 
 import java.util.Collection;
@@ -27,6 +29,7 @@ public class Class extends Entity {
     protected final Map<String, List<Attribute>> attributes = new HashMap<>();
     protected final List<TypeVar> type_parameters = new ArrayList<>();
 
+    protected final List<Attribute> own_attributes = new ArrayList<>();
     protected final List<Attribute> instance_attributes = new ArrayList<>();
     protected final List<Attribute> class_attributes = new ArrayList<>();
     protected final List<Method> static_methods_list = new ArrayList<>();
@@ -85,6 +88,7 @@ public class Class extends Entity {
 
     public void check() throws SemanticException {
         for (Constructor constructor:constructors.values()) constructor.check();
+        checkAttributeInitialization();
         for (Method method:methods.values()) method.check();
     }
 
@@ -258,6 +262,7 @@ public class Class extends Entity {
                 attribute.getToken()
             );
         else {
+            own_attributes.addLast(attribute);
             attributes.put(attribute.getName(), new ArrayList<>(List.of(attribute)));
             if (attribute.isStatic()) class_attributes.addLast(attribute);
             else instance_attributes.addLast(attribute);
@@ -278,6 +283,43 @@ public class Class extends Entity {
         if (attr_list.getFirst().isPrivate()) return; // TODO: check
         addAttributes(attr_name, attr_list.stream().filter(attr -> !attr.isPrivate()).toList());
     }
+
+    private void checkAttributeInitialization() throws SemanticException {
+        SymbolTable.actualBlock = new Block(new Token(TokenType.leftBrace, "{", 0, 0));
+        SymbolTable.actualUnit = new Method("", new Token(TokenType.idMetVar, "", 0, 0));
+
+        for (Attribute attribute:own_attributes) {
+            if (!attributes.containsKey(attribute.getName())) continue;
+            if (!attributes.get(attribute.getName()).isEmpty()) attributes.get(attribute.getName()).removeFirst();
+            if (attributes.get(attribute.getName()).isEmpty()) attributes.remove(attribute.getName());
+        }
+
+        for (Attribute attribute:own_attributes) {
+            if (attribute.isStatic()) SymbolTable.actualUnit.setStatic();
+            else SymbolTable.actualUnit.unsetStatic();
+
+            if (attribute.getExpression() != null) {
+                Type expressionType = attribute.getExpression().checkType();
+                if (expressionType != null && !attribute.getType().compatible(expressionType)) {
+                    SymbolTable.throwException(
+                        String.format(
+                            SemanticErrorMessages.TYPE_NOT_COMPATIBLE,
+                            attribute.getType().getName(),
+                            expressionType.getName()
+                        ),
+                        attribute.getToken()
+                    );
+                }
+            }
+
+            if (attributes.containsKey(attribute.getName())) attributes.get(attribute.getName()).addFirst(attribute);
+            else attributes.put(attribute.getName(), new ArrayList<>(List.of(attribute)));
+        }
+
+        SymbolTable.actualBlock = null;
+        SymbolTable.actualUnit = null;
+    }
+
 // ------------------------------------- Generics --------------------------------------------------------------------
 
     public List<TypeVar> getTypeParameters() {
