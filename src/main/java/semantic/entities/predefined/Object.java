@@ -2,6 +2,7 @@ package main.java.semantic.entities.predefined;
 
 import main.java.model.Token;
 import main.java.model.TokenType;
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.Class;
 import main.java.semantic.entities.Method;
 import main.java.semantic.entities.Parameter;
@@ -31,7 +32,10 @@ public class Object {
 
     private static void init() {
         initialized = true;
+        Class actualClass = SymbolTable.actualClass;
+        SymbolTable.actualClass = object;
         addDebugPrint();
+        SymbolTable.actualClass = actualClass;
     }
 
     private static void addDebugPrint() {

@@ -2,6 +2,7 @@ package main.java.semantic.entities.predefined;
 
 import main.java.model.Token;
 import main.java.model.TokenType;
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.PrimitiveType;
@@ -43,12 +44,15 @@ public class MiniIterable {
     }
 
     private static void init() {
+        initialized = true;
+        Class actualClass = SymbolTable.actualClass;
+        SymbolTable.actualClass = object;
         object.setAbstract();
         addTypeVar();
         addStart();
         addNext();
         addHasNext();
-        initialized = true;
+        SymbolTable.actualClass = actualClass;
     }
 
     private static void addTypeVar() {
