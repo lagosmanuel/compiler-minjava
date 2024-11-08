@@ -8,6 +8,7 @@ import main.java.model.TokenType;
 import main.java.semantic.entities.Class;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.Constructor;
+import main.java.codegen.Generator;
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
@@ -26,8 +27,9 @@ public class SymbolTable {
     private final static Map<String, Class> classes = new HashMap<>();
     private static boolean hasMain = false;
     private static Token EOF;
+    private static Generator generator;
 
-    public static void init(Map<Integer, Pair<List<Error>, String>> errors_map) {
+    public static void init(Map<Integer, Pair<List<Error>, String>> errors_map, String output_filename) {
         errors = errors_map;
         classes.clear();
         actualClass = null;
@@ -36,6 +38,7 @@ public class SymbolTable {
         addPrimitiveClasses();
         hasMain = false;
         EOF = null;
+        generator = new Generator(output_filename);
     }
 
     public static void validate() throws SemanticException {
@@ -58,6 +61,18 @@ public class SymbolTable {
             actualClass = myClass;
             myClass.check();
         }
+    }
+
+    public static void generate() {
+        if (errors.isEmpty()) for (Class myClass:classes.values()) {
+            actualClass = myClass;
+            //myClass.generate();
+        }
+        generator.close();
+    }
+
+    public static Generator getGenerator() {
+        return generator;
     }
 
     public static void foundMain() {
