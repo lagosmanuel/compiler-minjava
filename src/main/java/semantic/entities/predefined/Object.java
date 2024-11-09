@@ -48,16 +48,13 @@ public class Object {
                 0
             )
         );
-
         method.setStatic();
-
         method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
             0
         )));
-
         method.addParameter(new Parameter(
             "i",
             new Token(
@@ -73,7 +70,7 @@ public class Object {
                 0
             ))
         ));
-
+        method.setBody(new BlockPredefined(MethodPredefined.debugPrint));
         object.addMethod(method);
     }
 }

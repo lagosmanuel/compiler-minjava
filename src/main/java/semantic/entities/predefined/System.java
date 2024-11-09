@@ -76,6 +76,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printSln));
         system.addMethod(method);
     }
 
@@ -111,6 +112,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printIln));
         system.addMethod(method);
     }
 
@@ -146,6 +148,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printCln));
         system.addMethod(method);
     }
 
@@ -181,11 +184,12 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printBln));
         system.addMethod(method);
     }
 
     private static void addMethodPrintln() {
-        Method read = new Method(
+        Method method = new Method(
             "println",
             new Token(
                 TokenType.idMetVar,
@@ -194,14 +198,15 @@ public class System {
                 0
             )
         );
-        read.setStatic();
-        read.setReturnType(new PrimitiveType("void", new Token(
+        method.setStatic();
+        method.setReturnType(new PrimitiveType("void", new Token(
             TokenType.idMetVar,
             "void",
             0,
             0
         )));
-        system.addMethod(read);
+        method.setBody(new BlockPredefined(MethodPredefined.println));
+        system.addMethod(method);
     }
 
     private static void addMethodPrintS() {
@@ -236,6 +241,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printS));
         system.addMethod(method);
     }
 
@@ -271,6 +277,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printI));
         system.addMethod(method);
     }
 
@@ -306,6 +313,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printC));
         system.addMethod(method);
     }
 
@@ -341,6 +349,7 @@ public class System {
                 0
             ))
         ));
+        method.setBody(new BlockPredefined(MethodPredefined.printB));
         system.addMethod(method);
     }
 
@@ -361,6 +370,7 @@ public class System {
             0,
             0
         )));
+        method.setBody(new BlockPredefined(MethodPredefined.read));
         system.addMethod(method);
     }
 }
