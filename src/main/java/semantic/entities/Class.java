@@ -88,6 +88,9 @@ public class Class extends Entity {
         inheritAbstractMethods(superClass);
         if(!isAbstract() && !abstractMethods.isEmpty()) abstractMethodsNotImplemented();
 
+        setMethodsOffsets();
+        setAttributesOffsets();
+
         is_consolidated = true;
     }
 
@@ -421,5 +424,15 @@ public class Class extends Entity {
             ),
             this.getToken()
         ));
+    }
+
+    private void setMethodsOffsets() {
+        for (int i = 0; i < dynamic_methods_list.size(); ++i)
+            dynamic_methods_list.get(i).setOffset(i);
+    }
+
+    private void setAttributesOffsets() {
+        for (int i = 0; i < instance_attributes.size(); ++i)
+            instance_attributes.get(i).setOffset(i);
     }
 }
