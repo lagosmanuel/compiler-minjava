@@ -1,6 +1,7 @@
 package main.java.semantic.entities.model.statement.expression;
 
 import main.java.exeptions.SemanticException;
+import main.java.messages.CodegenErrorMessages;
 import main.java.messages.SemanticErrorMessages;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
@@ -78,7 +79,9 @@ public class UnaryExpression extends BasicExpression {
                 Instruction.NEG.toString(),
                 Comment.OP_NOT
             );
-            default -> throw new RuntimeException("Invalid unary operator");
+            default -> throw new RuntimeException(
+                CodegenErrorMessages.INVALID_UNARY_OP.formatted(operator.getLexeme())
+            );
         }
     }
 }

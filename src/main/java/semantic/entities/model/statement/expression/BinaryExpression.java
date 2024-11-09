@@ -2,6 +2,7 @@ package main.java.semantic.entities.model.statement.expression;
 
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
+import main.java.messages.CodegenErrorMessages;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
@@ -176,7 +177,9 @@ public class BinaryExpression extends CompositeExpression {
                 Instruction.GE.toString(),
                 Comment.OP_BINARY.formatted(operator.getLexeme())
             );
-            default -> throw new RuntimeException("Invalid binary operator");
+            default -> throw new RuntimeException(
+                CodegenErrorMessages.INVALID_BINARY_OP.formatted(operator.getLexeme())
+            );
         }
     }
 }

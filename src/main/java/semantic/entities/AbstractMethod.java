@@ -4,6 +4,7 @@ import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Unit;
 import main.java.messages.SemanticErrorMessages;
+import main.java.messages.CodegenErrorMessages;
 import main.java.exeptions.SemanticException;
 
 public class AbstractMethod extends Unit {
@@ -25,6 +26,8 @@ public class AbstractMethod extends Unit {
 
     @Override
     public void generate() {
-        throw new RuntimeException("Abstract method cannot be generated");
+        throw new RuntimeException(
+            CodegenErrorMessages.ABSTRACT_GEN.formatted(name)
+        );
     }
 }

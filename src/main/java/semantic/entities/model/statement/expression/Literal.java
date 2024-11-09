@@ -9,6 +9,7 @@ import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.config.CodegenConfig;
 import main.java.messages.SemanticErrorMessages;
+import main.java.messages.CodegenErrorMessages;
 import main.java.exeptions.SemanticException;
 
 public class Literal extends Operand {
@@ -47,6 +48,9 @@ public class Literal extends Operand {
                 Instruction.PUSH.toString(),
                 value.getLexeme(),
                 Comment.LITERAL_LOAD.formatted(value.getLexeme())
+            );
+            case floatLiteral -> throw new RuntimeException(
+                CodegenErrorMessages.FLOAT_NOT_SUPPORTED
             );
             case charLiteral -> SymbolTable.getGenerator().write(
                 Instruction.PUSH.toString(),

@@ -79,6 +79,5 @@ public class SemanticErrorMessages {
     public static final String TYPE_VAR_NOT_INSTANTIATED = "Type parameter %s is not instantiated";
     public static final String SWITCH_DEFAULT_ALREADY_DEFINED = "Switch default case is already defined";
     public static final String CASE_ALREADY_DEFINED = "Case with literal %s is already defined";
-
     public static final String CONSTRUCTOR_WITHOUT_PARAMS_NOT_FOUND = "Constructor with no parameters not found in super class %s";
 }
