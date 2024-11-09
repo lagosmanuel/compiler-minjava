@@ -168,7 +168,7 @@ public class SymbolTable {
     }
 
     public static Constructor getNewDefaultConstructor() {
-        return new Constructor(
+        Constructor constructor = new Constructor(
             actualClass.getName(),
             new Token(
                 TokenType.idClass,
@@ -177,6 +177,15 @@ public class SymbolTable {
                 0
             )
         );
+        constructor.setBody(new Block(
+            new Token(
+                TokenType.leftBrace,
+                "{",
+                0,
+                0
+            )
+        ));
+        return constructor;
     }
 
 // --------------------------------------------------------------------------------------------------------------------
