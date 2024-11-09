@@ -9,6 +9,8 @@ import main.java.exeptions.SemanticException;
 import main.java.semantic.entities.model.statement.Block;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.type.PrimitiveType;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Labeler;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -22,13 +24,38 @@ public abstract class Unit extends Entity {
     protected final List<Parameter> parameter_list;
     protected Block body;
 
+    protected String label;
+    protected int offset;
+
     protected boolean is_private = false;
     protected boolean is_static = false;
+    protected boolean is_generated = false;
 
     public Unit(String unit_name, Token unit_token) {
         super(unit_name, unit_token);
         this.parameters = new HashMap<>();
         this.parameter_list = new ArrayList<>();
+    }
+
+    public void generate() {
+        if (is_generated) return;
+        is_generated = true;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public boolean isStatic() {
@@ -102,6 +129,11 @@ public abstract class Unit extends Entity {
         for (Parameter parameter:parameters.values())
             parameter.validate();
         if (return_type != null) return_type.validate();
+        setLabel(Labeler.getLabel(
+            CodegenConfig.FUNCTION_NAME_FORMAT,
+            SymbolTable.actualClass.getName(),
+            name
+        ));
     }
 
     public void check() throws SemanticException {

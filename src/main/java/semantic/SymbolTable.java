@@ -9,6 +9,7 @@ import main.java.semantic.entities.Class;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.Constructor;
 import main.java.codegen.Generator;
+import main.java.codegen.Labeler;
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
@@ -39,6 +40,7 @@ public class SymbolTable {
         hasMain = false;
         EOF = null;
         generator = new Generator(output_filename);
+        Labeler.reset();
     }
 
     public static void validate() throws SemanticException {
@@ -66,7 +68,7 @@ public class SymbolTable {
     public static void generate() {
         if (errors.isEmpty()) for (Class myClass:classes.values()) {
             actualClass = myClass;
-            //myClass.generate();
+            myClass.generate();
         }
         generator.close();
     }

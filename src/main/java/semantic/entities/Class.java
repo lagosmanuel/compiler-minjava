@@ -9,6 +9,10 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.Block;
 import main.java.semantic.entities.predefined.Object;
+import main.java.codegen.Instruction;
+import main.java.codegen.Labeler;
+import main.java.codegen.Comment;
+import main.java.config.CodegenConfig;
 
 import java.util.Collection;
 import java.util.Set;
@@ -18,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
@@ -90,6 +95,39 @@ public class Class extends Entity {
         for (Constructor constructor:constructors.values()) constructor.check();
         checkAttributeInitialization();
         for (Method method:methods.values()) method.check();
+    }
+
+    public void generate() {
+        generateVT();
+    }
+
+    private void generateVT() {
+        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.VT_COMMENT.formatted(getName()));
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.VT_FORMAT, name),
+            Instruction.DW.toString(),
+            dynamic_methods_list.stream()
+                .map(Method::getLabel)
+                .collect(Collectors.joining(" ")
+            ) + (dynamic_methods_list.isEmpty()? "0":"")
+        );
+        SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
+    }
+
+    private void _generateVT() {
+        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.VT_COMMENT.formatted(getName()));
+        for (int i = 0; i < dynamic_methods_list.size(); ++i) {
+            SymbolTable.getGenerator().write(
+                i==0? Labeler.getLabel(CodegenConfig.VT_FORMAT, name) + " " + Instruction.DW:
+                      Instruction.DW.toString(),
+                dynamic_methods_list.get(i).getLabel()
+            );
+        }
+        if (dynamic_methods_list.isEmpty()) SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.VT_FORMAT, name),
+            Instruction.DW.toString(), "0"
+        );
+        SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
     }
 
     private void inheritAttributes(Class superClass) {
