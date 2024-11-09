@@ -7,6 +7,8 @@ import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.PrimitiveType;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 
 public class BinaryExpression extends CompositeExpression {
     private final CompositeExpression left;
@@ -113,5 +115,68 @@ public class BinaryExpression extends CompositeExpression {
                 yield null;
             }
         };
+    }
+
+    @Override
+    public void generate() {
+        if (left == null || right == null || operator == null) return;
+        left.generate();
+        right.generate();
+
+        switch (operator.getType()) {
+            case opPlus -> SymbolTable.getGenerator().write(
+                Instruction.ADD.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opMinus -> SymbolTable.getGenerator().write(
+                Instruction.SUB.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opTimes -> SymbolTable.getGenerator().write(
+                Instruction.MUL.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opDiv -> SymbolTable.getGenerator().write(
+                Instruction.DIV.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opMod -> SymbolTable.getGenerator().write(
+                Instruction.MOD.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opAnd -> SymbolTable.getGenerator().write(
+                Instruction.AND.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opOr -> SymbolTable.getGenerator().write(
+                Instruction.OR.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opEqual -> SymbolTable.getGenerator().write(
+                Instruction.EQ.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opNotEqual -> SymbolTable.getGenerator().write(
+                Instruction.NE.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opLess -> SymbolTable.getGenerator().write(
+                Instruction.LT.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opGreater -> SymbolTable.getGenerator().write(
+                Instruction.GT.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opLessEqual -> SymbolTable.getGenerator().write(
+                Instruction.LE.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            case opGreaterEqual -> SymbolTable.getGenerator().write(
+                Instruction.GE.toString(),
+                Comment.OP_BINARY.formatted(operator.getLexeme())
+            );
+            default -> throw new RuntimeException("Invalid binary operator");
+        }
     }
 }

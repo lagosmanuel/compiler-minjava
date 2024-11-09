@@ -20,4 +20,5 @@ public class Comment {
     public static final String LITERAL_LOAD = "; Load literal %s";
     public static final String OP_NEG = "; Negate operand";
     public static final String OP_NOT = "; Boolean Not operand";
+    public static final String OP_BINARY = "; Binary operator %s";
 }
