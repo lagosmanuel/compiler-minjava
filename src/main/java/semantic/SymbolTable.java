@@ -70,7 +70,11 @@ public class SymbolTable {
 
     public static void generate() {
         if (errors.isEmpty()) {
+            generator.write(CodegenConfig.CODE);
+            generator.write(CodegenConfig.LINE_SPACE);
+            callHeapInit();
             callMain();
+            loadHeapFunctions();
             for (Class myClass:classes.values()) {
                 actualClass = myClass;
                 myClass.generate();
@@ -79,12 +83,52 @@ public class SymbolTable {
         generator.close();
     }
 
+    private static void callHeapInit() {
+        generator.write(Instruction.PUSH.toString(), CodegenConfig.HEAP_INIT_LABEL, Comment.HEAP_INIT_CALL);
+        generator.write(Instruction.CALL.toString());
+        generator.write(CodegenConfig.LINE_SPACE);
+    }
+
     private static void callMain() {
-        generator.write(CodegenConfig.CODE, Comment.MAIN_CALL);
-        generator.write(Instruction.PUSH.toString(), CodegenConfig.MAIN_LABEL);
+        generator.write(Instruction.PUSH.toString(), CodegenConfig.MAIN_LABEL, Comment.MAIN_CALL);
         generator.write(Instruction.CALL.toString());
         generator.write(Instruction.HALT.toString());
+        generator.write(CodegenConfig.LINE_SPACE);
+    }
+
+    private static void loadHeapFunctions() {
+        loadHeapInit();
+        generator.write(CodegenConfig.LINE_SPACE);
+        loadMalloc();
         generator.write(CodegenConfig.LINE_SEPARATOR);
+    }
+
+    private static void loadHeapInit() {
+        generator.write(
+            Labeler.getLabel(CodegenConfig.LABEL, CodegenConfig.HEAP_INIT_LABEL),
+            Instruction.RET.toString(), "0",
+            Comment.HEAP_INIT
+        );
+    }
+
+    private static void loadMalloc() {
+        generator.write(
+            Labeler.getLabel(CodegenConfig.LABEL, CodegenConfig.MALLOC_LABEL),
+            Instruction.LOADFP.toString(),
+            Comment.MALLOC
+        );
+        generator.write(Instruction.LOADSP.toString());
+        generator.write(Instruction.STOREFP.toString());
+        generator.write(Instruction.LOADHL.toString());
+        generator.write(Instruction.DUP.toString());
+        generator.write(Instruction.PUSH.toString(), "1");
+        generator.write(Instruction.ADD.toString());
+        generator.write(Instruction.STORE.toString(), "4");
+        generator.write(Instruction.LOAD.toString(), "3");
+        generator.write(Instruction.ADD.toString());
+        generator.write(Instruction.STOREHL.toString());
+        generator.write(Instruction.STOREFP.toString());
+        generator.write(Instruction.RET.toString(), "1");
     }
 
     public static Generator getGenerator() {
