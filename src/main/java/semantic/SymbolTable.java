@@ -77,6 +77,10 @@ public class SymbolTable {
         return generator;
     }
 
+    public static boolean hasMain() {
+        return hasMain;
+    }
+
     public static void foundMain() {
         hasMain = true;
     }

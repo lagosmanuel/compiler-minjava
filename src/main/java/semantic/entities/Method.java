@@ -1,9 +1,11 @@
 package main.java.semantic.entities;
 
-import main.java.exeptions.SemanticException;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Unit;
+import main.java.codegen.Labeler;
+import main.java.config.CodegenConfig;
+import main.java.exeptions.SemanticException;
 
 import java.util.Objects;
 
@@ -20,6 +22,11 @@ public class Method extends Unit {
         if (!isPrivate() &&
             isStatic() &&
             Objects.equals(return_type.getName(), "void") &&
-            Objects.equals(name, "main")) SymbolTable.foundMain();
+            Objects.equals(name, "main") &&
+            !SymbolTable.hasMain()
+        ) {
+            SymbolTable.foundMain();
+            setLabel(Labeler.getLabel(CodegenConfig.MAIN_LABEL));
+        }
     }
 }
