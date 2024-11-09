@@ -102,6 +102,14 @@ public class Class extends Entity {
 
     public void generate() {
         generateVT();
+        generateCode();
+    }
+
+    private void generateCode() {
+        SymbolTable.getGenerator().write(CodegenConfig.CODE, Comment.CLASS_CODE.formatted(getName()));
+        constructors.values().forEach(Constructor::generate);
+        methods.values().forEach(Method::generate);
+        SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
     }
 
     private void generateVT() {

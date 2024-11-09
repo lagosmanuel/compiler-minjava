@@ -11,6 +11,8 @@ import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.config.CodegenConfig;
 import main.java.codegen.Labeler;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -40,6 +42,23 @@ public abstract class Unit extends Entity {
     public void generate() {
         if (!isMyOwn() || is_generated) return;
         is_generated = true;
+        prologue();
+    }
+
+    protected void prologue() {
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, label),
+            Instruction.LOADFP.toString(),
+            Comment.SAVE_FP
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADSP.toString(),
+            Comment.LOAD_SP
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.STOREFP.toString(),
+            Comment.STORE_FP
+        );
     }
 
     public String getLabel() {
