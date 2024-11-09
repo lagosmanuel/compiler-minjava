@@ -7,4 +7,9 @@ public class NOOP extends Statement {
     public NOOP(Token identifier) {
         super(identifier);
     }
+
+    @Override
+    public void generate() {
+        // Do nothing
+    }
 }
