@@ -38,7 +38,7 @@ public abstract class Unit extends Entity {
     }
 
     public void generate() {
-        if (is_generated) return;
+        if (!isMyOwn() || is_generated) return;
         is_generated = true;
     }
 
@@ -199,5 +199,10 @@ public abstract class Unit extends Entity {
         String separator = arguments > 0? SemanticConfig.PARAMETER_TYPE_SEPARATOR:"";
         String counter = "X".repeat(arguments);
         return name + separator + counter;
+    }
+
+    private boolean isMyOwn() {
+        String[] classname = label.split("#");
+        return classname.length > 1 && classname[1].equals(SymbolTable.actualClass.getName());
     }
 }
