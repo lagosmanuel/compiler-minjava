@@ -1,5 +1,8 @@
 package main.java.semantic.entities.model.statement.primary;
 
+import main.java.codegen.Comment;
+import main.java.codegen.Instruction;
+import main.java.config.CodegenConfig;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
@@ -38,5 +41,15 @@ public class ThisAccess extends Access {
         }
 
         return getChained() != null? getChained().checkType(type):type;
+    }
+
+    @Override
+    public void generate() {
+        SymbolTable.getGenerator().write(
+            Instruction.LOAD.toString(),
+            CodegenConfig.OFFSET_THIS,
+            Comment.LOAD_THIS
+        );
+        if (getChained() != null) getChained().generate();
     }
 }

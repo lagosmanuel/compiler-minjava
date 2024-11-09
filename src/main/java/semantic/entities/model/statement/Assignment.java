@@ -19,6 +19,7 @@ public class Assignment extends Expression {
         this.left = left;
         this.right = right;
         this.operator = operator;
+        if (left != null) left.setAssignOp(operator);
     }
 
     @Override
@@ -64,5 +65,12 @@ public class Assignment extends Expression {
 
         setType(leftType);
         return leftType;
+    }
+
+    @Override
+    public void generate() {
+        if (left == null || right == null || operator == null) return;
+        right.generate();
+        left.generate();
     }
 }

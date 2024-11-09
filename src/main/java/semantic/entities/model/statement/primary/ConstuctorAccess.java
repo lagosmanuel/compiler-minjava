@@ -113,4 +113,7 @@ public class ConstuctorAccess extends Access {
         }
         return null;
     }
+
+    @Override
+    public void generate() {}
 }

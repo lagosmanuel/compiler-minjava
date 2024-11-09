@@ -87,4 +87,7 @@ public class SuperAccess extends Access {
     public boolean isConstructorCall() {
         return isConstructorCall;
     }
+
+    @Override
+    public void generate() {}
 }

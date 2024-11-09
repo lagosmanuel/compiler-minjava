@@ -165,6 +165,7 @@ public abstract class Unit extends Entity {
             name,
             SymbolTable.actualClass.getName()
         ));
+        setParametersOffset();
     }
 
     public void check() throws SemanticException {
@@ -236,5 +237,15 @@ public abstract class Unit extends Entity {
         if (label.equals(CodegenConfig.MAIN_LABEL)) return true;
         String[] classname = label.split("#");
         return classname.length > 1 && classname[1].equals(SymbolTable.actualClass.getName());
+    }
+
+    private void setParametersOffset() {
+        for (int i = 0; i < parameter_list.size(); ++i) {
+            parameter_list.get(i).setOffset(
+                is_static?
+                    CodegenConfig.PARAM_OFFSET + parameter_list.size() - i - 1:
+                    CodegenConfig.PARAM_OFFSET + parameter_list.size() - i
+            );
+        }
     }
 }

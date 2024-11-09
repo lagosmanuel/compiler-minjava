@@ -79,4 +79,8 @@ public class MethodAccess extends Access {
         }
         return null;
     }
+
+    @Override
+    public void generate() {}
+    public boolean isVoid() { return false; }
 }

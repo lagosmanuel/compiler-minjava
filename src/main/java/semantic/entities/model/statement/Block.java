@@ -46,6 +46,7 @@ public class Block extends Statement {
 
     public void addLocalVar(LocalVar localVar) {
         if (localVar == null) return;
+        localVar.setOffset(-localVars.size());
         localVars.add(localVar);
     }
 

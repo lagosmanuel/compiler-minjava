@@ -26,4 +26,6 @@ abstract public class Chained {
     public abstract boolean isStatement();
 
     public abstract Type checkType(Type type) throws SemanticException;
+
+    public void generate() {}
 }

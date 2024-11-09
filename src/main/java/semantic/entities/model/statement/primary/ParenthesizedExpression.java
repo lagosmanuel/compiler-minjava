@@ -34,4 +34,11 @@ public class ParenthesizedExpression extends Access {
             getChained().checkType(expression.checkType()):
             expression.checkType();
     }
+
+    @Override
+    public void generate() {
+        if (expression == null) return;
+        expression.generate();
+        if (getChained() != null) getChained().generate();
+    }
 }

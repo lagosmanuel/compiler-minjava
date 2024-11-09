@@ -22,4 +22,12 @@ public class Comment {
     public static final String OP_NOT = "; Boolean Not operand";
     public static final String OP_BINARY = "; Binary operator %s";
     public static final String EXPRESSION_DROP_VALUE = "; Drop value from expression";
+    public static final String VAR_LOAD = "; Load variable/parameter %s";
+    public static final String VAR_STORE = "; Store variable/parameter %s";
+    public static final String ATTRIBUTE_LOAD = "Load attribute %s";
+    public static final String ATTRIBUTE_STATIC_LOAD = "; Load static attribute %s";
+    public static final String ATTRIBUTE_STORE = "Store attribute %s";
+    public static final String ATTRIBUTE_STATIC_STORE = "; Store static attribute %s";
+    public static final String ASSIGN_PLUS = "; Calculate assignment plus";
+    public static final String ASSIGN_MINUS = "; Calculate assignment minus";
 }

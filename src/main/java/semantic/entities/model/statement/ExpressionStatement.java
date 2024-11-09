@@ -5,6 +5,7 @@ import main.java.codegen.Comment;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.semantic.entities.model.statement.primary.MethodAccess;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -32,10 +33,12 @@ public class ExpressionStatement extends Statement {
     public void generate() {
         if (expression == null) return;
         expression.generate();
-        SymbolTable.getGenerator().write(
-            Instruction.POP.toString(),
-            Comment.EXPRESSION_DROP_VALUE
-        );
+        if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid()) {
+            SymbolTable.getGenerator().write(
+                Instruction.POP.toString(),
+                Comment.EXPRESSION_DROP_VALUE
+            );
+        }
     }
 
     public Expression getExpression() {

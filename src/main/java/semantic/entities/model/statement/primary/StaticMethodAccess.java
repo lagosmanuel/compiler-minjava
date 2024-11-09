@@ -44,4 +44,7 @@ public class StaticMethodAccess extends MethodAccess {
             return null;
         } else return checkMethodInClass(myclass, true);
     }
+
+    @Override
+    public void generate() {}
 }

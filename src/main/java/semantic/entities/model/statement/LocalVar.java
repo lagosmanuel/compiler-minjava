@@ -19,6 +19,7 @@ public class LocalVar extends Statement {
     private final Token identifier;
     private final Expression value;
     private final List<LocalVar> localVars = new ArrayList<>();
+    private int offset;
 
     public LocalVar(Type type, List<Token> identifiers, Expression value) {
         super(type.getToken());
@@ -45,6 +46,14 @@ public class LocalVar extends Statement {
 
     public List<LocalVar> getLocalVars() {
         return localVars;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public Type getType() {
