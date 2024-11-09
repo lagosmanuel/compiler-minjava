@@ -14,4 +14,7 @@ public class CodegenConfig {
     public static final String LINE_SPACE = "";
     public static final String LABEL = "%s:";
     public static final String OFFSET_THIS = "3";
+    public static final String NULL_VALUE = "0";
+    public static final String FALSE_VALUE = "0";
+    public static final String TRUE_VALUE = "1";
 }

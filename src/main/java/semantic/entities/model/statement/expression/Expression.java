@@ -33,4 +33,6 @@ abstract public class Expression {
     }
 
     public abstract Type checkType() throws SemanticException;
+
+    public abstract void generate();
 }
