@@ -163,7 +163,7 @@ public class Class extends Entity {
 
         if (!methods.containsKey(method.getName()) && !abstractMethods.containsKey(method.getName())) {
             if (!method.isPrivate()) methods.put(method.getName(), method);
-            if (!method.isStatic()) methods_list.addFirst(method); // TODO: check
+            methods_list.addFirst(method); // TODO: check
         } else if (abstractMethods.containsKey(method.getName())) {
             if (!abstractMethods.get(method.getName()).isCompatible(method) && !method.isPrivate()) {
                 SymbolTable.saveError(
