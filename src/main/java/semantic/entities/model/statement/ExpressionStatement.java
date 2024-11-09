@@ -1,5 +1,7 @@
 package main.java.semantic.entities.model.statement;
 
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
@@ -30,6 +32,10 @@ public class ExpressionStatement extends Statement {
     public void generate() {
         if (expression == null) return;
         expression.generate();
+        SymbolTable.getGenerator().write(
+            Instruction.POP.toString(),
+            Comment.EXPRESSION_DROP_VALUE
+        );
     }
 
     public Expression getExpression() {

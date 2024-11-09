@@ -21,4 +21,5 @@ public class Comment {
     public static final String OP_NEG = "; Negate operand";
     public static final String OP_NOT = "; Boolean Not operand";
     public static final String OP_BINARY = "; Binary operator %s";
+    public static final String EXPRESSION_DROP_VALUE = "; Drop value from expression";
 }
