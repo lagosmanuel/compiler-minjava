@@ -6,4 +6,5 @@ public class Comment {
     public static String SAVE_FP = "; Save FP register";
     public static String LOAD_SP = "; Load SP register";
     public static String STORE_FP = "; Store FP register";
+    public static String MAIN_CALL = "; call the main function";
 }

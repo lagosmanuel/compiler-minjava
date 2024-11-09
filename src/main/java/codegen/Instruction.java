@@ -49,5 +49,6 @@ public enum Instruction {
     LOADHP,
     STOREHP,
     LOADHL,
-    STOREHL
+    STOREHL,
+    HALT
 }

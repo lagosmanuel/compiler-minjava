@@ -10,6 +10,9 @@ import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.Constructor;
 import main.java.codegen.Generator;
 import main.java.codegen.Labeler;
+import main.java.codegen.Comment;
+import main.java.codegen.Instruction;
+import main.java.config.CodegenConfig;
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
 import main.java.messages.SemanticErrorMessages;
@@ -66,11 +69,22 @@ public class SymbolTable {
     }
 
     public static void generate() {
-        if (errors.isEmpty()) for (Class myClass:classes.values()) {
-            actualClass = myClass;
-            myClass.generate();
+        if (errors.isEmpty()) {
+            callMain();
+            for (Class myClass:classes.values()) {
+                actualClass = myClass;
+                myClass.generate();
+            }
         }
         generator.close();
+    }
+
+    private static void callMain() {
+        generator.write(CodegenConfig.CODE, Comment.MAIN_CALL);
+        generator.write(Instruction.PUSH.toString(), CodegenConfig.MAIN_LABEL);
+        generator.write(Instruction.CALL.toString());
+        generator.write(Instruction.HALT.toString());
+        generator.write(CodegenConfig.LINE_SEPARATOR);
     }
 
     public static Generator getGenerator() {
