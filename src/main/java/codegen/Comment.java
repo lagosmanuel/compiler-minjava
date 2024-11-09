@@ -10,4 +10,5 @@ public class Comment {
     public static String HEAP_INIT_CALL = "; call the heap init function";
     public static String HEAP_INIT = "; heap init function";
     public static String MALLOC = "; malloc function";
+    public static String BLOCK_RET = "; return from block and free local vars";
 }

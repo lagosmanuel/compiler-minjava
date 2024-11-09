@@ -43,6 +43,7 @@ public abstract class Unit extends Entity {
         if (!isMyOwn() || is_generated) return;
         is_generated = true;
         prologue();
+        body.generate();
     }
 
     protected void prologue() {

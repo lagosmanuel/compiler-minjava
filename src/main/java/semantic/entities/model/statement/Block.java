@@ -5,6 +5,8 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.primary.SuperAccess;
+import main.java.codegen.Comment;
+import main.java.codegen.Instruction;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -70,6 +72,17 @@ public class Block extends Statement {
             if (statement.hasReturn()) setReturnable();
         }
         SymbolTable.actualBlock = getParent();
+    }
+
+    public void generate() {
+        statements.forEach(Statement::generate);
+        SymbolTable.getGenerator().write(
+            Instruction.FMEM.toString(),
+            getParent() != null?
+                String.valueOf(localVars.size()-getParent().localVars.size()):
+                String.valueOf(localVars.size()),
+            Comment.BLOCK_RET
+        );
     }
 
     private void checkSuper(Statement statement) throws SemanticException{
