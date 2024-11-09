@@ -29,4 +29,13 @@ public class Method extends Unit {
             setLabel(Labeler.getLabel(CodegenConfig.MAIN_LABEL));
         }
     }
+
+    @Override
+    public void generate() {
+        if (!isMyOwn() || is_generated) return;
+        super.generate();
+        body.generate();
+        epilogue();
+        SymbolTable.getGenerator().write(CodegenConfig.LINE_SPACE);
+    }
 }

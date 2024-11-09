@@ -22,4 +22,9 @@ public class AbstractMethod extends Unit {
         if (is_static)
             SymbolTable.throwException(SemanticErrorMessages.ABSTRACT_METHOD_STATIC, getToken());
     }
+
+    @Override
+    public void generate() {
+        throw new RuntimeException("Abstract method cannot be generated");
+    }
 }

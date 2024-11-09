@@ -43,7 +43,6 @@ public abstract class Unit extends Entity {
         if (!isMyOwn() || is_generated) return;
         is_generated = true;
         prologue();
-        body.generate();
     }
 
     protected void prologue() {
@@ -59,6 +58,18 @@ public abstract class Unit extends Entity {
         SymbolTable.getGenerator().write(
             Instruction.STOREFP.toString(),
             Comment.STORE_FP
+        );
+    }
+
+    protected void epilogue() {
+        SymbolTable.getGenerator().write(
+            Instruction.STOREFP.toString(),
+            Comment.RESTORE_FP
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.RET.toString(),
+            String.valueOf(parameter_list.size() + (!is_static?1:0)),
+            Comment.UNIT_RET
         );
     }
 
@@ -221,7 +232,8 @@ public abstract class Unit extends Entity {
         return name + separator + counter;
     }
 
-    private boolean isMyOwn() {
+    protected boolean isMyOwn() {
+        if (label.equals(CodegenConfig.MAIN_LABEL)) return true;
         String[] classname = label.split("#");
         return classname.length > 1 && classname[1].equals(SymbolTable.actualClass.getName());
     }

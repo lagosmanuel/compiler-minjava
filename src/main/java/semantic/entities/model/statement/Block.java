@@ -28,6 +28,10 @@ public class Block extends Statement {
         statement.setParent(this);
     }
 
+    public Statement getStatement(int index) {
+        return index >= 0 && index < statements.size()? statements.get(index):null;
+    }
+
     public boolean hasLocalVar(String varName) {
         return localVars.stream().anyMatch(
             localVar -> Objects.equals(localVar.getIdentifier().getLexeme(), varName));

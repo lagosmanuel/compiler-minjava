@@ -13,4 +13,5 @@ public class CodegenConfig {
     public static final String LINE_SEPARATOR = ";----------------------------------------\n";
     public static final String LINE_SPACE = "";
     public static final String LABEL = "%s:";
+    public static final String OFFSET_THIS = "3";
 }
