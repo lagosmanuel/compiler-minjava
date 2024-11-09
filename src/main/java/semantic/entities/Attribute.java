@@ -5,6 +5,8 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Variable;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Labeler;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -14,11 +16,20 @@ public class Attribute extends Variable {
     protected final boolean is_private;
     protected final boolean is_static;
     protected Expression expression;
+    protected String label;
 
     public Attribute(String attr_name, Token attr_token, Type attr_type, boolean is_static, boolean is_private) {
         super(attr_name, attr_token, attr_type);
         this.is_static = is_static;
         this.is_private = is_private;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public boolean isStatic() {
@@ -43,5 +54,10 @@ public class Attribute extends Variable {
         super.validate();
         if (Objects.equals(type.getName(), "void"))
             SymbolTable.throwException(SemanticErrorMessages.ATTRIBUTE_VOID, type.getToken());
+        setLabel(Labeler.getLabel(
+            CodegenConfig.ATTRIBUTE_NAME_FORMAT,
+            name,
+            SymbolTable.actualClass.getName()
+        ));
     }
 }
