@@ -105,7 +105,7 @@ public class Class extends Entity {
     }
 
     private void generateVT() {
-        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.VT_COMMENT.formatted(getName()));
+        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         SymbolTable.getGenerator().write(
             Labeler.getLabel(CodegenConfig.VT_FORMAT, name),
             Instruction.DW.toString(),
@@ -118,7 +118,7 @@ public class Class extends Entity {
     }
 
     private void _generateVT() {
-        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.VT_COMMENT.formatted(getName()));
+        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         for (int i = 0; i < dynamic_methods_list.size(); ++i) {
             SymbolTable.getGenerator().write(
                 i==0? Labeler.getLabel(CodegenConfig.VT_FORMAT, name) + " " + Instruction.DW:
