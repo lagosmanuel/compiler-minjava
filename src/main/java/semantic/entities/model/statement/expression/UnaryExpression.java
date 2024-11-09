@@ -5,6 +5,8 @@ import main.java.messages.SemanticErrorMessages;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 
 public class UnaryExpression extends BasicExpression {
     private final Operand operand;
@@ -60,5 +62,23 @@ public class UnaryExpression extends BasicExpression {
                 yield null;
             }
         };
+    }
+
+    @Override
+    public void generate() {
+        if (operand == null || operator == null) return;
+        operand.generate();
+        switch (operator.getType()) {
+            case opPlus -> {}
+            case opMinus -> SymbolTable.getGenerator().write(
+                Instruction.NEG.toString(),
+                Comment.OP_NEG
+            );
+            case opNot -> SymbolTable.getGenerator().write(
+                Instruction.NEG.toString(),
+                Comment.OP_NOT
+            );
+            default -> throw new RuntimeException("Invalid unary operator");
+        }
     }
 }

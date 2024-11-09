@@ -18,4 +18,6 @@ public class Comment {
     public static final String SUPER_LOAD = "; Load super constructor";
     public static final String SUPER_DROP_REF = "; Drop reference from super constructor";
     public static final String LITERAL_LOAD = "; Load literal %s";
+    public static final String OP_NEG = "; Negate operand";
+    public static final String OP_NOT = "; Boolean Not operand";
 }
