@@ -26,6 +26,12 @@ public class ExpressionStatement extends Statement {
         }
     }
 
+    @Override
+    public void generate() {
+        if (expression == null) return;
+        expression.generate();
+    }
+
     public Expression getExpression() {
         return expression;
     }
