@@ -119,4 +119,8 @@ public class SuperAccess extends Access {
         }
         if (getChained() != null) getChained().generate(supername);
     }
+
+    public boolean isVoid() {
+        return isConstructorCall() || (getChained() != null && getChained().isVoid());
+    }
 }
