@@ -107,8 +107,14 @@ public class Class extends Entity {
 
     private void generateCode() {
         SymbolTable.getGenerator().write(CodegenConfig.CODE, Comment.CLASS_CODE.formatted(getName()));
-        constructors.values().forEach(Constructor::generate);
-        methods.values().forEach(Method::generate);
+        constructors.values().forEach(constructor -> {
+            SymbolTable.actualUnit = constructor;
+            constructor.generate();
+        });
+        methods.values().forEach(method -> {
+            SymbolTable.actualUnit = method;
+            method.generate();
+        });
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
     }
 
