@@ -34,4 +34,5 @@ public class Comment {
     public static final String CALL_METHOD = "; Call method %s";
     public static final String VT_ACCESS_METHOD = "; Get method %s from VT";
     public static final String ACCESS_STATIC_METHOD = "; Get static method %s";
+    public static final String SWAP_ARGUMENTS = "; Swap method arguments and reference";
 }

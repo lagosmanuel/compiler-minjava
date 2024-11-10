@@ -62,4 +62,9 @@ public class ChainedVar extends Chained {
 
         return null;
     }
+
+    @Override
+    public void generate() {
+
+    }
 }

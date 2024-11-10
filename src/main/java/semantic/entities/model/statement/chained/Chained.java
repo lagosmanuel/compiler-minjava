@@ -41,5 +41,5 @@ abstract public class Chained {
 
     public abstract Type checkType(Type type) throws SemanticException;
 
-    public void generate() {}
+    public abstract void generate();
 }
