@@ -121,7 +121,7 @@ public class Class extends Entity {
     private void generateVT() {
         SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         SymbolTable.getGenerator().write(
-            Labeler.getLabel(CodegenConfig.VT_FORMAT, name),
+            Labeler.getLabel(CodegenConfig.VT_LABEL, name),
             Instruction.DW.toString(),
             dynamic_methods_list.stream()
                 .map(Method::getLabel)
@@ -135,13 +135,13 @@ public class Class extends Entity {
         SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         for (int i = 0; i < dynamic_methods_list.size(); ++i) {
             SymbolTable.getGenerator().write(
-                i==0? Labeler.getLabel(CodegenConfig.VT_FORMAT, name) + " " + Instruction.DW:
+                i==0? Labeler.getLabel(CodegenConfig.VT_LABEL, name) + " " + Instruction.DW:
                       Instruction.DW.toString(),
                 dynamic_methods_list.get(i).getLabel()
             );
         }
         if (dynamic_methods_list.isEmpty()) SymbolTable.getGenerator().write(
-            Labeler.getLabel(CodegenConfig.VT_FORMAT, name),
+            Labeler.getLabel(CodegenConfig.VT_LABEL, name),
             Instruction.DW.toString(), "0"
         );
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);

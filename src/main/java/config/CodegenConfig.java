@@ -3,7 +3,8 @@ package main.java.config;
 public class CodegenConfig {
     public static final String DATA = ".DATA";
     public static final String CODE = ".CODE";
-    public static final String VT_FORMAT = "vt_%s:";
+    public static final String VT_FORMAT = "vt_%s";
+    public static final String VT_LABEL = VT_FORMAT + ":";
     public static final String CLASS_SEPARATOR = "@";
     public static final String FUNCTION_NAME_FORMAT = "%s" + CLASS_SEPARATOR + "%s";
     public static final String ATTRIBUTE_NAME_FORMAT = "$%s" + CLASS_SEPARATOR + "%s";
