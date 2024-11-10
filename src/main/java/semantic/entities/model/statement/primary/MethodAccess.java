@@ -91,7 +91,7 @@ public class MethodAccess extends Access {
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.RMEM.toString(), "1",
-                Comment.RETURN_ALLOC
+                Comment.RETURN_ALLOC.formatted(method.getLabel())
             );
         }
         arguments.forEach(Expression::generate);

@@ -30,7 +30,7 @@ public class Comment {
     public static final String ATTRIBUTE_STATIC_STORE = "; Store static attribute: %s";
     public static final String ASSIGN_PLUS = "; Calculate assignment plus";
     public static final String ASSIGN_MINUS = "; Calculate assignment minus";
-    public static final String RETURN_ALLOC = "; Reserve space for return value";
+    public static final String RETURN_ALLOC = "; Reserve space for return value of method %s";
     public static final String CALL_METHOD = "; Call method %s";
     public static final String VT_ACCESS_METHOD = "; Get method %s from VT";
     public static final String ACCESS_STATIC_METHOD = "; Get static method %s";

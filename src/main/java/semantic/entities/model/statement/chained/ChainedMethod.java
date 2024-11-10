@@ -91,7 +91,7 @@ public class ChainedMethod extends Chained {
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.DUP.toString(),
-                Comment.RETURN_ALLOC
+                Comment.RETURN_ALLOC.formatted(method.getLabel())
             );
         }
         arguments.forEach(argument -> {
