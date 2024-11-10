@@ -9,6 +9,7 @@ public class Labeler {
 
     public static void reset() {
         label_counter = 0;
+        labels.clear();
     }
 
     private static int increment() {
