@@ -7,6 +7,7 @@ import main.java.exeptions.SemanticException;
 abstract public class Chained {
     private final Token identifier;
     private final Chained chained;
+    private Token assignOp;
 
     public Chained(Token identifier, Chained chained) {
         this.identifier = identifier;
@@ -19,6 +20,19 @@ abstract public class Chained {
 
     public Chained getChained() {
         return chained;
+    }
+
+    public boolean isLeftValue() {
+        return assignOp != null;
+    }
+
+    public Token getAssignOp() {
+        return assignOp;
+    }
+
+    public void setAssignOp(Token assignOp) {
+        this.assignOp = assignOp;
+        if (chained != null) chained.setAssignOp(assignOp);
     }
 
     public abstract boolean isAssignable();

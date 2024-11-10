@@ -18,4 +18,10 @@ public abstract class Access extends Operand {
     public void setChained(Chained chained) {
         this.chained = chained;
     }
+
+    @Override
+    public void setAssignOp(Token assignOp) {
+        this.assignOp = assignOp;
+        if (chained != null) chained.setAssignOp(assignOp);
+    }
 }

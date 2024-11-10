@@ -7,7 +7,7 @@ import main.java.exeptions.SemanticException;
 abstract public class Expression {
     private final Token identifier;
     private Type type = null;
-    private Token assignOp;
+    protected Token assignOp;
 
     public Expression(Token identifier) {
         this.identifier = identifier;
