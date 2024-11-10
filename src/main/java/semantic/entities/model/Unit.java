@@ -235,7 +235,7 @@ public abstract class Unit extends Entity {
 
     protected boolean isMyOwn() {
         if (label.equals(CodegenConfig.MAIN_LABEL)) return true;
-        String[] classname = label.split("#");
+        String[] classname = label.split(CodegenConfig.CLASS_SEPARATOR);
         return classname.length > 1 && classname[1].equals(SymbolTable.actualClass.getName());
     }
 
