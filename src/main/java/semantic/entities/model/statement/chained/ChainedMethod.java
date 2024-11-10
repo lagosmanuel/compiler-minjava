@@ -119,6 +119,10 @@ public class ChainedMethod extends Chained {
             );
         }
         SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "0",
+            Comment.VT_LOAD.formatted("")
+        );
+        SymbolTable.getGenerator().write(
             Instruction.LOADREF.toString(),
             String.valueOf(method.getOffset()),
             Comment.VT_ACCESS_METHOD.formatted(method.getLabel())
