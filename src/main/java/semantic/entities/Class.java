@@ -447,6 +447,6 @@ public class Class extends Entity {
 
     private void setAttributesOffsets() {
         for (int i = 0; i < instance_attributes.size(); ++i)
-            instance_attributes.get(i).setOffset(i);
+            instance_attributes.get(i).setOffset(i+1);
     }
 }
