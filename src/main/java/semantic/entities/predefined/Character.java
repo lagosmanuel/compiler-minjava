@@ -1,5 +1,6 @@
 package main.java.semantic.entities.predefined;
 
+import main.java.config.SemanticConfig;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
@@ -51,7 +52,7 @@ public class Character {
     }
 
     private static void addConstructor() {
-        Constructor constructor = new Constructor(name + "@X", token);
+        Constructor constructor = new Constructor(name + SemanticConfig.PARAMETER_TYPE_SEPARATOR + "X", token);
         constructor.addParameter(new Parameter(
             "init",
             new Token(TokenType.idMetVar, "init", 0, 0),

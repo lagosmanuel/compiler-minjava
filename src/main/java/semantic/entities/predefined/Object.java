@@ -1,5 +1,6 @@
 package main.java.semantic.entities.predefined;
 
+import main.java.config.SemanticConfig;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
@@ -40,7 +41,7 @@ public class Object {
 
     private static void addDebugPrint() {
         Method method = new Method(
-            "debugPrint@X",
+            "debugPrint%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "debugPrint",

@@ -1,5 +1,6 @@
 package main.java.semantic.entities.predefined;
 
+import main.java.config.SemanticConfig;
 import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
@@ -46,7 +47,7 @@ public class System {
 
     private static void addMethodPrintSln() {
         Method method = new Method(
-            "printSln@X",
+            "printSln%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printSln",
@@ -82,7 +83,7 @@ public class System {
 
     private static void addMethodPrintIln() {
         Method method = new Method(
-            "printIln@X",
+            "printIln%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printIln",
@@ -118,7 +119,7 @@ public class System {
 
     private static void addMethodPrintCln() {
         Method method = new Method(
-            "printCln@X",
+            "printCln%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printCln",
@@ -154,7 +155,7 @@ public class System {
 
     private static void addMethodPrintBln() {
         Method method = new Method(
-            "printBln@X",
+            "printBln%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printBln",
@@ -211,7 +212,7 @@ public class System {
 
     private static void addMethodPrintS() {
         Method method = new Method(
-            "printS@X",
+            "printS%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printS",
@@ -247,7 +248,7 @@ public class System {
 
     private static void addMethodPrintI() {
         Method method = new Method(
-            "printI@X",
+            "printI%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printI",
@@ -283,7 +284,7 @@ public class System {
 
     private static void addMethodPrintC() {
         Method method = new Method(
-            "printC@X",
+            "printC%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printC",
@@ -319,7 +320,7 @@ public class System {
 
     private static void addMethodPrintB() {
         Method method = new Method(
-            "printB@X",
+            "printB%sX".formatted(SemanticConfig.PARAMETER_TYPE_SEPARATOR),
             new Token(
                 TokenType.idMetVar,
                 "printB",
