@@ -14,8 +14,8 @@ public class Comment {
     public static final String BLOCK_RET = "; return from block and free local variables";
     public static final String UNIT_RET = "; return from unit and free params";
     public static final String LOAD_THIS = "; Load reference to this";
-    public static final String SUPER_CALL = "; Call super constructor";
-    public static final String SUPER_LOAD = "; Load super constructor";
+    public static final String SUPER_CALL = "; Call super constructor %s";
+    public static final String SUPER_LOAD = "; Load super constructor %s";
     public static final String LITERAL_LOAD = "; Load literal: %s";
     public static final String OP_NEG = "; Negate operand";
     public static final String OP_NOT = "; Boolean Not operand";

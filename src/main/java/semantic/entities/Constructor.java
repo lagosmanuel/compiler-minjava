@@ -48,11 +48,11 @@ public class Constructor extends Unit {
             SymbolTable.getGenerator().write(
                 Instruction.PUSH.toString(),
                 getSuperCallLabel(),
-                Comment.SUPER_LOAD
+                Comment.SUPER_LOAD.formatted(getSuperCallLabel())
             );
             SymbolTable.getGenerator().write(
                 Instruction.CALL.toString(),
-                Comment.SUPER_CALL
+                Comment.SUPER_CALL.formatted(getSuperCallLabel())
             );
         }
     }
