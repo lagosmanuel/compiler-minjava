@@ -126,5 +126,10 @@ public class MethodAccess extends Access {
         }
     }
 
-    public boolean isVoid() { return false; }
+    public boolean isVoid() {
+        return method == null ||
+               method.getReturnType() == null ||
+               Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID) ||
+               (getChained() != null && getChained().isVoid());
+    }
 }

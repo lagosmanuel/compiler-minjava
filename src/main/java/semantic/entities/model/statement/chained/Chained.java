@@ -42,4 +42,6 @@ abstract public class Chained {
     public abstract Type checkType(Type type) throws SemanticException;
 
     public abstract void generate();
+
+    public abstract boolean isVoid();
 }

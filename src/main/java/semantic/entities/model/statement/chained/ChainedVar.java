@@ -67,4 +67,9 @@ public class ChainedVar extends Chained {
     public void generate() {
 
     }
+
+    @Override
+    public boolean isVoid() {
+        return getChained() == null || getChained().isVoid();
+    }
 }
