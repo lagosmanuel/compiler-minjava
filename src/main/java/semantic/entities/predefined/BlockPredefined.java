@@ -2,9 +2,12 @@ package main.java.semantic.entities.predefined;
 
 import main.java.model.Token;
 import main.java.model.TokenType;
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.statement.Block;
 import main.java.semantic.entities.model.statement.Return;
 import main.java.semantic.entities.model.statement.expression.Literal;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 
 public class BlockPredefined extends Block {
     private final MethodPredefined method;
@@ -23,7 +26,17 @@ public class BlockPredefined extends Block {
     @Override
     public void generate() {
         switch (method) {
-            // TODO
+            case debugPrint -> {
+                SymbolTable.getGenerator().write(
+                    Instruction.LOAD.toString(),
+                    "3",
+                    Comment.VAR_LOAD.formatted("i")
+                );
+                SymbolTable.getGenerator().write(
+                    Instruction.IPRINT.toString(),
+                    Comment.IPRINT
+                );
+            }
         }
     }
 
