@@ -35,4 +35,13 @@ public class Comment {
     public static final String ACCESS_STATIC_METHOD = "; Get static method %s";
     public static final String SWAP_ARGUMENTS = "; Swap method arguments and reference";
     public static final String IPRINT = "; print integer value from stack";
+    public static final String CONSTRUCTOR_CALL = "; Call constructor %s";
+    public static final String OBJECT_ALLOC = "; Allocate object with %d attributes";
+    public static final String MALLOC_LOAD = "; Load malloc function";
+    public static final String MALLOC_CALL = "; Call malloc function";
+    public static final String VT_LOAD = "; Load VT of class %s";
+    public static final String VT_STORE = "; Store VT of class %s in the CIR";
+    public static final String CONSTRUCTOR_LOAD = "; Load constructor %s";
+    public static final String CONSTRUCTOR_ALLOC = "; Allocate memory for the reference to the new object";
+    public static final String CONSTRUCTOR_SAVE_THIS = "; Save the reference to the new object";
 }

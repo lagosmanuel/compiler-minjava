@@ -3,11 +3,15 @@ package main.java.semantic.entities.model.statement.primary;
 import main.java.model.Token;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.Class;
+import main.java.semantic.entities.Constructor;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.Access;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.type.TypeVar;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Comment;
+import main.java.codegen.Instruction;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -17,6 +21,8 @@ public class ConstuctorAccess extends Access {
     private final Token className;
     private final List<TypeVar> typeVars;
     private final List<Expression> arguments;
+    private Constructor constructor;
+    private Class myclass;
 
     public ConstuctorAccess(Token identifier, List<TypeVar> typeVars, List<Expression> arguments) {
         super(identifier);
@@ -40,7 +46,7 @@ public class ConstuctorAccess extends Access {
         if (className == null || arguments == null) return null;
 
         String mangledName = Unit.getMangledName(className.getLexeme(), arguments.size());
-        Class myclass = SymbolTable.getClass(className.getLexeme());
+        myclass = SymbolTable.getClass(className.getLexeme());
 
         if (myclass == null) {
             SymbolTable.throwException(
@@ -104,6 +110,7 @@ public class ConstuctorAccess extends Access {
                 getIdentifier()
             );
         } else if (myclass.getConstructor(mangledName).argumentsMatch(arguments, getIdentifier())) {
+            constructor = myclass.getConstructor(mangledName);
             Type type = Type.createType(
                 myclass.getToken(),
                 typeVars
@@ -115,5 +122,86 @@ public class ConstuctorAccess extends Access {
     }
 
     @Override
-    public void generate() {}
+    public void generate() {
+        if (myclass == null || constructor == null) return;
+        allocate_result();
+        if (arguments != null) arguments.forEach(Expression::generate);
+        malloc_call();
+        store_vt_cir();
+        save_this_ref();
+        call_constructor();
+        if (getChained() != null) getChained().generate();
+    }
+
+    private void allocate_result() {
+        SymbolTable.getGenerator().write(
+            Instruction.RMEM.toString(), "1",
+            Comment.CONSTRUCTOR_ALLOC
+        );
+    }
+
+    public void malloc_call() {
+        SymbolTable.getGenerator().write(
+            Instruction.RMEM.toString(), "1",
+            Comment.RETURN_ALLOC.formatted(CodegenConfig.MALLOC_LABEL)
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            String.valueOf(myclass.getInstanceAttributes().size()+1),
+            Comment.OBJECT_ALLOC.formatted(myclass.getInstanceAttributes().size())
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            CodegenConfig.MALLOC_LABEL,
+            Comment.MALLOC_LOAD.formatted()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.CALL.toString(),
+            Comment.MALLOC_CALL.formatted()
+        );
+    }
+
+    public void store_vt_cir() {
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            CodegenConfig.VT_FORMAT.formatted(myclass.getName()),
+            Comment.VT_LOAD.formatted(myclass.getName())
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.STOREREF.toString(), "0",
+            Comment.VT_STORE.formatted(myclass.getName())
+        );
+    }
+
+    public void save_this_ref() {
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADSP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.SWAP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.STOREREF.toString(),
+            String.valueOf(3 + (arguments != null? arguments.size():0)),
+            Comment.CONSTRUCTOR_SAVE_THIS
+        );
+    }
+
+    private void call_constructor() {
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            constructor.getLabel(),
+            Comment.CONSTRUCTOR_LOAD.formatted(constructor.getLabel())
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.CALL.toString(),
+            Comment.CONSTRUCTOR_CALL.formatted(constructor.getLabel())
+        );
+    }
 }
