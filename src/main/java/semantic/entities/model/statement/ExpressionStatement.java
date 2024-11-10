@@ -6,6 +6,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.statement.primary.MethodAccess;
+import main.java.semantic.entities.model.statement.primary.ConstuctorAccess;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -33,7 +34,8 @@ public class ExpressionStatement extends Statement {
     public void generate() {
         if (expression == null) return;
         expression.generate();
-        if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid()) {
+        if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid() ||
+            expression instanceof ConstuctorAccess constuctorAccess && constuctorAccess.getChained() == null) {
             SymbolTable.getGenerator().write(
                 Instruction.POP.toString(),
                 Comment.EXPRESSION_DROP_VALUE
