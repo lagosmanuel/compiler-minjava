@@ -54,7 +54,7 @@ public class Literal extends Operand {
             );
             case charLiteral -> SymbolTable.getGenerator().write(
                 Instruction.PUSH.toString(),
-                String.valueOf((int) value.getLexeme().indexOf(0)),
+                String.valueOf((int) value.getLexeme().charAt(1)),
                 Comment.LITERAL_LOAD.formatted(value.getLexeme())
             );
             case trueLiteral -> SymbolTable.getGenerator().write(
