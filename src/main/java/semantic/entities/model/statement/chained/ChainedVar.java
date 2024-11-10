@@ -117,6 +117,11 @@ public class ChainedVar extends Chained {
     }
 
     @Override
+    public void generate(String supername) {
+        generate();
+    }
+
+    @Override
     public boolean isVoid() {
         return getChained() == null || getChained().isVoid();
     }

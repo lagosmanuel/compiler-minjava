@@ -8,6 +8,9 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.Access;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
+import main.java.config.CodegenConfig;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -16,7 +19,8 @@ import java.util.List;
 public class SuperAccess extends Access {
     private final Token className;
     private final List<Expression> arguments;
-    private boolean isConstructorCall = false;
+    private Constructor constructor;
+    private String supername;
 
     @Override
     public boolean isAssignable() {
@@ -41,6 +45,7 @@ public class SuperAccess extends Access {
         Class myclass = SymbolTable.getClass(className.getLexeme());
         Class superclass = myclass != null? SymbolTable.getClass(myclass.getSuperType().getName()):null;
         Type supertype = superclass != null? Type.createType(superclass.getToken(), null):null;
+        supername = superclass != null? superclass.getName():"";
 
         if (SymbolTable.actualUnit.isStatic()) {
             SymbolTable.throwException(
@@ -53,8 +58,7 @@ public class SuperAccess extends Access {
         if (supertype == null) return null;
 
         if (arguments != null) {
-            Constructor constructor = superclass.getConstructor(Unit.getMangledName(superclass.getName(), arguments.size()));
-            isConstructorCall = true;
+            constructor = superclass.getConstructor(Unit.getMangledName(superclass.getName(), arguments.size()));
             if (constructor == null) {
                 SymbolTable.throwException(
                     String.format(
@@ -85,9 +89,34 @@ public class SuperAccess extends Access {
     }
 
     public boolean isConstructorCall() {
-        return isConstructorCall;
+        return arguments != null;
     }
 
     @Override
-    public void generate() {}
+    public void generate() {
+        if (isConstructorCall()) {
+            arguments.forEach(Expression::generate);
+            SymbolTable.getGenerator().write(
+                Instruction.LOAD.toString(),
+                CodegenConfig.OFFSET_THIS,
+                Comment.LOAD_SUPER
+            );
+            SymbolTable.getGenerator().write(
+                Instruction.PUSH.toString(),
+                constructor.getLabel(),
+                Comment.SUPER_LOAD.formatted(constructor.getLabel())
+            );
+            SymbolTable.getGenerator().write(
+                Instruction.CALL.toString(),
+                Comment.SUPER_CALL.formatted(constructor.getLabel())
+            );
+        } else {
+            SymbolTable.getGenerator().write(
+                Instruction.LOAD.toString(),
+                CodegenConfig.OFFSET_THIS,
+                Comment.LOAD_SUPER
+            );
+        }
+        if (getChained() != null) getChained().generate(supername);
+    }
 }

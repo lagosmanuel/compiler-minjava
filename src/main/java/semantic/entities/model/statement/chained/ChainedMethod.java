@@ -7,6 +7,7 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.config.CodegenConfig;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.messages.SemanticErrorMessages;
@@ -88,6 +89,11 @@ public class ChainedMethod extends Chained {
 
     @Override
     public void generate() {
+        generate(null);
+    }
+
+    @Override
+    public void generate(String supername) {
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.DUP.toString(),
@@ -101,9 +107,17 @@ public class ChainedMethod extends Chained {
                 Comment.SWAP_ARGUMENTS
             );
         });
-        SymbolTable.getGenerator().write(
-            Instruction.DUP.toString()
-        );
+        if (supername == null || supername.isEmpty()) {
+            SymbolTable.getGenerator().write(
+                Instruction.DUP.toString()
+            );
+        } else {
+            SymbolTable.getGenerator().write(
+                Instruction.PUSH.toString(),
+                CodegenConfig.VT_FORMAT.formatted(supername),
+                Comment.VT_LOAD.formatted(supername)
+            );
+        }
         SymbolTable.getGenerator().write(
             Instruction.LOADREF.toString(),
             String.valueOf(method.getOffset()),

@@ -44,4 +44,5 @@ public class Comment {
     public static final String CONSTRUCTOR_LOAD = "; Load constructor %s";
     public static final String CONSTRUCTOR_ALLOC = "; Allocate memory for the reference to the new object";
     public static final String CONSTRUCTOR_SAVE_THIS = "; Save the reference to the new object";
+    public static final String LOAD_SUPER = "; Load reference to super";
 }
