@@ -20,4 +20,5 @@ public class CodegenConfig {
     public static final String FALSE_VALUE = "0";
     public static final String TRUE_VALUE = "1";
     public static final int PARAM_OFFSET = Integer.parseInt(OFFSET_THIS);
+    public static final String EPILOGUE_SUFFIX = "_epilogue";
 }

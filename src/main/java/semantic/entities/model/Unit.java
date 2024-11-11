@@ -63,6 +63,7 @@ public abstract class Unit extends Entity {
 
     protected void epilogue() {
         SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, getEpilogueLabel()),
             Instruction.STOREFP.toString(),
             Comment.RESTORE_FP
         );
@@ -85,8 +86,18 @@ public abstract class Unit extends Entity {
         return offset;
     }
 
+    public String getEpilogueLabel() {
+        return label + CodegenConfig.EPILOGUE_SUFFIX;
+    }
+
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public int getReturnOffset() {
+        return parameter_list.size() +
+               (!is_static?1:0) +
+               Integer.parseInt(CodegenConfig.OFFSET_THIS);
     }
 
     public boolean isStatic() {
