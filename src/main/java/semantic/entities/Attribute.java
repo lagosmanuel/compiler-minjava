@@ -56,7 +56,7 @@ public class Attribute extends Variable {
             SymbolTable.throwException(SemanticErrorMessages.ATTRIBUTE_VOID, type.getToken());
         setLabel(Labeler.getLabel(
             CodegenConfig.ATTRIBUTE_NAME_FORMAT,
-            name,
+            Labeler.getLabel(true, name),
             SymbolTable.actualClass.getName()
         ));
     }

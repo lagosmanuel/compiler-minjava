@@ -173,7 +173,7 @@ public abstract class Unit extends Entity {
         if (return_type != null) return_type.validate();
         setLabel(Labeler.getLabel(
             CodegenConfig.FUNCTION_NAME_FORMAT,
-            name,
+            Labeler.getLabel(true, name),
             SymbolTable.actualClass.getName()
         ));
         setParametersOffset();
