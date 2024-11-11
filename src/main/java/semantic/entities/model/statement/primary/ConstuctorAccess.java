@@ -204,4 +204,8 @@ public class ConstuctorAccess extends Access {
             Comment.CONSTRUCTOR_CALL.formatted(constructor.getLabel())
         );
     }
+
+    public boolean isVoid() {
+        return getChained() != null && getChained().isVoid();
+    }
 }

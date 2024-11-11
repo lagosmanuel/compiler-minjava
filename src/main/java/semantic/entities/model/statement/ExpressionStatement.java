@@ -36,7 +36,7 @@ public class ExpressionStatement extends Statement {
         if (expression == null) return;
         expression.generate();
         if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid() ||
-            expression instanceof ConstuctorAccess constuctorAccess && constuctorAccess.getChained() == null ||
+            expression instanceof ConstuctorAccess constuctorAccess && !constuctorAccess.isVoid() ||
             expression instanceof SuperAccess superAccess && !superAccess.isVoid()) {
             SymbolTable.getGenerator().write(
                 Instruction.POP.toString(),
