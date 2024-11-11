@@ -24,4 +24,6 @@ public class CodegenConfig {
     public static final String EPILOGUE_SUFFIX = "_epilogue";
     public static final String IF_END = "if_end";
     public static final String IF_ELSE = "if_else";
+    public static final String WHILE_CONDITION = "while_condition";
+    public static final String WHILE_END = "while_end";
 }

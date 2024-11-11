@@ -5,6 +5,9 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Instruction;
+import main.java.codegen.Labeler;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -31,5 +34,30 @@ public class While extends Statement {
             );
         }
         if (statement != null) statement.check();
+    }
+
+    @Override
+    public void generate() {
+        if (condition == null || statement == null) return;
+        String labelCondition = Labeler.getLabel(true, CodegenConfig.WHILE_CONDITION);
+        String labelEnd = Labeler.getLabel(true, CodegenConfig.WHILE_END);
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, labelCondition),
+            Instruction.NOP.toString()
+        );
+        condition.generate();
+        SymbolTable.getGenerator().write(
+            Instruction.BF.toString(),
+            labelEnd
+        );
+        statement.generate();
+        SymbolTable.getGenerator().write(
+            Instruction.JUMP.toString(),
+            labelCondition
+        );
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
+            Instruction.NOP.toString()
+        );
     }
 }
