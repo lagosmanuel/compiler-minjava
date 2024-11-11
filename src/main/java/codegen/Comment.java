@@ -47,4 +47,5 @@ public class Comment {
     public static final String LOAD_SUPER = "; Load reference to super";
     public static final String RETURN_STORE = "; Store return value";
     public static final String UNIT_EPILOGUE_JUMP = "; Jump to the epilogue of unit %s";
+    public static final String VAR_ALLOC = "; Allocate memory for local variable %s";
 }

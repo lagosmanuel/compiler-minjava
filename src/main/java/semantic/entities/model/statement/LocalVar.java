@@ -9,6 +9,8 @@ import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.codegen.Comment;
+import main.java.codegen.Instruction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,5 +116,33 @@ public class LocalVar extends Statement {
             );
         } else declared = false;
         return declared;
+    }
+
+    @Override
+    public void generate() {
+        if (value != null) {
+            value.generate();
+            for (int i = 0; i < localVars.size()-1; ++i) {
+                SymbolTable.getGenerator().write(
+                    Instruction.DUP.toString(),
+                    Comment.VAR_ALLOC.formatted(localVars.get(i+1).getIdentifier().getLexeme())
+                );
+            }
+        } else {
+            SymbolTable.getGenerator().write(
+                Instruction.RMEM.toString(),
+                String.valueOf(localVars.size()),
+                Comment.VAR_ALLOC.formatted(names())
+            );
+        }
+    }
+
+    private String names() {
+        if (localVars.isEmpty()) return "";
+        StringBuilder names = new StringBuilder();
+        for (LocalVar localVar:localVars)
+            names.append(localVar.getIdentifier().getLexeme())
+                 .append(", ");
+        return names.substring(0, names.length()-2);
     }
 }
