@@ -23,7 +23,7 @@ public class Comment {
     public static final String EXPRESSION_DROP_VALUE = "; Drop value from expression";
     public static final String VAR_LOAD = "; Load variable/parameter: %s";
     public static final String VAR_STORE = "; Store variable/parameter: %s";
-    public static final String ATTRIBUTE_LOAD = "Load attribute: %s";
+    public static final String ATTRIBUTE_LOAD = "; Load attribute: %s";
     public static final String ATTRIBUTE_STATIC_LOAD = "; Load static attribute: %s";
     public static final String ATTRIBUTE_STORE = "; Store attribute: %s";
     public static final String ATTRIBUTE_STATIC_STORE = "; Store static attribute: %s";
@@ -45,4 +45,6 @@ public class Comment {
     public static final String CONSTRUCTOR_ALLOC = "; Allocate memory for the reference to the new object";
     public static final String CONSTRUCTOR_SAVE_THIS = "; Save the reference to the new object";
     public static final String LOAD_SUPER = "; Load reference to super";
+    public static final String RETURN_STORE = "; Store return value";
+    public static final String UNIT_EPILOGUE_JUMP = "; Jump to the epilogue of unit %s";
 }

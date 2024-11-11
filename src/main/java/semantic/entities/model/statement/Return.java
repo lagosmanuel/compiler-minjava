@@ -6,6 +6,8 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.codegen.Instruction;
+import main.java.codegen.Comment;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -58,5 +60,27 @@ public class Return extends Statement {
                 getIdentifier()
             );
         }
+    }
+
+    @Override
+    public void generate() {
+        if (expression != null) {
+            expression.generate();
+            SymbolTable.getGenerator().write(
+                Instruction.STORE.toString(),
+                String.valueOf(SymbolTable.actualUnit.getReturnOffset()),
+                Comment.RETURN_STORE
+            );
+        }
+        SymbolTable.getGenerator().write(
+            Instruction.FMEM.toString(),
+            String.valueOf(getParent().getLocalVars().size()),
+            Comment.BLOCK_RET
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.JUMP.toString(),
+            SymbolTable.actualUnit.getEpilogueLabel(),
+            Comment.UNIT_EPILOGUE_JUMP.formatted(SymbolTable.actualUnit.getLabel())
+        );
     }
 }
