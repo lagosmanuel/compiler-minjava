@@ -102,7 +102,41 @@ public class Class extends Entity {
 
     public void generate() {
         generateVT();
+        alloc_attr_static();
         generateCode();
+    }
+
+    private void alloc_attr_static() {
+        if (own_attributes.stream().noneMatch(Attribute::isStatic)) return;
+        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_ATTR_STATIC_ALLOC.formatted(getName()));
+        own_attributes.forEach(attribute -> {
+            if (attribute.isStatic()) {
+                SymbolTable.getGenerator().write(
+                    Labeler.getLabel(CodegenConfig.LABEL, attribute.getLabel()),
+                    Instruction.DW.toString(), "0",
+                    Comment.ATTR_STATIC_ALLOC.formatted(attribute.getLabel())
+                );
+            }
+        });
+        SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
+    }
+
+    public void init_attr_static() {
+        own_attributes.forEach(attribute -> {
+            if (attribute.isStatic() && attribute.getExpression() != null) {
+                SymbolTable.getGenerator().write(
+                    Instruction.PUSH.toString(),
+                    attribute.getLabel(),
+                    Comment.ATTRIBUTE_LOAD.formatted(attribute.getLabel())
+                );
+                attribute.getExpression().generate();
+                SymbolTable.getGenerator().write(
+                    Instruction.STOREREF.toString(), "0",
+                    Comment.ATTRIBUTE_STORE.formatted(attribute.getLabel())
+                );
+                SymbolTable.getGenerator().write(CodegenConfig.LINE_SPACE);
+            }
+        });
     }
 
     private void generateCode() {
@@ -332,6 +366,10 @@ public class Class extends Entity {
 
     public List<Attribute> getInstanceAttributes() {
         return instance_attributes;
+    }
+
+    public List<Attribute> getOwnAttributes() {
+        return own_attributes;
     }
 
     private void addPublicAttributes(String attr_name, List<Attribute> attr_list) {

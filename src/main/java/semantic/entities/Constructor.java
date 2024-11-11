@@ -32,6 +32,7 @@ public class Constructor extends Unit {
         if (!isMyOwn() || is_generated) return;
         super.generate();
         super_call();
+        attr_init();
         body.generate();
         epilogue();
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SPACE);
@@ -55,6 +56,26 @@ public class Constructor extends Unit {
                 Comment.SUPER_CALL.formatted(getSuperCallLabel())
             );
         }
+    }
+
+    private void attr_init() {
+        Class myclass = SymbolTable.getClass(getToken().getLexeme());
+        if (myclass == null) return;
+        myclass.getOwnAttributes().forEach(attribute -> {
+            if (!attribute.isStatic() && attribute.getExpression() != null) {
+                SymbolTable.getGenerator().write(
+                    Instruction.LOAD.toString(),
+                    CodegenConfig.OFFSET_THIS,
+                    Comment.LOAD_THIS
+                );
+                attribute.getExpression().generate();
+                SymbolTable.getGenerator().write(
+                    Instruction.STOREREF.toString(),
+                    String.valueOf(attribute.getOffset()),
+                    Comment.ATTRIBUTE_STORE.formatted(attribute.getLabel())
+                );
+            }
+        });
     }
 
     private boolean isConstructorCall(Statement statement) {

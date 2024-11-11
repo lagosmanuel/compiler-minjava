@@ -73,6 +73,7 @@ public class SymbolTable {
             generator.write(CodegenConfig.CODE);
             generator.write(CodegenConfig.LINE_SPACE);
             callHeapInit();
+            initStaticAttributes();
             callMain();
             loadHeapFunctions();
             for (Class myClass:classes.values()) {
@@ -87,6 +88,13 @@ public class SymbolTable {
         generator.write(Instruction.PUSH.toString(), CodegenConfig.HEAP_INIT_LABEL, Comment.HEAP_INIT_CALL);
         generator.write(Instruction.CALL.toString());
         generator.write(CodegenConfig.LINE_SPACE);
+    }
+
+    private static void initStaticAttributes() {
+        for (Class myClass:classes.values()) {
+            actualClass = myClass;
+            myClass.init_attr_static();
+        }
     }
 
     private static void callMain() {

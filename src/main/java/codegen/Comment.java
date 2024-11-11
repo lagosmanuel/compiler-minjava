@@ -48,4 +48,6 @@ public class Comment {
     public static final String RETURN_STORE = "; Store return value";
     public static final String UNIT_EPILOGUE_JUMP = "; Jump to the epilogue of unit %s";
     public static final String VAR_ALLOC = "; Allocate memory for local variable %s";
+    public static final String CLASS_ATTR_STATIC_ALLOC = "; Allocate memory for static attributes of class %s";
+    public static final String ATTR_STATIC_ALLOC = "; Allocate memory for static attribute %s";
 }
