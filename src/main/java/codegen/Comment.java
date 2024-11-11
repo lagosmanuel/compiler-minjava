@@ -34,7 +34,12 @@ public class Comment {
     public static final String VT_ACCESS_METHOD = "; Get method %s from VT";
     public static final String ACCESS_STATIC_METHOD = "; Get static method %s";
     public static final String SWAP_ARGUMENTS = "; Swap method arguments and reference";
-    public static final String IPRINT = "; print integer value from stack";
+    public static final String READ = "; Read one byte from input stream";
+    public static final String BPRINT = "; Print boolean value from stack";
+    public static final String CPRINT = "; Print char value from stack";
+    public static final String IPRINT = "; Print integer value from stack";
+    public static final String SPRINT = "; Print string value from stack";
+    public static final String PRNLN = "; Print new line character";
     public static final String CONSTRUCTOR_CALL = "; Call constructor %s";
     public static final String OBJECT_ALLOC = "; Allocate object with %d attributes";
     public static final String MALLOC_LOAD = "; Load malloc function";
