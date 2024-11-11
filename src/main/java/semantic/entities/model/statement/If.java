@@ -5,6 +5,9 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Instruction;
+import main.java.codegen.Labeler;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -33,5 +36,21 @@ public class If extends Statement {
             );
         }
         if (then != null) then.check();
+    }
+
+    @Override
+    public void generate() {
+        if (condition == null || then == null) return;
+        String labelEnd = Labeler.getLabel(true, CodegenConfig.IF_END);
+        condition.generate();
+        SymbolTable.getGenerator().write(
+            Instruction.BF.toString(),
+            labelEnd
+        );
+        then.generate();
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
+            Instruction.NOP.toString()
+        );
     }
 }
