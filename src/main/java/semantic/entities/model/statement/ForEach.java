@@ -14,6 +14,7 @@ public class ForEach extends Statement {
     private final LocalVar declaration;
     private final CompositeExpression iterable;
     private final Statement statement;
+    private final Block body;
 
     public ForEach(Token identifier, LocalVar declaration, CompositeExpression iterable, Statement statement) {
         super(identifier);
@@ -21,6 +22,7 @@ public class ForEach extends Statement {
         this.iterable = iterable;
         this.statement = statement;
         if (statement != null) statement.setBreakable();
+        this.body = new Block(identifier);
     }
 
     @Override
@@ -28,8 +30,13 @@ public class ForEach extends Statement {
         if (checked()) return;
         super.check();
 
+        body.setParent(getParent());
+        body.check();
+        this.setParent(body);
+        SymbolTable.actualBlock = body;
+
         if (declaration != null) {
-            declaration.setParent(getParent());
+            declaration.setParent(body);
             declaration.check();
         }
         Type iterableType = iterable != null? iterable.checkType():null;
@@ -62,8 +69,12 @@ public class ForEach extends Statement {
             );
         }
 
-        if (statement != null) statement.check();
-        if (getParent() != null && declaration != null)
-            declaration.getLocalVars().forEach(getParent()::removeLocalVar);
+        if (statement != null) {
+            statement.setParent(body);
+            statement.check();
+        }
+
+        this.setParent(body.getParent());
+        SymbolTable.actualBlock = body.getParent();
     }
 }
