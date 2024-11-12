@@ -37,7 +37,8 @@ public class ExpressionStatement extends Statement {
         expression.generate();
         if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid() ||
             expression instanceof ConstuctorAccess constuctorAccess && !constuctorAccess.isVoid() ||
-            expression instanceof SuperAccess superAccess && !superAccess.isVoid()) {
+            expression instanceof SuperAccess superAccess && !superAccess.isVoid() ||
+            expression instanceof Assignment) {
             SymbolTable.getGenerator().write(
                 Instruction.POP.toString(),
                 Comment.EXPRESSION_DROP_VALUE

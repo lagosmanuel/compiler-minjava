@@ -139,6 +139,9 @@ public class VarAccess extends Access {
 
     private void storeAttr() {
         SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
             Instruction.LOAD.toString(),
             CodegenConfig.OFFSET_THIS,
             Comment.LOAD_THIS
@@ -154,6 +157,9 @@ public class VarAccess extends Access {
     }
 
     private void storeAttrStatic() {
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
         SymbolTable.getGenerator().write(
             Instruction.PUSH.toString(),
             attribute.getLabel()
@@ -176,6 +182,9 @@ public class VarAccess extends Access {
     }
 
     private void storeVar() {
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
         SymbolTable.getGenerator().write(
             Instruction.STORE.toString(),
             String.valueOf(offset),

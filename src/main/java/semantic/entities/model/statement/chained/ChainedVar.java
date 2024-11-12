@@ -107,7 +107,11 @@ public class ChainedVar extends Chained {
 
     private void storeAttr() {
         SymbolTable.getGenerator().write(
-            Instruction.SWAP.toString()
+            Instruction.LOADSP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "2",
+            Comment.ATTRIBUTE_STORE_SWAP
         );
         SymbolTable.getGenerator().write(
             Instruction.STOREREF.toString(),

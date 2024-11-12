@@ -57,4 +57,5 @@ public class Comment {
     public static final String ATTR_STATIC_ALLOC = "; Allocate memory for static attribute %s";
     public static final String BLOCK_BREAK = "; Break from block and free local variables";
     public static final String BREAK_JUMP = "; Jump to the end of the breakable block";
+    public static final String ATTRIBUTE_STORE_SWAP = "; Swap the value and reference to store an attribute and keep the result on the stack";
 }
