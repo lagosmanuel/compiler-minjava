@@ -5,9 +5,6 @@ import main.java.codegen.Comment;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
-import main.java.semantic.entities.model.statement.primary.MethodAccess;
-import main.java.semantic.entities.model.statement.primary.ConstuctorAccess;
-import main.java.semantic.entities.model.statement.primary.SuperAccess;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -35,9 +32,7 @@ public class ExpressionStatement extends Statement {
     public void generate() {
         if (expression == null) return;
         expression.generate();
-        if (expression instanceof MethodAccess methodAccess && !methodAccess.isVoid() ||
-            expression instanceof ConstuctorAccess constuctorAccess && !constuctorAccess.isVoid() ||
-            expression instanceof SuperAccess superAccess && !superAccess.isVoid() ||
+        if (expression instanceof Access access && !access.isVoid() ||
             expression instanceof Assignment) {
             SymbolTable.getGenerator().write(
                 Instruction.POP.toString(),

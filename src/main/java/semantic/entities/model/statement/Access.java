@@ -24,4 +24,6 @@ public abstract class Access extends Operand {
         this.assignOp = assignOp;
         if (chained != null) chained.setAssignOp(assignOp);
     }
+
+    public abstract boolean isVoid();
 }

@@ -191,4 +191,9 @@ public class VarAccess extends Access {
             Comment.VAR_STORE.formatted(getIdentifier().getLexeme())
         );
     }
+
+    @Override
+    public boolean isVoid() {
+        return getChained() != null && getChained().isVoid();
+    }
 }

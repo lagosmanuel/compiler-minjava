@@ -52,4 +52,9 @@ public class ThisAccess extends Access {
         );
         if (getChained() != null) getChained().generate();
     }
+
+    @Override
+    public boolean isVoid() {
+        return getChained() != null && getChained().isVoid();
+    }
 }

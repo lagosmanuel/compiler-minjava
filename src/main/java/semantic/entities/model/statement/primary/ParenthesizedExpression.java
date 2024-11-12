@@ -41,4 +41,10 @@ public class ParenthesizedExpression extends Access {
         expression.generate();
         if (getChained() != null) getChained().generate();
     }
+
+    @Override
+    public boolean isVoid() {
+        return (expression instanceof Access access && access.isVoid()) ||
+               (getChained() != null && getChained().isVoid());
+    }
 }
