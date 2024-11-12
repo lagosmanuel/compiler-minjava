@@ -22,7 +22,6 @@ public class For extends Statement {
         this.condition = condition;
         this.increment = increment;
         this.statement = statement;
-        if (statement != null) statement.setBreakable();
         this.body = new Block(identifier);
     }
 
@@ -31,6 +30,7 @@ public class For extends Statement {
         if (checked()) return;
         super.check();
 
+        body.setBreakable();
         body.setParent(getParent());
         body.check();
         this.setParent(body);

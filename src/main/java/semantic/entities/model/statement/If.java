@@ -35,7 +35,10 @@ public class If extends Statement {
                 getIdentifier()
             );
         }
-        if (then != null) then.check();
+        if (then != null) {
+            then.setParent(getParent());
+            then.check();
+        }
     }
 
     @Override

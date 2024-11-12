@@ -21,7 +21,6 @@ public class ForEach extends Statement {
         this.declaration = declaration;
         this.iterable = iterable;
         this.statement = statement;
-        if (statement != null) statement.setBreakable();
         this.body = new Block(identifier);
     }
 
@@ -30,6 +29,7 @@ public class ForEach extends Statement {
         if (checked()) return;
         super.check();
 
+        body.setBreakable();
         body.setParent(getParent());
         body.check();
         this.setParent(body);

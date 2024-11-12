@@ -19,7 +19,10 @@ public class While extends Statement {
         super(identifier);
         this.condition = condition;
         this.statement = statement;
-        if (statement != null) statement.setBreakable();
+        if (statement != null) {
+            statement.setBreakable();
+            statement.setParent(getParent());
+        };
     }
 
     @Override

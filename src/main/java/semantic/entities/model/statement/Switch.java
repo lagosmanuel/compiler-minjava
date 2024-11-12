@@ -42,6 +42,7 @@ public class Switch extends Statement {
                 getIdentifier()
             );
         } else for (SwitchStatement statement:statements) {
+            statement.getStatement().setParent(getParent());
             statement.check(this);
             if (!statement.hasReturn()) unsetReturnable();
         }

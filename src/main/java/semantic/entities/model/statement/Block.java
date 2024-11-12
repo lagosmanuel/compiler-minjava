@@ -50,11 +50,6 @@ public class Block extends Statement {
         localVars.add(localVar);
     }
 
-    public void removeLocalVar(LocalVar localVar) {
-        if (localVar == null) return;
-        localVars.remove(localVar);
-    }
-
     public List<LocalVar> getLocalVars() {
         return localVars;
     }

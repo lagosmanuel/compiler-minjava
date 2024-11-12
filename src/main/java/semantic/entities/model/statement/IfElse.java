@@ -22,6 +22,7 @@ public class IfElse extends If {
         if (checked()) return;
         super.check();
         if (elses != null) {
+            elses.setParent(getParent());
             elses.check();
             if (then.hasReturn() && elses.hasReturn()) setReturnable();
         }
