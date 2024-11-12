@@ -92,6 +92,11 @@ public class BlockPredefined extends Block {
                     Comment.VAR_LOAD.formatted("s")
                 );
                 SymbolTable.getGenerator().write(
+                    Instruction.LOADREF.toString(),
+                    "1",
+                    Comment.STRING_LOAD
+                );
+                SymbolTable.getGenerator().write(
                     Instruction.SPRINT.toString(),
                     Comment.SPRINT
                 );
@@ -137,6 +142,11 @@ public class BlockPredefined extends Block {
                     Instruction.LOAD.toString(),
                     "3",
                     Comment.VAR_LOAD.formatted("s")
+                );
+                SymbolTable.getGenerator().write(
+                    Instruction.LOADREF.toString(),
+                    "1",
+                    Comment.STRING_LOAD
                 );
                 SymbolTable.getGenerator().write(
                     Instruction.SPRINT.toString(),

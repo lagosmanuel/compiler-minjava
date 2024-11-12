@@ -12,6 +12,7 @@ import main.java.codegen.Generator;
 import main.java.codegen.Labeler;
 import main.java.codegen.Comment;
 import main.java.codegen.Instruction;
+import main.java.codegen.Strings;
 import main.java.config.CodegenConfig;
 import main.java.config.SemanticConfig;
 import main.java.exeptions.SemanticException;
@@ -44,6 +45,7 @@ public class SymbolTable {
         EOF = null;
         generator = new Generator(output_filename);
         Labeler.reset();
+        Strings.reset();
     }
 
     public static void validate() throws SemanticException {
@@ -80,6 +82,7 @@ public class SymbolTable {
                 actualClass = myClass;
                 myClass.generate();
             }
+            Strings.generate();
         }
         generator.close();
     }

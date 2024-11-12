@@ -7,6 +7,7 @@ import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
+import main.java.codegen.Strings;
 import main.java.config.CodegenConfig;
 import main.java.messages.SemanticErrorMessages;
 import main.java.messages.CodegenErrorMessages;
@@ -67,9 +68,9 @@ public class Literal extends Operand {
                 CodegenConfig.FALSE_VALUE,
                 Comment.LITERAL_LOAD.formatted(value.getLexeme())
             );
-            case stringLiteral -> SymbolTable.getGenerator().write(
-                // TODO
-            );
+            case stringLiteral -> {
+                Strings.create(value.getLexeme());
+            }
             case nullLiteral -> SymbolTable.getGenerator().write(
                 Instruction.PUSH.toString(),
                 CodegenConfig.NULL_VALUE,

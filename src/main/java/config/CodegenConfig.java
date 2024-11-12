@@ -26,4 +26,5 @@ public class CodegenConfig {
     public static final String IF_ELSE = "if_else";
     public static final String WHILE_CONDITION = "while_condition";
     public static final String WHILE_END = "while_end";
+    public static final String STRING_LABEL = "_string";
 }
