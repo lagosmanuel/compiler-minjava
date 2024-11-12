@@ -55,4 +55,6 @@ public class Comment {
     public static final String VAR_ALLOC = "; Allocate memory for local variable %s";
     public static final String CLASS_ATTR_STATIC_ALLOC = "; Allocate memory for static attributes of class %s";
     public static final String ATTR_STATIC_ALLOC = "; Allocate memory for static attribute %s";
+    public static final String BLOCK_BREAK = "; Break from block and free local variables";
+    public static final String BREAK_JUMP = "; Jump to the end of the breakable block";
 }

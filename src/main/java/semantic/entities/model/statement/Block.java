@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class Block extends Statement {
     private final List<Statement> statements = new ArrayList<>();
     private final List<LocalVar> localVars = new ArrayList<>();
+    private String labelEnd;
 
     public Block(Token identifier) {
         super(identifier);
@@ -52,6 +53,14 @@ public class Block extends Statement {
 
     public List<LocalVar> getLocalVars() {
         return localVars;
+    }
+
+    public String getLabelEnd() {
+        return labelEnd;
+    }
+
+    public void setLabelEnd(String labelEnd) {
+        this.labelEnd = labelEnd;
     }
 
     @Override

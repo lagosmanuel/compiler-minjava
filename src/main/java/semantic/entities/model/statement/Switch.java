@@ -20,16 +20,22 @@ public class Switch extends Statement {
     private Type expressionType = null;
     private boolean hasDefault = false;
     private final Set<String> cases = new HashSet<>();
+    private final Block body;
 
     public Switch(Token identifier, Expression expression, List<SwitchStatement> statements) {
         super(identifier);
         this.expression = expression;
         this.statements = statements;
+        this.body = new Block(identifier);
         this.setReturnable();
     }
 
     @Override
     public void check() throws SemanticException {
+        if (checked()) return;
+        super.check();
+        body.setParent(getParent());
+        body.check();
         expressionType = expression != null? expression.checkType():null;
         if (expressionType == null) return;
         if (!expressionType.isInt() && !expressionType.isFloat() && !expressionType.isChar() &&
@@ -42,7 +48,7 @@ public class Switch extends Statement {
                 getIdentifier()
             );
         } else for (SwitchStatement statement:statements) {
-            statement.getStatement().setParent(getParent());
+            statement.getStatement().setParent(body);
             statement.check(this);
             if (!statement.hasReturn()) unsetReturnable();
         }

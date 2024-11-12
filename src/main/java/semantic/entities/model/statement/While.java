@@ -14,15 +14,13 @@ import main.java.exeptions.SemanticException;
 public class While extends Statement {
     private final Expression condition;
     private final Statement statement;
+    private final Block body;
 
     public While(Token identifier, Expression condition, Statement statement) {
         super(identifier);
         this.condition = condition;
         this.statement = statement;
-        if (statement != null) {
-            statement.setBreakable();
-            statement.setParent(getParent());
-        };
+        this.body = new Block(identifier);
     }
 
     @Override
@@ -36,7 +34,13 @@ public class While extends Statement {
                 getIdentifier()
             );
         }
-        if (statement != null) statement.check();
+        if (statement != null) {
+            body.setBreakable();
+            body.setParent(getParent());
+            body.check();
+            statement.setParent(body);
+            statement.check();
+        }
     }
 
     @Override
@@ -44,6 +48,7 @@ public class While extends Statement {
         if (condition == null || statement == null) return;
         String labelCondition = Labeler.getLabel(true, CodegenConfig.WHILE_CONDITION);
         String labelEnd = Labeler.getLabel(true, CodegenConfig.WHILE_END);
+        body.setLabelEnd(labelEnd);
         SymbolTable.getGenerator().write(
             Labeler.getLabel(CodegenConfig.LABEL, labelCondition),
             Instruction.NOP.toString()
