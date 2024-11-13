@@ -40,6 +40,6 @@ public class Case extends SwitchStatement {
                 ),
                 literal.getIdentifier()
             );
-        } else myswitch.addCase(literal);
+        } else label = myswitch.addCase(literal);
     }
 }

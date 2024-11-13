@@ -1,14 +1,19 @@
 package main.java.semantic.entities.model.statement.switchs;
 
 import main.java.model.Token;
+import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.statement.Switch;
 import main.java.semantic.entities.model.Statement;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Instruction;
+import main.java.codegen.Labeler;
 import main.java.exeptions.SemanticException;
 
 abstract public class SwitchStatement {
     private final Token identifier;
     private final Statement statement;
     private boolean checked = false;
+    protected String label;
 
     public SwitchStatement(Token identifier, Statement statement) {
         this.identifier = identifier;
@@ -18,6 +23,10 @@ abstract public class SwitchStatement {
 
     public Token getIdentifier() {
         return identifier;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public boolean checked() {
@@ -35,5 +44,14 @@ abstract public class SwitchStatement {
     public void check(Switch myswitch) throws SemanticException {
         checked = true;
         if (statement != null) statement.check();
+    }
+
+    public void generate() {
+        if (label == null || label.isEmpty()) return;
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, label),
+            Instruction.NOP.toString()
+        );
+        if (getStatement() != null) getStatement().generate();
     }
 }

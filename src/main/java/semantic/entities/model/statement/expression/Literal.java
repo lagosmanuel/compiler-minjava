@@ -15,6 +15,7 @@ import main.java.exeptions.SemanticException;
 
 public class Literal extends Operand {
     private final Token value;
+    private String label;
 
     public Literal(Token value) {
         super(value);
@@ -77,5 +78,13 @@ public class Literal extends Operand {
                 Comment.LITERAL_LOAD.formatted(value.getLexeme())
             );
         }
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

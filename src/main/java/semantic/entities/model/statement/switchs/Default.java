@@ -21,6 +21,6 @@ public class Default extends SwitchStatement {
                 SemanticErrorMessages.SWITCH_DEFAULT_ALREADY_DEFINED,
                 getIdentifier()
             );
-        } else myswitch.setDefault();
+        } else label = myswitch.setDefault();
     }
 }
