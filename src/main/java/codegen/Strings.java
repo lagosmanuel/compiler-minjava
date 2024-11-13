@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Strings {
-    private static Class myClass = main.java.semantic.entities.predefined.String.Class();
+    private final static Class myClass = main.java.semantic.entities.predefined.String.Class();
     private static final Map<String, String> strings = new HashMap<>();
 
     public static void reset() {
@@ -117,6 +117,7 @@ public class Strings {
     }
 
     public static void generate() {
+        if (strings.isEmpty()) return;
         SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.STRING_SECTION);
         strings.forEach((string, label) -> {
             SymbolTable.getGenerator().write(
