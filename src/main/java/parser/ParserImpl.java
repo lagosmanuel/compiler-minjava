@@ -487,7 +487,7 @@ public class ParserImpl implements Parser {
                 match(TokenType.semicolon);
                 yield statement;
             }
-            case semicolon -> new NOOP(match(TokenType.semicolon));
+            case semicolon -> new Nop(match(TokenType.semicolon));
             case kwVar, kwBoolean, kwChar, kwInt, kwFloat -> {
                 Statement statement = LocalVarPrimitiveType();
                 match(TokenType.semicolon);
