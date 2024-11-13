@@ -100,6 +100,7 @@ public class MethodAccess extends Access {
             Instruction.CALL.toString(),
             Comment.CALL_METHOD.formatted(method.getLabel())
         );
+        if (getChained() != null) getChained().generate();
     }
 
     protected void loadTarget() {
