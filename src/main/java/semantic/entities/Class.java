@@ -184,6 +184,10 @@ public class Class extends Entity {
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
     }
 
+    public String getVTLabel() {
+        return vt_label;
+    }
+
     private void inheritAttributes(Class superClass) {
         superClass.getAttributes().forEach(this::addPublicAttributes);
         superClass.getInstanceAttributes().reversed().forEach(instance_attributes::addFirst);

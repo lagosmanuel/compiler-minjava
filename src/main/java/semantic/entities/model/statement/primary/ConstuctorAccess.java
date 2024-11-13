@@ -166,8 +166,7 @@ public class ConstuctorAccess extends Access {
             Instruction.DUP.toString()
         );
         SymbolTable.getGenerator().write(
-            Instruction.PUSH.toString(),
-            CodegenConfig.VT_FORMAT.formatted(myclass.getName()),
+            Instruction.PUSH.toString(), myclass.getVTLabel(),
             Comment.VT_LOAD.formatted(myclass.getName())
         );
         SymbolTable.getGenerator().write(

@@ -93,7 +93,7 @@ public class ChainedMethod extends Chained {
     }
 
     @Override
-    public void generate(String supername) {
+    public void generate(String super_vt_label) {
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.DUP.toString(),
@@ -107,15 +107,14 @@ public class ChainedMethod extends Chained {
                 Comment.SWAP_ARGUMENTS
             );
         });
-        if (supername == null || supername.isEmpty()) {
+        if (super_vt_label == null || super_vt_label.isEmpty()) {
             SymbolTable.getGenerator().write(
                 Instruction.DUP.toString()
             );
         } else {
             SymbolTable.getGenerator().write(
-                Instruction.PUSH.toString(),
-                CodegenConfig.VT_FORMAT.formatted(supername),
-                Comment.VT_LOAD.formatted(supername)
+                Instruction.PUSH.toString(), super_vt_label,
+                Comment.VT_LOAD.formatted(super_vt_label)
             );
         }
         SymbolTable.getGenerator().write(

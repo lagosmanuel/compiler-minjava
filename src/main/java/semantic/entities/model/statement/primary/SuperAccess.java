@@ -20,7 +20,7 @@ public class SuperAccess extends Access {
     private final Token className;
     private final List<Expression> arguments;
     private Constructor constructor;
-    private String supername;
+    private String super_vt_label;
 
     @Override
     public boolean isAssignable() {
@@ -45,7 +45,7 @@ public class SuperAccess extends Access {
         Class myclass = SymbolTable.getClass(className.getLexeme());
         Class superclass = myclass != null? SymbolTable.getClass(myclass.getSuperType().getName()):null;
         Type supertype = superclass != null? Type.createType(superclass.getToken(), null):null;
-        supername = superclass != null? superclass.getName():"";
+        this.super_vt_label = superclass != null? superclass.getVTLabel():null;
 
         if (SymbolTable.actualUnit.isStatic()) {
             SymbolTable.throwException(
@@ -117,7 +117,7 @@ public class SuperAccess extends Access {
                 Comment.LOAD_SUPER
             );
         }
-        if (getChained() != null) getChained().generate(supername);
+        if (getChained() != null) getChained().generate(super_vt_label);
     }
 
     public boolean isVoid() {

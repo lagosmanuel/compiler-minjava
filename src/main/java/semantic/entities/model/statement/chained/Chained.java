@@ -42,7 +42,7 @@ abstract public class Chained {
     public abstract Type checkType(Type type) throws SemanticException;
 
     public abstract void generate();
-    public abstract void generate(String supername);
+    public abstract void generate(String super_vt_label);
 
     public abstract boolean isVoid();
 }

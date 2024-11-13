@@ -63,8 +63,7 @@ public class Strings {
             Instruction.DUP.toString()
         );
         SymbolTable.getGenerator().write(
-            Instruction.PUSH.toString(),
-            CodegenConfig.VT_FORMAT.formatted(myClass.getName()),
+            Instruction.PUSH.toString(), myClass.getVTLabel(),
             Comment.VT_LOAD.formatted(myClass.getName())
         );
         SymbolTable.getGenerator().write(
