@@ -43,14 +43,17 @@ public class Class extends Entity {
     protected Type super_type = Object.type;
     protected boolean is_abstract;
     protected boolean is_consolidated;
+    protected final String vt_label;
 
     public Class(String class_name, Token class_token, List<TypeVar> type_params) {
         super(class_name, class_token);
         type_params.forEach(this::addTypeParameter);
+        this.vt_label = Labeler.getLabel(true, CodegenConfig.VT_FORMAT, class_name);
     }
 
     public Class(String class_name, Token class_token) {
         super(class_name, class_token);
+        this.vt_label = Labeler.getLabel(true, CodegenConfig.VT_FORMAT, class_name);
     }
 
     @Override
@@ -155,7 +158,7 @@ public class Class extends Entity {
     private void generateVT() {
         SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         SymbolTable.getGenerator().write(
-            Labeler.getLabel(CodegenConfig.VT_LABEL, name),
+            Labeler.getLabel(CodegenConfig.LABEL, vt_label),
             Instruction.DW.toString(),
             dynamic_methods_list.stream()
                 .map(Method::getLabel)
@@ -169,13 +172,13 @@ public class Class extends Entity {
         SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
         for (int i = 0; i < dynamic_methods_list.size(); ++i) {
             SymbolTable.getGenerator().write(
-                i==0? Labeler.getLabel(CodegenConfig.VT_LABEL, name) + " " + Instruction.DW:
+                i==0? Labeler.getLabel(CodegenConfig.LABEL, vt_label) + " " + Instruction.DW:
                       Instruction.DW.toString(),
                 dynamic_methods_list.get(i).getLabel()
             );
         }
         if (dynamic_methods_list.isEmpty()) SymbolTable.getGenerator().write(
-            Labeler.getLabel(CodegenConfig.VT_LABEL, name),
+            Labeler.getLabel(CodegenConfig.LABEL, vt_label),
             Instruction.DW.toString(), "0"
         );
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
