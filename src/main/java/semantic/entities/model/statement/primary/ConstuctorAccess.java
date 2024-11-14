@@ -12,11 +12,13 @@ import main.java.semantic.entities.model.type.TypeVar;
 import main.java.config.CodegenConfig;
 import main.java.codegen.Comment;
 import main.java.codegen.Instruction;
+import main.java.codegen.Strings;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ConstuctorAccess extends Access {
     private final Token className;
@@ -125,12 +127,14 @@ public class ConstuctorAccess extends Access {
     @Override
     public void generate() {
         if (myclass == null || constructor == null) return;
-        allocate_result();
-        if (arguments != null) arguments.forEach(Expression::generate);
-        malloc_call();
-        store_vt_cir();
-        save_this_ref();
-        call_constructor();
+        if (!isString()) {
+            allocate_result();
+            if (arguments != null) arguments.forEach(Expression::generate);
+            malloc_call();
+            store_vt_cir();
+            save_this_ref();
+            call_constructor();
+        } else Strings.create("");
         if (getChained() != null) getChained().generate();
         else Wrapper.unwrap(Type.createType(myclass.getToken(), myclass.getTypeParameters()));
     }
@@ -208,5 +212,9 @@ public class ConstuctorAccess extends Access {
 
     public boolean isVoid() {
         return getChained() != null && getChained().isVoid();
+    }
+
+    private boolean isString() {
+        return Objects.equals(myclass.getName(), main.java.semantic.entities.predefined.String.name);
     }
 }

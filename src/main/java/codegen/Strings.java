@@ -122,7 +122,7 @@ public class Strings {
             SymbolTable.getGenerator().write(
                 Labeler.getLabel(CodegenConfig.LABEL, label),
                 Instruction.DW.toString(),
-                string, ", 0"
+                string.isEmpty()? "0":string+", 0"
             );
         });
     }
