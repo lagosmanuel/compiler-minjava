@@ -6,6 +6,7 @@ import main.java.semantic.entities.Class;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Strings {
     private final static Class myClass = main.java.semantic.entities.predefined.String.Class();
@@ -122,8 +123,12 @@ public class Strings {
             SymbolTable.getGenerator().write(
                 Labeler.getLabel(CodegenConfig.LABEL, label),
                 Instruction.DW.toString(),
-                string.isEmpty()? "0":string+", 0"
+                isEmpty(string)?"0":string+", 0"
             );
         });
+    }
+
+    private static boolean isEmpty(String string) {
+        return string == null || string.isEmpty() || Objects.equals(string, "\"\"");
     }
 }
