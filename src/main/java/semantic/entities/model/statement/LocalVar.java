@@ -11,6 +11,7 @@ import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.codegen.Comment;
 import main.java.codegen.Instruction;
+import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +123,7 @@ public class LocalVar extends Statement {
     public void generate() {
         if (value != null) {
             value.generate();
+            Wrapper.wrap(type);
             for (int i = 0; i < localVars.size()-1; ++i) {
                 SymbolTable.getGenerator().write(
                     Instruction.DUP.toString(),

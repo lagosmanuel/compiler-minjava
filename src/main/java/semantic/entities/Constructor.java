@@ -8,6 +8,7 @@ import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.ExpressionStatement;
 import main.java.semantic.entities.model.statement.primary.SuperAccess;
+import main.java.semantic.entities.predefined.Wrapper;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.config.CodegenConfig;
@@ -69,6 +70,7 @@ public class Constructor extends Unit {
                     Comment.LOAD_THIS
                 );
                 attribute.getExpression().generate();
+                Wrapper.wrap(attribute.getType());
                 SymbolTable.getGenerator().write(
                     Instruction.STOREREF.toString(),
                     String.valueOf(attribute.getOffset()),

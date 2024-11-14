@@ -14,6 +14,7 @@ import main.java.codegen.Comment;
 import main.java.codegen.Instruction;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.List;
 
@@ -131,6 +132,7 @@ public class ConstuctorAccess extends Access {
         save_this_ref();
         call_constructor();
         if (getChained() != null) getChained().generate();
+        else Wrapper.unwrap(Type.createType(myclass.getToken(), myclass.getTypeParameters()));
     }
 
     private void allocate_result() {

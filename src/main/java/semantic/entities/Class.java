@@ -9,6 +9,7 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.Block;
 import main.java.semantic.entities.predefined.Object;
+import main.java.semantic.entities.predefined.Wrapper;
 import main.java.codegen.Instruction;
 import main.java.codegen.Labeler;
 import main.java.codegen.Comment;
@@ -133,6 +134,7 @@ public class Class extends Entity {
                     Comment.ATTRIBUTE_LOAD.formatted(attribute.getLabel())
                 );
                 attribute.getExpression().generate();
+                Wrapper.wrap(attribute.getType());
                 SymbolTable.getGenerator().write(
                     Instruction.STOREREF.toString(), "0",
                     Comment.ATTRIBUTE_STORE.formatted(attribute.getLabel())

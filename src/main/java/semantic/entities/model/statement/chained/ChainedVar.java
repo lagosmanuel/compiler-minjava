@@ -10,6 +10,7 @@ import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
+import main.java.semantic.entities.predefined.Wrapper;
 
 public class ChainedVar extends Chained {
     private Attribute attribute;
@@ -70,9 +71,12 @@ public class ChainedVar extends Chained {
 
     @Override
     public void generate() {
-        if (!isLeftValue() || getChained() != null) loadAttr();
-        else {
+        if (!isLeftValue() || getChained() != null) {
+            loadAttr();
+            if (getChained() == null) Wrapper.unwrap(attribute.getType());
+        } else {
             opPlusMinus();
+            Wrapper.wrap(attribute.getType());
             storeAttr();
         }
         if (getChained() != null) getChained().generate();

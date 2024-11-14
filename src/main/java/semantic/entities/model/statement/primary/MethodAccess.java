@@ -13,6 +13,7 @@ import main.java.codegen.Comment;
 import main.java.codegen.Instruction;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -88,6 +89,7 @@ public class MethodAccess extends Access {
 
     @Override
     public void generate() {
+        if (method == null || arguments == null) return;
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.RMEM.toString(), "1",
@@ -101,6 +103,7 @@ public class MethodAccess extends Access {
             Comment.CALL_METHOD.formatted(method.getLabel())
         );
         if (getChained() != null) getChained().generate();
+        else Wrapper.unwrap(method.getReturnType());
     }
 
     protected void loadTarget() {

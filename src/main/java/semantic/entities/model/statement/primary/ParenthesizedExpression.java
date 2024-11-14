@@ -5,9 +5,11 @@ import main.java.model.Token;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.statement.Access;
 import main.java.semantic.entities.model.statement.expression.Expression;
+import main.java.semantic.entities.predefined.Wrapper;
 
 public class ParenthesizedExpression extends Access {
     private final Expression expression;
+    private Type type;
 
     public ParenthesizedExpression(Token identifier, Expression expression) {
         super(identifier);
@@ -30,16 +32,19 @@ public class ParenthesizedExpression extends Access {
     @Override
     public Type checkType() throws SemanticException {
         if (expression == null) return null;
+        type = expression.checkType();
         return getChained() != null?
-            getChained().checkType(expression.checkType()):
-            expression.checkType();
+            getChained().checkType(type):type;
     }
 
     @Override
     public void generate() {
         if (expression == null) return;
         expression.generate();
-        if (getChained() != null) getChained().generate();
+        if (getChained() != null) {
+            Wrapper.wrap(type);
+            getChained().generate();
+        }
     }
 
     @Override

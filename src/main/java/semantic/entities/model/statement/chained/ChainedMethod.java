@@ -7,11 +7,11 @@ import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.Unit;
 import main.java.semantic.entities.model.statement.expression.Expression;
-import main.java.config.CodegenConfig;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -94,6 +94,7 @@ public class ChainedMethod extends Chained {
 
     @Override
     public void generate(String super_vt_label) {
+        if (method == null || arguments == null) return;
         if (method.getReturnType() != null && !Objects.equals(method.getReturnType().getName(), PrimitiveType.VOID)) {
             SymbolTable.getGenerator().write(
                 Instruction.DUP.toString(),
@@ -131,6 +132,7 @@ public class ChainedMethod extends Chained {
             Comment.CALL_METHOD.formatted(method.getLabel())
         );
         if (getChained() != null) getChained().generate();
+        else Wrapper.unwrap(method.getReturnType());
     }
 
     @Override

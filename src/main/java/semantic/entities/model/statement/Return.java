@@ -10,11 +10,13 @@ import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.predefined.Wrapper;
 
 import java.util.Objects;
 
 public class Return extends Statement {
     private final Expression expression;
+    private Type declaredType;
 
     public Return(Token identifier, Expression expression) {
         super(identifier);
@@ -33,6 +35,7 @@ public class Return extends Statement {
         if (checked()) return;
         super.check();
         Type returnType = expression != null? expression.checkType():null;
+        this.declaredType = SymbolTable.actualUnit.getReturnType();
 
         if (returnType != null && SymbolTable.actualUnit.getReturnType() == null) {
             SymbolTable.throwException(
@@ -66,6 +69,7 @@ public class Return extends Statement {
     public void generate() {
         if (expression != null) {
             expression.generate();
+            Wrapper.wrap(declaredType);
             SymbolTable.getGenerator().write(
                 Instruction.STORE.toString(),
                 String.valueOf(SymbolTable.actualUnit.getReturnOffset()),

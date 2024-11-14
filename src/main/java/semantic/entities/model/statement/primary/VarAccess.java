@@ -14,9 +14,11 @@ import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
+import main.java.semantic.entities.predefined.Wrapper;
 
 public class VarAccess extends Access {
     private Attribute attribute;
+    private Type type;
     private int offset;
 
     public VarAccess(Token identifier) {
@@ -39,7 +41,7 @@ public class VarAccess extends Access {
         Unit unit = SymbolTable.actualUnit;
         Block block = SymbolTable.actualBlock;
         String name = getIdentifier().getLexeme();
-        Type type = null;
+        type = null;
 
         if (block.hasLocalVar(name)) {
             type = block.getLocalVar(name).getType();
@@ -78,19 +80,25 @@ public class VarAccess extends Access {
             if (!isLeftValue() || getChained() != null) {
                if (attribute.isStatic()) loadAttrStatic();
                else loadAttr();
+               if (getChained() == null) Wrapper.unwrap(type);
             } else {
                 if (attribute.isStatic()) {
                     opPlusMinus(true, true);
+                    Wrapper.wrap(type);
                     storeAttrStatic();
                 } else {
                     opPlusMinus(true, false);
+                    Wrapper.wrap(type);
                     storeAttr();
                 }
             }
         } else {
-            if (!isLeftValue() || getChained() != null) loadVar();
-            else {
+            if (!isLeftValue() || getChained() != null) {
+                loadVar();
+                if (getChained() == null) Wrapper.unwrap(type);
+            } else {
                 opPlusMinus(false, false);
+                Wrapper.wrap(type);
                 storeVar();
             }
         }
@@ -104,6 +112,7 @@ public class VarAccess extends Access {
             if (isAttribute && isStatic) loadAttrStatic();
             else if (isAttribute) loadAttr();
             else loadVar();
+            Wrapper.unwrap(type);
             SymbolTable.getGenerator().write(Instruction.SWAP.toString());
         }
         if (getAssignOp().getType().equals(TokenType.opPlusAssign)) {
