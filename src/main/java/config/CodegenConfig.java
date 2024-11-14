@@ -29,4 +29,6 @@ public class CodegenConfig {
     public static final String CASE_LABEL = "_case";
     public static final String DEFAULT_LABEL = "_default";
     public static final String SWITCH_END = "_switch_end";
+    public static final String STRING_COMPARE_CONDITION = "_string_compare_condition";
+    public static final String STRING_COMPARE_END = "_string_compare_end";
 }

@@ -78,9 +78,14 @@ public class Switch extends Statement {
     private void jumpCase(Literal literal) {
         expression.generate();
         literal.generate();
-        SymbolTable.getGenerator().write(
-            Instruction.EQ.toString()
-        );
+        if (expressionType.isString()) {
+            main.java.semantic.entities.predefined
+                .String.compare();
+        } else {
+            SymbolTable.getGenerator().write(
+                Instruction.EQ.toString()
+            );
+        }
         SymbolTable.getGenerator().write(
             Instruction.BT.toString(),
             literal.getLabel()
