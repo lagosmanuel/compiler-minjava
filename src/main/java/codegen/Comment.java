@@ -61,4 +61,5 @@ public class Comment {
     public static final String STRING_SECTION = "; Strings section";
     public static final String STRING_LOAD = "; Load String";
     public static final String SWITCH_END = "; End of switch statement";
+    public static final String METHOD_LOAD = "; Load method %s";
 }

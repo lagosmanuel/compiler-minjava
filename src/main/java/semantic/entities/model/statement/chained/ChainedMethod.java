@@ -108,31 +108,46 @@ public class ChainedMethod extends Chained {
                 Comment.SWAP_ARGUMENTS
             );
         });
-        if (super_vt_label == null || super_vt_label.isEmpty()) {
-            SymbolTable.getGenerator().write(
-                Instruction.DUP.toString()
-            );
-        } else {
-            SymbolTable.getGenerator().write(
-                Instruction.PUSH.toString(), super_vt_label,
-                Comment.VT_LOAD.formatted(super_vt_label)
-            );
-        }
-        SymbolTable.getGenerator().write(
-            Instruction.LOADREF.toString(), "0",
-            Comment.VT_LOAD.formatted("")
-        );
-        SymbolTable.getGenerator().write(
-            Instruction.LOADREF.toString(),
-            String.valueOf(method.getOffset()),
-            Comment.VT_ACCESS_METHOD.formatted(method.getLabel())
-        );
+        loadMethod(super_vt_label);
         SymbolTable.getGenerator().write(
             Instruction.CALL.toString(),
             Comment.CALL_METHOD.formatted(method.getLabel())
         );
         if (getChained() != null) getChained().generate();
         else Wrapper.unwrap(method.getReturnType());
+    }
+
+    private void loadMethod(String super_vt_label) {
+        if (method.isStatic()) {
+            SymbolTable.getGenerator().write(
+                Instruction.POP.toString()
+            );
+            SymbolTable.getGenerator().write(
+                Instruction.PUSH.toString(),
+                method.getLabel(),
+                Comment.METHOD_LOAD.formatted(method.getLabel())
+            );
+        } else {
+            if (super_vt_label == null || super_vt_label.isEmpty()) {
+                SymbolTable.getGenerator().write(
+                    Instruction.DUP.toString()
+                );
+            } else {
+                SymbolTable.getGenerator().write(
+                    Instruction.PUSH.toString(), super_vt_label,
+                    Comment.VT_LOAD.formatted(super_vt_label)
+                );
+            }
+            SymbolTable.getGenerator().write(
+                Instruction.LOADREF.toString(), "0",
+                Comment.VT_LOAD.formatted("")
+            );
+            SymbolTable.getGenerator().write(
+                Instruction.LOADREF.toString(),
+                String.valueOf(method.getOffset()),
+                Comment.VT_ACCESS_METHOD.formatted(method.getLabel())
+            );
+        }
     }
 
     @Override
