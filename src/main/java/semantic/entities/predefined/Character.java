@@ -83,4 +83,22 @@ public class Character {
         method.setBody(code);
         object.addMethod(method);
     }
+
+    public static char extract(java.lang.String ch_string) {
+        if (ch_string == null || ch_string.length() < 3) return 0;
+        return ch_string.charAt(1) == '\\'?
+            escape(ch_string.charAt(2)):ch_string.charAt(1);
+    }
+
+    private static char escape(char ch) {
+        return switch (ch) {
+            case 'n' -> '\n';
+            case 'r' -> '\r';
+            case 't' -> '\t';
+            case 'b' -> '\b';
+            case 'f' -> '\f';
+            case '0' -> '\0';
+            default -> ch;
+        };
+    }
 }

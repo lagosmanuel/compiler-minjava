@@ -5,6 +5,7 @@ import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
 import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.PrimitiveType;
+import main.java.semantic.entities.predefined.Character;
 import main.java.codegen.Instruction;
 import main.java.codegen.Comment;
 import main.java.codegen.Strings;
@@ -56,7 +57,7 @@ public class Literal extends Operand {
             );
             case charLiteral -> SymbolTable.getGenerator().write(
                 Instruction.PUSH.toString(),
-                String.valueOf((int) value.getLexeme().charAt(1)),
+                String.valueOf((int) Character.extract(value.getLexeme())),
                 Comment.LITERAL_LOAD.formatted(value.getLexeme())
             );
             case trueLiteral -> SymbolTable.getGenerator().write(
