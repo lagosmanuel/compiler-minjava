@@ -7,6 +7,9 @@ import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.CompositeExpression;
 import main.java.semantic.entities.predefined.MiniIterable;
+import main.java.config.CodegenConfig;
+import main.java.codegen.Instruction;
+import main.java.codegen.Labeler;
 import main.java.messages.SemanticErrorMessages;
 import main.java.exeptions.SemanticException;
 
@@ -76,5 +79,110 @@ public class ForEach extends Statement {
 
         this.setParent(body.getParent());
         SymbolTable.actualBlock = body.getParent();
+    }
+
+    @Override
+    public void generate() {
+        if (declaration == null || statement == null || iterable == null) return;
+        String labelEnd= Labeler.getLabel(true, CodegenConfig.FOREACH_END);
+        String blockEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_BLOCK_END);
+        String conditionLabel = Labeler.getLabel(true, CodegenConfig.FOREACH_CONDITION);
+        body.setLabelEnd(labelEnd);
+        alloc_var();
+        call_start();
+        eval_condition(conditionLabel);
+        jump_end(blockEnd);
+        load_next();
+        statement.generate();
+        jump_condition(conditionLabel);
+        end(blockEnd, labelEnd);
+    }
+
+    private void alloc_var() {
+        SymbolTable.getGenerator().write(
+            Instruction.RMEM.toString(), "1"
+        );
+    }
+
+    private void get_iterable() {
+        iterable.generate();
+    }
+
+    private void call_start() {
+        get_iterable();
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "0"
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(),
+            String.valueOf(CodegenConfig.FOREACH_START_OFFSET)
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.CALL.toString()
+        );
+    }
+
+    private void eval_condition(String labelCondition) {
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, labelCondition),
+            Instruction.RMEM.toString(), "1"
+        );
+        get_iterable();
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "0"
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(),
+            String.valueOf(CodegenConfig.FOREACH_HASNEXT_OFFSET)
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.CALL.toString()
+        );
+    }
+
+    private void jump_end(String labelEnd) {
+        SymbolTable.getGenerator().write(
+            Instruction.BF.toString(), labelEnd
+        );
+    }
+
+    private void load_next() {
+        get_iterable();
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "0"
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(),
+            String.valueOf(CodegenConfig.FOREACH_NEXT_OFFSET)
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.CALL.toString()
+        );
+    }
+
+    private void jump_condition(String conditionLabel) {
+        SymbolTable.getGenerator().write(
+            Instruction.JUMP.toString(), conditionLabel
+        );
+    }
+
+    private void end(String blockEnd, String labelEnd) {
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, blockEnd),
+            Instruction.FMEM.toString(), "1"
+        );
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
+            Instruction.NOP.toString()
+        );
     }
 }
