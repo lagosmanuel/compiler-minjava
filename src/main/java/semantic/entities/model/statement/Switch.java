@@ -68,6 +68,7 @@ public class Switch extends Statement {
     @Override
     public void generate() {
         if (expression == null || statements == null || statements.isEmpty()) return;
+        expression.generate();
         cases.forEach((__, literal) -> jumpCase(literal));
         jumpDefault();
         jumpEnd();
@@ -76,7 +77,9 @@ public class Switch extends Statement {
     }
 
     private void jumpCase(Literal literal) {
-        expression.generate();
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
         literal.generate();
         if (expressionType.isString()) {
             main.java.semantic.entities.predefined
@@ -110,7 +113,7 @@ public class Switch extends Statement {
     private void endSwitch() {
         SymbolTable.getGenerator().write(
             Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
-            Instruction.NOP.toString(),
+            Instruction.POP.toString(),
             Comment.SWITCH_END
         );
     }
