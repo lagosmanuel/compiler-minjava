@@ -72,12 +72,14 @@ public class ChainedVar extends Chained {
     @Override
     public void generate() {
         if (!isLeftValue() || getChained() != null) {
-            loadAttr();
+            if (attribute.isStatic()) loadAttrStatic();
+            else loadAttr();
             if (getChained() == null) Wrapper.unwrap(attribute.getType());
         } else {
             opPlusMinus();
             Wrapper.wrap(attribute.getType());
-            storeAttr();
+            if (attribute.isStatic()) storeAttrStatic();
+            else storeAttr();
         }
         if (getChained() != null) getChained().generate();
     }
@@ -88,7 +90,8 @@ public class ChainedVar extends Chained {
             SymbolTable.getGenerator().write(Instruction.SWAP.toString());
             SymbolTable.getGenerator().write(Instruction.LOADSP.toString());
             SymbolTable.getGenerator().write(Instruction.LOADREF.toString(), "2");
-            loadAttr();
+            if (attribute.isStatic()) loadAttrStatic();
+            else loadAttr();
             SymbolTable.getGenerator().write(Instruction.SWAP.toString());
         }
         if (getAssignOp().getType().equals(TokenType.opPlusAssign)) {
@@ -121,6 +124,40 @@ public class ChainedVar extends Chained {
             Instruction.STOREREF.toString(),
             String.valueOf(attribute.getOffset()),
             Comment.ATTRIBUTE_STORE.formatted(getIdentifier().getLexeme())
+        );
+    }
+
+    private void loadAttrStatic() {
+        SymbolTable.getGenerator().write(
+            Instruction.POP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            attribute.getLabel()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.LOADREF.toString(), "0",
+            Comment.ATTRIBUTE_STATIC_LOAD.formatted(attribute.getName())
+        );
+    }
+
+    private void storeAttrStatic() {
+        SymbolTable.getGenerator().write(
+            Instruction.POP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.DUP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.PUSH.toString(),
+            attribute.getLabel()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.SWAP.toString()
+        );
+        SymbolTable.getGenerator().write(
+            Instruction.STOREREF.toString(), "0",
+            Comment.ATTRIBUTE_STATIC_STORE.formatted(attribute.getName())
         );
     }
 
