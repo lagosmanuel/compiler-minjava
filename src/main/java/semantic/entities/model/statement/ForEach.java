@@ -118,7 +118,7 @@ public class ForEach extends Statement {
         );
         SymbolTable.getGenerator().write(
             Instruction.LOADREF.toString(),
-            String.valueOf(CodegenConfig.FOREACH_START_OFFSET)
+            String.valueOf(MiniIterable.METHOD_START_OFFSET)
         );
         SymbolTable.getGenerator().write(
             Instruction.CALL.toString()
@@ -139,7 +139,7 @@ public class ForEach extends Statement {
         );
         SymbolTable.getGenerator().write(
             Instruction.LOADREF.toString(),
-            String.valueOf(CodegenConfig.FOREACH_HASNEXT_OFFSET)
+            String.valueOf(MiniIterable.METHOD_HASNEXT_OFFSET)
         );
         SymbolTable.getGenerator().write(
             Instruction.CALL.toString()
@@ -162,7 +162,7 @@ public class ForEach extends Statement {
         );
         SymbolTable.getGenerator().write(
             Instruction.LOADREF.toString(),
-            String.valueOf(CodegenConfig.FOREACH_NEXT_OFFSET)
+            String.valueOf(MiniIterable.METHOD_NEXT_OFFSET)
         );
         SymbolTable.getGenerator().write(
             Instruction.CALL.toString()

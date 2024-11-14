@@ -34,7 +34,4 @@ public class CodegenConfig {
     public static final String FOREACH_END = "_foreach_end";
     public static final String FOREACH_BLOCK_END = "_foreach_block_end";
     public static final String FOREACH_CONDITION = "_foreach_condition";
-    public static final int FOREACH_START_OFFSET = 0;
-    public static final int FOREACH_HASNEXT_OFFSET = 1;
-    public static final int FOREACH_NEXT_OFFSET = 2;
 }

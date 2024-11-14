@@ -11,10 +11,19 @@ import main.java.semantic.entities.Class;
 import main.java.semantic.entities.AbstractMethod;
 
 import java.util.List;
+import java.lang.String;
 
 public class MiniIterable {
     private static boolean initialized = false;
     public static final java.lang.String name = "MiniIterable";
+
+    public final static String METHOD_START_NAME = "start";
+    public final static String METHOD_HASNEXT_NAME = "hasNext";
+    public final static String METHOD_NEXT_NAME = "next";
+
+    public final static int METHOD_START_OFFSET = 0;
+    public final static int METHOD_HASNEXT_OFFSET = 1;
+    public final static int METHOD_NEXT_OFFSET = 2;
 
     public static final Token token = new Token(
         TokenType.idClass,
@@ -61,10 +70,10 @@ public class MiniIterable {
 
     private static void addStart() {
         AbstractMethod method = new AbstractMethod(
-            "start",
+            METHOD_START_NAME,
             new Token(
                 TokenType.idMetVar,
-                "start",
+                METHOD_START_NAME,
                 0,
                 0
             )
@@ -75,10 +84,10 @@ public class MiniIterable {
 
     private static void addNext() {
         AbstractMethod method = new AbstractMethod(
-            "next",
+            METHOD_NEXT_NAME,
             new Token(
                 TokenType.idMetVar,
-                "next",
+                METHOD_NEXT_NAME,
                 0,
                 0
             )
@@ -89,12 +98,12 @@ public class MiniIterable {
 
     private static void addHasNext() {
         AbstractMethod method = new AbstractMethod(
-            "hasNext",
+            METHOD_HASNEXT_NAME,
             new Token(
-                    TokenType.idMetVar,
-                    "hasNext",
-                    0,
-                    0
+                TokenType.idMetVar,
+                METHOD_HASNEXT_NAME,
+                0,
+                0
             )
         );
         method.setReturnType(PrimitiveType.BOOLEAN_TYPE);

@@ -6,8 +6,10 @@ import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Entity;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.type.ClassType;
 import main.java.semantic.entities.model.type.TypeVar;
 import main.java.semantic.entities.model.statement.Block;
+import main.java.semantic.entities.predefined.MiniIterable;
 import main.java.semantic.entities.predefined.Object;
 import main.java.semantic.entities.predefined.Wrapper;
 import main.java.codegen.Instruction;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import main.java.messages.SemanticErrorMessages;
@@ -163,25 +166,10 @@ public class Class extends Entity {
             Labeler.getLabel(CodegenConfig.LABEL, vt_label),
             Instruction.DW.toString(),
             dynamic_methods_list.stream()
+                .sorted(Comparator.comparingInt(Method::getOffset))
                 .map(Method::getLabel)
                 .collect(Collectors.joining(", ")
             ) + (dynamic_methods_list.isEmpty()? "0":"")
-        );
-        SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
-    }
-
-    private void _generateVT() {
-        SymbolTable.getGenerator().write(CodegenConfig.DATA, Comment.CLASS_VT.formatted(getName()));
-        for (int i = 0; i < dynamic_methods_list.size(); ++i) {
-            SymbolTable.getGenerator().write(
-                i==0? Labeler.getLabel(CodegenConfig.LABEL, vt_label) + " " + Instruction.DW:
-                      Instruction.DW.toString(),
-                dynamic_methods_list.get(i).getLabel()
-            );
-        }
-        if (dynamic_methods_list.isEmpty()) SymbolTable.getGenerator().write(
-            Labeler.getLabel(CodegenConfig.LABEL, vt_label),
-            Instruction.DW.toString(), "0"
         );
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
     }
@@ -488,12 +476,30 @@ public class Class extends Entity {
     }
 
     private void setMethodsOffsets() {
-        for (int i = 0; i < dynamic_methods_list.size(); ++i)
+        boolean isMiniIterable = isMiniIterable();
+        for (int i = 0; i < dynamic_methods_list.size(); ++i) {
             dynamic_methods_list.get(i).setOffset(i);
+            if (isMiniIterable) miniIterableOffset(dynamic_methods_list.get(i));
+        }
     }
 
     private void setAttributesOffsets() {
         for (int i = 0; i < instance_attributes.size(); ++i)
             instance_attributes.get(i).setOffset(i+1);
+    }
+
+
+    private boolean isMiniIterable() {
+        Type type = Type.createType(getToken(), getTypeParameters());
+        return type instanceof ClassType classType && classType.getAncestor(MiniIterable.name) != null;
+    }
+
+    private void miniIterableOffset(Method method) {
+        switch (method.getName()) {
+            case MiniIterable.METHOD_START_NAME -> method.setOffset(MiniIterable.METHOD_START_OFFSET);
+            case MiniIterable.METHOD_HASNEXT_NAME -> method.setOffset(MiniIterable.METHOD_HASNEXT_OFFSET);
+            case MiniIterable.METHOD_NEXT_NAME -> method.setOffset(MiniIterable.METHOD_NEXT_OFFSET);
+            default -> method.setOffset(method.getOffset()+3);
+        }
     }
 }
