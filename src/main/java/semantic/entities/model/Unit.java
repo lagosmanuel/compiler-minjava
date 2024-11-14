@@ -40,7 +40,7 @@ public abstract class Unit extends Entity {
     }
 
     public void generate() {
-        if (!isMyOwn() || is_generated) return;
+        if (!isMyOwn()) return;
         is_generated = true;
         prologue();
     }
@@ -245,7 +245,7 @@ public abstract class Unit extends Entity {
     }
 
     protected boolean isMyOwn() {
-        if (label.equals(CodegenConfig.MAIN_LABEL)) return true;
+        if (label.equals(CodegenConfig.MAIN_LABEL) && !is_generated) return true;
         String[] classname = label.split(CodegenConfig.CLASS_SEPARATOR);
         return classname.length > 1 && classname[1].equals(SymbolTable.actualClass.getName());
     }

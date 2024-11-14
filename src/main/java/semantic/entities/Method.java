@@ -32,7 +32,7 @@ public class Method extends Unit {
 
     @Override
     public void generate() {
-        if (!isMyOwn() || is_generated) return;
+        if (!isMyOwn()) return;
         super.generate();
         body.generate();
         epilogue();
