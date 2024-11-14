@@ -164,7 +164,7 @@ public class Class extends Entity {
             Instruction.DW.toString(),
             dynamic_methods_list.stream()
                 .map(Method::getLabel)
-                .collect(Collectors.joining(" ")
+                .collect(Collectors.joining(", ")
             ) + (dynamic_methods_list.isEmpty()? "0":"")
         );
         SymbolTable.getGenerator().write(CodegenConfig.LINE_SEPARATOR);
