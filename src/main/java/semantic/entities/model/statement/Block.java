@@ -63,6 +63,12 @@ public class Block extends Statement {
         this.labelEnd = labelEnd;
     }
 
+    public int ownLocalVarCount() {
+        return getParent() != null?
+            localVars.size()-getParent().localVars.size():
+            localVars.size();
+    }
+
     @Override
     public void check() throws SemanticException {
         if (checked()) return;

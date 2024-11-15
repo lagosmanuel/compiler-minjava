@@ -84,7 +84,7 @@ public class ForEach extends Statement {
     @Override
     public void generate() {
         if (declaration == null || statement == null || iterable == null) return;
-        String labelEnd= Labeler.getLabel(true, CodegenConfig.FOREACH_END);
+        String labelEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_END);
         String blockEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_BLOCK_END);
         String conditionLabel = Labeler.getLabel(true, CodegenConfig.FOREACH_CONDITION);
         body.setLabelEnd(labelEnd);

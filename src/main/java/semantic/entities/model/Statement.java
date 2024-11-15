@@ -35,7 +35,7 @@ public abstract class Statement {
        this.checked = true;
     }
 
-    public void generate() {}
+    public abstract void generate();
 
     public void setBreakable() {
         this.breakable = true;
