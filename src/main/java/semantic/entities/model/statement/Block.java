@@ -18,6 +18,7 @@ public class Block extends Statement {
     private final List<Statement> statements = new ArrayList<>();
     private final List<LocalVar> localVars = new ArrayList<>();
     private String labelEnd;
+    private int allocated_vars_count;
 
     public Block(Token identifier) {
         super(identifier);
@@ -55,6 +56,14 @@ public class Block extends Statement {
         return localVars;
     }
 
+    public int getAllocatedVarsCount() {
+        return allocated_vars_count;
+    }
+
+    public void allocateVars(int count) {
+        allocated_vars_count += count;
+    }
+
     public String getLabelEnd() {
         return labelEnd;
     }
@@ -65,8 +74,8 @@ public class Block extends Statement {
 
     public int ownLocalVarCount() {
         return getParent() != null?
-            localVars.size()-getParent().localVars.size():
-            localVars.size();
+            getAllocatedVarsCount()-getParent().getAllocatedVarsCount():
+            getAllocatedVarsCount();
     }
 
     @Override
@@ -90,12 +99,13 @@ public class Block extends Statement {
     }
 
     public void generate() {
+        if (getParent() != null) allocateVars(getParent().getAllocatedVarsCount());
         statements.forEach(Statement::generate);
         SymbolTable.getGenerator().write(
             Instruction.FMEM.toString(),
             getParent() != null?
-                String.valueOf(localVars.size()-getParent().localVars.size()):
-                String.valueOf(localVars.size()),
+                String.valueOf(getAllocatedVarsCount()-getParent().getAllocatedVarsCount()):
+                String.valueOf(getAllocatedVarsCount()),
             Comment.BLOCK_RET
         );
     }

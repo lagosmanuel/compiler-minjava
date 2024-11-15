@@ -47,10 +47,6 @@ public class LocalVar extends Statement {
         this.value = value;
     }
 
-    public List<LocalVar> getLocalVars() {
-        return localVars;
-    }
-
     public int getOffset() {
         return offset;
     }
@@ -137,6 +133,7 @@ public class LocalVar extends Statement {
                 Comment.VAR_ALLOC.formatted(names())
             );
         }
+        if (getParent() != null) getParent().allocateVars(localVars.size());
     }
 
     private String names() {

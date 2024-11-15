@@ -35,8 +35,8 @@ public class Break extends Statement {
 
         SymbolTable.getGenerator().write(
             Instruction.FMEM.toString(), String.valueOf(block.getParent() != null?
-                getParent().getLocalVars().size() - block.getParent().getLocalVars().size():
-                getParent().getLocalVars().size()
+                getParent().getAllocatedVarsCount()-block.getParent().getAllocatedVarsCount():
+                getParent().getAllocatedVarsCount()
             ),
             Comment.BLOCK_BREAK
         );

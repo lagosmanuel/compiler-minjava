@@ -88,6 +88,7 @@ public class ForEach extends Statement {
         String blockEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_BLOCK_END);
         String conditionLabel = Labeler.getLabel(true, CodegenConfig.FOREACH_CONDITION);
         body.setLabelEnd(labelEnd);
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount());
         alloc_var();
         call_start();
         eval_condition(conditionLabel);
@@ -102,6 +103,7 @@ public class ForEach extends Statement {
         SymbolTable.getGenerator().write(
             Instruction.RMEM.toString(), "1"
         );
+        body.allocateVars(1);
     }
 
     private void get_iterable() {

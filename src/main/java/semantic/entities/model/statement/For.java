@@ -80,6 +80,7 @@ public class For extends Statement {
         String blockEnd = Labeler.getLabel(true, CodegenConfig.FOR_BLOCK_END);
         String labelCondition = Labeler.getLabel(true, CodegenConfig.FOR_CONDITION);
         body.setLabelEnd(labelEnd);
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount());
         init();
         condition(labelCondition);
         jumpEnd(blockEnd);

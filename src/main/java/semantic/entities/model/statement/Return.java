@@ -78,7 +78,7 @@ public class Return extends Statement {
         }
         SymbolTable.getGenerator().write(
             Instruction.FMEM.toString(),
-            String.valueOf(getParent().getLocalVars().size()),
+            String.valueOf(getParent().getAllocatedVarsCount()),
             Comment.BLOCK_RET
         );
         SymbolTable.getGenerator().write(
