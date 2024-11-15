@@ -1,8 +1,10 @@
 package main.java.semantic.entities.model.statement;
 
 import main.java.model.Token;
+import main.java.model.TokenType;
 import main.java.semantic.SymbolTable;
 import main.java.semantic.entities.model.Type;
+import main.java.semantic.entities.model.type.PrimitiveType;
 import main.java.semantic.entities.model.Statement;
 import main.java.semantic.entities.model.statement.expression.Expression;
 import main.java.semantic.entities.model.statement.expression.Literal;
@@ -43,6 +45,10 @@ public class Switch extends Statement {
         body.setLabelEnd(labelEnd);
         body.setParent(getParent());
         body.check();
+        body.addLocalVar(new LocalVar(
+            PrimitiveType.INT_TYPE,
+            List.of(new Token(TokenType.idMetVar, "", 0, 0)))
+        );
         expressionType = expression != null? expression.checkType():null;
         if (expressionType == null) return;
         if (!expressionType.isInt() && !expressionType.isFloat() && !expressionType.isChar() &&
@@ -68,6 +74,7 @@ public class Switch extends Statement {
     @Override
     public void generate() {
         if (expression == null || statements == null || statements.isEmpty()) return;
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount());
         expression.generate();
         cases.forEach((__, literal) -> jumpCase(literal));
         jumpDefault();
