@@ -146,7 +146,7 @@ public class ConstuctorAccess extends Access {
         );
     }
 
-    public void malloc_call() {
+    private void malloc_call() {
         SymbolTable.getGenerator().write(
             Instruction.RMEM.toString(), "1",
             Comment.RETURN_ALLOC.formatted(CodegenConfig.MALLOC_LABEL)
@@ -167,7 +167,7 @@ public class ConstuctorAccess extends Access {
         );
     }
 
-    public void store_vt_cir() {
+    private void store_vt_cir() {
         SymbolTable.getGenerator().write(
             Instruction.DUP.toString()
         );
@@ -181,7 +181,7 @@ public class ConstuctorAccess extends Access {
         );
     }
 
-    public void save_this_ref() {
+    private void save_this_ref() {
         SymbolTable.getGenerator().write(
             Instruction.DUP.toString()
         );

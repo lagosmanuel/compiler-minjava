@@ -31,6 +31,7 @@ public class Strings {
         call_constructor();
         store_ref(label);
     }
+
     private static void allocate_result() {
         SymbolTable.getGenerator().write(
             Instruction.RMEM.toString(), "1",
@@ -38,7 +39,7 @@ public class Strings {
         );
     }
 
-    public static void malloc_call() {
+    private static void malloc_call() {
         SymbolTable.getGenerator().write(
         Instruction.RMEM.toString(), "1",
             Comment.RETURN_ALLOC.formatted(CodegenConfig.MALLOC_LABEL)
@@ -59,7 +60,7 @@ public class Strings {
         );
     }
 
-    public static void store_vt_cir() {
+    private static void store_vt_cir() {
         SymbolTable.getGenerator().write(
             Instruction.DUP.toString()
         );
@@ -73,7 +74,7 @@ public class Strings {
         );
     }
 
-    public static void save_this_ref() {
+    private static void save_this_ref() {
         SymbolTable.getGenerator().write(
             Instruction.DUP.toString()
         );
@@ -102,7 +103,7 @@ public class Strings {
         );
     }
 
-    public static void store_ref(String label) {
+    private static void store_ref(String label) {
         SymbolTable.getGenerator().write(
             Instruction.DUP.toString()
         );
