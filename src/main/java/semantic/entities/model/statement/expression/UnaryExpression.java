@@ -76,7 +76,7 @@ public class UnaryExpression extends BasicExpression {
                 Comment.OP_NEG
             );
             case opNot -> SymbolTable.getGenerator().write(
-                Instruction.NEG.toString(),
+                Instruction.NOT.toString(),
                 Comment.OP_NOT
             );
             default -> throw new RuntimeException(
