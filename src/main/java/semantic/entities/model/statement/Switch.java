@@ -27,14 +27,12 @@ public class Switch extends Statement {
     private String defaultLabel;
     private final Map<String, Literal> cases = new HashMap<>();
     private final Block body;
-    private final String labelEnd;
 
     public Switch(Token identifier, Expression expression, List<SwitchStatement> statements) {
         super(identifier);
         this.expression = expression;
         this.statements = statements;
         this.body = new Block(identifier);
-        this.labelEnd = Labeler.getLabel(true, CodegenConfig.SWITCH_END);
         this.setReturnable();
     }
 
@@ -42,7 +40,6 @@ public class Switch extends Statement {
     public void check() throws SemanticException {
         if (checked()) return;
         super.check();
-        body.setLabelEnd(labelEnd);
         body.setParent(getParent());
         body.check();
         body.addLocalVar(new LocalVar(
@@ -74,13 +71,16 @@ public class Switch extends Statement {
     @Override
     public void generate() {
         if (expression == null || statements == null || statements.isEmpty()) return;
-        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount());
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount()+1);
+        String labelEnd = Labeler.getLabel(true, CodegenConfig.SWITCH_END);
+        String blockEnd = Labeler.getLabel(true, CodegenConfig.SWITCH_BLOCK_END);
+        body.setLabelEnd(labelEnd);
         expression.generate();
         cases.forEach((__, literal) -> jumpCase(literal));
         jumpDefault();
-        jumpEnd();
+        jumpEnd(blockEnd);
         statements.forEach(SwitchStatement::generate);
-        endSwitch();
+        endSwitch(blockEnd, labelEnd);
     }
 
     private void jumpCase(Literal literal) {
@@ -110,17 +110,21 @@ public class Switch extends Statement {
         );
     }
 
-    private void jumpEnd() {
+    private void jumpEnd(String label) {
         SymbolTable.getGenerator().write(
-            Instruction.JUMP.toString(),
-            labelEnd
+            Instruction.JUMP.toString(), label
         );
     }
 
-    private void endSwitch() {
+    private void endSwitch(String blockEnd, String labelEnd) {
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, blockEnd),
+            Instruction.FMEM.toString(),
+            String.valueOf(body.ownLocalVarCount())
+        );
         SymbolTable.getGenerator().write(
             Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
-            Instruction.POP.toString(),
+            Instruction.NOP.toString(),
             Comment.SWITCH_END
         );
     }
