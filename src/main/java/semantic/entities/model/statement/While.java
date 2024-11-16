@@ -46,6 +46,7 @@ public class While extends Statement {
     @Override
     public void generate() {
         if (condition == null || statement == null) return;
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount());
         String labelCondition = Labeler.getLabel(true, CodegenConfig.WHILE_CONDITION);
         String labelEnd = Labeler.getLabel(true, CodegenConfig.WHILE_END);
         body.setLabelEnd(labelEnd);
