@@ -94,18 +94,19 @@ public class ForEach extends Statement {
     public void generate() {
         if (declaration == null || statement == null || iterable == null) return;
         String labelEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_END);
+        String blockEnd = Labeler.getLabel(true, CodegenConfig.FOREACH_BLOCK_END);
         String conditionLabel = Labeler.getLabel(true, CodegenConfig.FOREACH_CONDITION);
         body.setLabelEnd(labelEnd);
-        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount()+1);
+        if (body.getParent() != null) body.allocateVars(body.getParent().getAllocatedVarsCount()+2);
         iterable.generate();
         call_start();
         call_has_next(conditionLabel);
-        eval_condition(labelEnd);
+        eval_condition(blockEnd);
         call_next();
         statement.generate();
         drop_expression();
         jump_condition(conditionLabel);
-        end(labelEnd);
+        end(blockEnd, labelEnd);
     }
 
 
@@ -198,10 +199,14 @@ public class ForEach extends Statement {
         );
     }
 
-    private void end(String labelEnd) {
+    private void end(String blockEnd, String labelEnd) {
+        SymbolTable.getGenerator().write(
+            Labeler.getLabel(CodegenConfig.LABEL, blockEnd),
+            Instruction.POP.toString()
+        );
         SymbolTable.getGenerator().write(
             Labeler.getLabel(CodegenConfig.LABEL, labelEnd),
-            Instruction.POP.toString()
+            Instruction.NOP.toString()
         );
     }
 }
