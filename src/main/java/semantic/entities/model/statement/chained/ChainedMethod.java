@@ -132,16 +132,16 @@ public class ChainedMethod extends Chained {
                 SymbolTable.getGenerator().write(
                     Instruction.DUP.toString()
                 );
+                SymbolTable.getGenerator().write(
+                    Instruction.LOADREF.toString(), "0",
+                    Comment.VT_LOAD.formatted("")
+                );
             } else {
                 SymbolTable.getGenerator().write(
                     Instruction.PUSH.toString(), super_vt_label,
                     Comment.VT_LOAD.formatted(super_vt_label)
                 );
             }
-            SymbolTable.getGenerator().write(
-                Instruction.LOADREF.toString(), "0",
-                Comment.VT_LOAD.formatted("")
-            );
             SymbolTable.getGenerator().write(
                 Instruction.LOADREF.toString(),
                 String.valueOf(method.getOffset()),
