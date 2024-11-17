@@ -17,7 +17,7 @@ public class Labeler {
     }
 
     public static String getLabel(boolean indexed, String format, String... args) {
-        String label = String.format(format, args) + (indexed? CodegenConfig.INDEX_SUFFIX.formatted(increment()):"");
+        String label = String.format(format, (Object[]) args) + (indexed? CodegenConfig.INDEX_SUFFIX.formatted(increment()):"");
         if (labels.contains(label))
             throw new RuntimeException(String.format(CodegenConfig.LABEL_DUPLICATED, label));
         labels.add(label);
