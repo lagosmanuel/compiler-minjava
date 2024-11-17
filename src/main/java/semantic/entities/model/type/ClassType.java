@@ -100,7 +100,7 @@ public class ClassType extends Type {
 
         Type superType = myclass.getSuperType();
         superType.getTypeParams().forEach(typeVar -> {
-            if (map.containsKey(typeVar.getName()) && typeVar.getInstaceType() == null) {
+            if (map.containsKey(typeVar.getName())) {
                 typeVar.setInstanceType(map.get(typeVar.getName()).getInstaceType() != null?
                     map.get(typeVar.getName()).getInstaceType():
                     map.get(typeVar.getName())
