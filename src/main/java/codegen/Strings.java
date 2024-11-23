@@ -1,15 +1,15 @@
 package main.java.codegen;
 
 import main.java.config.CodegenConfig;
-import main.java.semantic.SymbolTable;
-import main.java.semantic.entities.Class;
+import main.java.symboltable.SymbolTable;
+import main.java.symboltable.entities.Class;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 
 public class Strings {
-    private final static Class myClass = main.java.semantic.entities.predefined.String.Class();
+    private final static Class myClass = main.java.symboltable.entities.predefined.String.Class();
     private static final Map<String, String> strings = new HashMap<>();
 
     public static void reset() {
