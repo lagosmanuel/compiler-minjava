@@ -10,7 +10,7 @@ import main.java.model.Token;
 import main.java.model.TokenType;
 import main.java.model.Pair;
 import main.java.model.Error;
-import main.java.semantic.SymbolTable;
+import main.java.symboltable.SymbolTable;
 import main.java.utils.sourcemanager.SourceManager;
 import main.java.utils.sourcemanager.SourceManagerImpl;
 import main.java.utils.Formater;
