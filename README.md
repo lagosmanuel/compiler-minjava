@@ -105,7 +105,7 @@ The LL(1) Context-Free Grammar of the language's syntax can be found in the file
 ## Example
    1. Compile the example program
    ```bash
-   java -cp out main.java.main.Main example.java example.out
+   java -cp out main.java.main.Main resources/examples/example.java example.out
    ```
    2. Run the output on the Virtual Machine
    ```bash
