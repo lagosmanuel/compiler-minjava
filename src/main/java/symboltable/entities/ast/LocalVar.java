@@ -18,6 +18,7 @@ import java.util.Objects;
 
 public class LocalVar extends Statement {
     private Type type;
+    private Type valueType;
     private final Token identifier;
     private final Expression value;
     private final List<LocalVar> localVars = new ArrayList<>();
@@ -70,7 +71,7 @@ public class LocalVar extends Statement {
         if (type == null) return;
 
         type.validate();
-        Type valueType = value != null? value.checkType():null;
+        valueType = value != null? value.checkType():null;
         for (TypeVar typeVar:type.getTypeParams()) typeVar.check();
 
         if (valueType != null && !type.compatible(valueType)) {
@@ -118,7 +119,7 @@ public class LocalVar extends Statement {
     public void generate() {
         if (value != null) {
             value.generate();
-            Wrapper.wrap(type);
+            Wrapper.wrap(valueType);
             for (int i = 0; i < localVars.size()-1; ++i) {
                 SymbolTable.getGenerator().write(
                     Instruction.DUP.toString(),
