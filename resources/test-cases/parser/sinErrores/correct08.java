@@ -50,7 +50,7 @@ class Prueba1<A, B, C> {
         return new ArrayList<C>();
     }
 
-    int prueba2() {
+    int prueba5() {
         for (A a: obtenerC()) {
             a = (b = c);
         }
